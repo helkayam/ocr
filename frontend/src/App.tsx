@@ -1,38 +1,41 @@
-import React from "react";
-import "./index.css";
+import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Index from "./pages/Index";
+import WorkspaceDetails from "./pages/WorkspaceDetails";
+import WorkspaceCreate from "./pages/WorkspaceCreate";
+import NotFound from "./pages/NotFound";
 
-function App() {
-  return (
-    <div className="app-container app-rtl">
-      <h1 className="app-title">Protocol Genesis – מסך פתיחה</h1>
+const queryClient = new QueryClient();
 
-      <p>
-        זהו המסך הראשוני של מערכת <strong>Protocol Genesis</strong>.
-        בשלב זה המערכת נמצאת בשלב התשתיות (Stage 1), ומוכנה להמשך פיתוח
-        של Workspaces והעלאת קבצים.
-      </p>
-
-      <div className="app-section">
-        <h2>מה כבר קיים בשלב 1?</h2>
-        <ul>
-          <li>תשתיות Docker (FastAPI, PostgreSQL, MinIO)</li>
-          <li>שרת FastAPI בסיסי עם נקודת בדיקה <code>/health</code></li>
-          <li>אפליקציית React + TypeScript שרצה ב־<code>localhost:3000</code></li>
-          <li>MinIO לאחסון קבצים עם ממשק ניהול ב־<code>localhost:9001</code></li>
-        </ul>
-      </div>
-
-      <div className="app-section">
-        <h2>מה מתוכנן לשלב הבא (Sprint 2)?</h2>
-        <ul>
-          <li>ניהול Workspaces (יצירה, רשימה, פתיחה)</li>
-          <li>ממשק העלאת קבצי PDF באמצעות Signed URL</li>
-          <li>שמירת מטא־דאטה של קבצים ב־PostgreSQL</li>
-          <li>שיפור ה־UI לפי סקיצות Lovable</li>
-        </ul>
-      </div>
-    </div>
-  );
-}
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <TooltipProvider>
+      <Toaster />
+      <Sonner 
+        theme="dark"
+        position="top-right"
+        toastOptions={{
+          style: {
+            background: 'hsl(0 0% 12%)',
+            border: '1px solid hsl(0 0% 20%)',
+            color: 'hsl(0 0% 100%)',
+          },
+          className: 'sonner-toast',
+        }}
+      />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/workspace/:id" element={<WorkspaceDetails />} />
+          <Route path="/create" element={<WorkspaceCreate />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
+    </TooltipProvider>
+  </QueryClientProvider>
+);
 
 export default App;
