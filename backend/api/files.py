@@ -10,17 +10,24 @@ from .schemas import (
     ConfirmUploadRequest,
     ConfirmUploadResponse
 )
+from services.storage_service import generate_presigned_upload_url
+import uuid
+
 
 router = APIRouter(prefix="/files", tags=["files"])
 
 
 @router.post("/upload-url", response_model=UploadUrlResponse)
 def get_upload_url(request: UploadUrlRequest):
-    """Get signed URL"""
-    # Stub implementation - no actual S3/MinIO integration yet
+    file_id = str(uuid.uuid4())
+    object_name = f"{request.workspace_id}/{file_id}/{request.filename}"
+
+    upload_url = generate_presigned_upload_url(object_name)
+
+
     return UploadUrlResponse(
-        upload_url="https://stub-upload-url.example.com/upload",
-        file_id="stub-file-id-1",
+        upload_url = upload_url,
+        file_id = file_id,
         expires_in=3600
     )
 
