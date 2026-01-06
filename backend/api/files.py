@@ -12,6 +12,9 @@ from .schemas import (
 )
 from services.storage_service import generate_presigned_upload_url
 import uuid
+import os
+import psycopg2
+
 
 
 router = APIRouter(prefix="/files", tags=["files"])
@@ -19,17 +22,43 @@ router = APIRouter(prefix="/files", tags=["files"])
 
 @router.post("/upload-url", response_model=UploadUrlResponse)
 def get_upload_url(request: UploadUrlRequest):
-    file_id = str(uuid.uuid4())
+    file_id = uuid.uuid4()
     object_name = f"{request.workspace_id}/{file_id}/{request.filename}"
 
     upload_url = generate_presigned_upload_url(object_name)
 
+    db_url = os.getenv("DATABASE_URL")
+    if db_url:
+        conn = psycopg2.connect(db_url)
+        conn.autocommit = True
+        cur = conn.cursor()
+
+        # אופציונלי: להבטיח שה-workspace קיים (לא חובה אבל נחמד)
+        cur.execute(
+            "INSERT INTO workspaces (workspace_id) VALUES (%s) ON CONFLICT DO NOTHING",
+            (request.workspace_id,)
+        )
+
+        cur.execute(
+            """
+            INSERT INTO files (file_id, workspace_id, filename, content_type, file_size, object_name)
+            VALUES (%s, %s, %s, %s, %s, %s)
+            """,
+            (str(file_id), request.workspace_id, request.filename, request.content_type, request.file_size, object_name)
+        )
+
+        cur.close()
+        conn.close()
+
+
+
 
     return UploadUrlResponse(
-        upload_url = upload_url,
-        file_id = file_id,
-        expires_in=3600
-    )
+    upload_url=upload_url,
+    file_id=str(file_id),
+    expires_in=3600
+)
+
 
 
 @router.post("/confirm-upload", response_model=ConfirmUploadResponse)

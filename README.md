@@ -59,7 +59,7 @@ cd infra
 docker compose up --build
 
 cd frontend
-npm start
+npm run dev
 
 
 
