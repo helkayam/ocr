@@ -1,87 +1,216 @@
-import os
 import json
+import os
+import glob
+from typing import List, Dict, Any
 
-OCR_JSON_DIR = "output/ocr_json"
-CHUNKS_OUTPUT = "output/chunks.json"
+# נסיון לייבא ספרייה לספירה מדויקת של טוקנים (כמו GPT-4)
+# אם לא קיימת, נשתמש בחישוב משוער
+try:
+    import tiktoken
+    ENC = tiktoken.get_encoding("cl100k_base")
+except ImportError:
+    ENC = None
 
-MAX_CHARS = 450
-MIN_CHARS = 120
+class SmartChunker:
+    def __init__(self, max_tokens: int = 500, overlap_tokens: int = 50):
+        """
+        :param max_tokens: גודל מקסימלי לצ'אנק (בטוקנים)
+        :param overlap_tokens: גודל החפיפה בין צ'אנקים
+        """
+        self.max_tokens = max_tokens
+        self.overlap_tokens = overlap_tokens
 
-
-def load_ocr_json(path):
-    with open(path, "r", encoding="utf-8") as f:
-        return json.load(f)
-
-
-def smart_split(text):
-    lines = [l.strip() for l in text.split("\n") if l.strip()]
-    blocks = []
-    current = ""
-
-    for line in lines:
-        # כותרת קצרה - מתחילים בלוק חדש
-        if len(line) < 60 and current:
-            blocks.append(current.strip())
-            current = line
-            continue
-
-        if len(current) + len(line) <= MAX_CHARS:
-            current = current + " " + line if current else line
+    def _count_tokens(self, text: str) -> int:
+        """ספירה מדויקת או משוערת של טוקנים"""
+        if not text:
+            return 0
+        if ENC:
+            return len(ENC.encode(text))
         else:
-            blocks.append(current.strip())
-            current = line
+            # הערכה גסה: מילה ממוצעת בעברית/אנגלית ~ 1.5 טוקנים
+            return int(len(text.split()) * 1.5)
 
-    if current:
-        blocks.append(current.strip())
+    def _is_header(self, block: Dict) -> bool:
+        """מזהה אם הבלוק הוא כותרת לפי המטא-דאטה מה-OCR"""
+        # יחס של מעל 1.15 לגודל הטקסט הרגיל מעיד בד"כ על כותרת
+        return block.get("ratio_to_body", 1.0) > 1.15
 
-    return blocks
+    def create_chunks_from_file_data(self, ocr_data: Dict) -> List[Dict]:
+        """מקבל את המידע הגולמי של קובץ שלם ומחזיר רשימת צ'אנקים"""
+        file_name = ocr_data.get("file_name", "unknown")
+        all_blocks = []
+        
+        # 1. Flattening: שיטוח כל העמודים לרשימה אחת רציפה
+        for page in ocr_data.get("pages", []):
+            page_num = page.get("page_num", 0)
+            # תמיכה במבנה החדש (blocks) או הישן (lines) ליתר ביטחון
+            blocks_list = page.get("blocks", page.get("lines", []))
+            
+            for block in blocks_list:
+                block["page_num"] = page_num # הוספת מספר עמוד לכל בלוק
+                all_blocks.append(block)
+
+        chunks = []
+        current_chunk_blocks = []
+        current_tokens = 0
+        
+        # מעקב הקשר (Context Tracking)
+        last_h1 = ""
+        last_h2 = ""
+
+        i = 0
+        while i < len(all_blocks):
+            block = all_blocks[i]
+            block_text = block.get("text", "")
+            if not block_text.strip(): # דילוג על בלוקים ריקים
+                i += 1
+                continue
+
+            block_tokens = self._count_tokens(block_text)
+            is_header = self._is_header(block)
+
+            # עדכון הקשר (Context Hierachy)
+            if is_header:
+                ratio = block.get("ratio_to_body", 1.0)
+                # אם היחס גדול מאוד (למשל 1.4) זו כותרת ראשית, אחרת משנית
+                if ratio > 1.4: 
+                    last_h1 = block_text
+                    last_h2 = "" # איפוס תת-כותרת בפרק חדש
+                else: 
+                    last_h2 = block_text
+
+            # --- לוגיקת החיתוך ---
+            
+            # האם הגענו לגבול?
+            is_full = (current_tokens + block_tokens) > self.max_tokens
+            
+            # האם כדאי לחתוך לפני הכותרת הזו? (כדי שהכותרת תתחיל צ'אנק חדש)
+            # רק אם הצ'אנק הנוכחי כבר מלא חלקית (מעל 40%)
+            should_split_before_header = is_header and current_tokens > (self.max_tokens * 0.4)
+
+            if (is_full or should_split_before_header) and current_chunk_blocks:
+                # שמירת הצ'אנק הנוכחי
+                chunks.append(self._finalize_chunk(current_chunk_blocks, file_name, last_h1, last_h2))
+
+                # חישוב חפיפה (Overlap) לצ'אנק הבא
+                overlap_blocks = []
+                overlap_cnt = 0
+                # לוקחים בלוקים מהסוף להתחלה עד שמגיעים למכסת החפיפה
+                for prev_block in reversed(current_chunk_blocks):
+                    prev_len = self._count_tokens(prev_block["text"])
+                    if overlap_cnt + prev_len <= self.overlap_tokens:
+                        overlap_blocks.insert(0, prev_block)
+                        overlap_cnt += prev_len
+                    else:
+                        break 
+                
+                # אתחול הצ'אנק הבא עם נתוני החפיפה
+                current_chunk_blocks = overlap_blocks[:]
+                current_tokens = overlap_cnt
+            
+            # הוספת הבלוק הנוכחי
+            current_chunk_blocks.append(block)
+            current_tokens += block_tokens
+            i += 1
+
+        # שמירת השאריות (הצ'אנק האחרון)
+        if current_chunk_blocks:
+            chunks.append(self._finalize_chunk(current_chunk_blocks, file_name, last_h1, last_h2))
+
+        return chunks
+
+    def _finalize_chunk(self, blocks: List[Dict], file_name: str, h1_ctx: str, h2_ctx: str) -> Dict:
+        """בניית אובייקט הצ'אנק הסופי"""
+        full_text = "\n".join([b["text"] for b in blocks])
+        pages = sorted(list(set([b["page_num"] for b in blocks])))
+        
+        # בניית מחרוזת הקשר
+        context_parts = []
+        if h1_ctx: context_parts.append(h1_ctx)
+        if h2_ctx: context_parts.append(h2_ctx)
+        context_str = " > ".join(context_parts)
+        
+        # טקסט עשיר להטמעה (Embedding)
+        text_with_context = f"Context: {context_str}\n---\n{full_text}" if context_str else full_text
+
+        # יצירת ID דטרמיניסטי (כדי שאם נריץ שוב, נקבל אותו ID לאותו טקסט)
+        chunk_hash = abs(hash(full_text)) % 1000000
+        chunk_id = f"{file_name}_p{pages[0]}_{chunk_hash}"
+
+        return {
+            "id": chunk_id,
+            "text": full_text,
+            "text_with_context": text_with_context,
+            "metadata": {
+                "source": file_name,
+                "pages": pages,
+                "token_count": self._count_tokens(full_text),
+                "context_h1": h1_ctx,
+                "context_h2": h2_ctx
+            }
+        }
+
+def process_directory(input_dir: str, output_file: str):
+    """
+    הפונקציה הראשית: עוברת על כל הקבצים ומייצרת קובץ פלט אחד.
+    """
+    chunker = SmartChunker(max_tokens=600, overlap_tokens=100)
+    all_chunks_aggregated = []
+
+    print(f"--- Starting Chunking Process ---")
+    print(f"Input Directory: {input_dir}")
+    
+    if not os.path.exists(input_dir):
+        print(f"Error: Input directory '{input_dir}' does not exist.")
+        return
+
+    # מציאת כל קבצי ה-JSON בתיקייה
+    json_files = glob.glob(os.path.join(input_dir, "*.json"))
+    
+    if not json_files:
+        print("No JSON files found to process.")
+        return
+
+    for json_path in json_files:
+        filename = os.path.basename(json_path)
+        print(f"Processing: {filename}...", end=" ")
+        
+        try:
+            with open(json_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            
+            # יצירת צ'אנקים לקובץ הנוכחי
+            file_chunks = chunker.create_chunks_from_file_data(data)
+            all_chunks_aggregated.extend(file_chunks)
+            
+            print(f"Done ({len(file_chunks)} chunks).")
+            
+        except Exception as e:
+            print(f"Error: {e}")
+
+    # שמירת כל התוצאות לקובץ אחד גדול
+    # קודם וודא שתיקיית הפלט קיימת
+    os.makedirs(os.path.dirname(output_file), exist_ok=True)
+    
+    print(f"--- Saving Results ---")
+    with open(output_file, 'w', encoding='utf-8') as f:
+        json.dump(all_chunks_aggregated, f, indent=2, ensure_ascii=False)
+    
+    print(f"Successfully saved {len(all_chunks_aggregated)} chunks to: {output_file}")
 
 
-def normalize_chunks(blocks):
-    normalized = []
-
-    buffer = ""
-    for block in blocks:
-        if len(block) < MIN_CHARS:
-            buffer += " " + block
-        else:
-            if buffer:
-                normalized.append(buffer.strip())
-                buffer = ""
-            normalized.append(block)
-
-    if buffer:
-        normalized.append(buffer.strip())
-
-    return normalized
-
-
-def build_chunks():
-    all_chunks = []
-
-    for filename in os.listdir(OCR_JSON_DIR):
-        if not filename.endswith(".json"):
-            continue
-
-        data = load_ocr_json(os.path.join(OCR_JSON_DIR, filename))
-        doc_id = data["document_id"]
-
-        raw_blocks = smart_split(data["text"])
-        chunks = normalize_chunks(raw_blocks)
-
-        for idx, chunk in enumerate(chunks):
-            all_chunks.append({
-                "document_id": doc_id,
-                "chunk_id": f"{doc_id}_{idx}",
-                "text": chunk
-            })
-
-    with open(CHUNKS_OUTPUT, "w", encoding="utf-8") as f:
-        json.dump(all_chunks, f, ensure_ascii=False, indent=2)
-
-    print(f"Created {len(all_chunks)} chunks")
-    print(f"Saved to {CHUNKS_OUTPUT}")
-
-
+# ==========================================
+#  MAIN EXECUTION
+# ==========================================
 if __name__ == "__main__":
-    build_chunks()
+    # הגדרת נתיבים (ניתן לשנות כאן)
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    
+    # תיקיית הקלט (איפה שנמצאים קבצי ה-JSON מהשלב הקודם)
+    OCR_JSON_DIR = os.path.join(BASE_DIR, "Test_files_types_json")
+    
+    # קובץ הפלט הסופי
+    CHUNKS_OUTPUT = os.path.join(BASE_DIR, "chunks.json")
+
+    # הפעלת התהליך
+    process_directory(OCR_JSON_DIR, CHUNKS_OUTPUT)
