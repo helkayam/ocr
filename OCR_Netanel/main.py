@@ -3,7 +3,7 @@ import os
 
 def main():
     ocr = OCRService()
-    input_dir = "TEST_FILES"
+    input_dir = "TEST_FILES_PDF"
     output_dir = "OUTPUT_TEXT"
 
     os.makedirs(output_dir, exist_ok=True)
