@@ -19,6 +19,19 @@ services:
     volumes:
       - ../backend:/app
 
+  frontend:
+    build: ../frontend
+    container_name: protocol-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_URL=http://backend:8000
+    depends_on:
+      - backend
+    volumes:
+      - ../frontend:/app
+      - /app/node_modules
+
   postgres:
     image: postgres:14
     container_name: protocol-postgres
