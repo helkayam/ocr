@@ -1,0 +1,126 @@
+{
+  "file_name": "graph type1.pdf",
+  "pages": [
+    {
+      "page_num": 1,
+      "stats": {
+        "median_font_size": 6.8,
+        "max_font_size": 12.24
+      },
+      "blocks": [
+        {
+          "text": "יאהגישה המומלצת לנוירופרוגנוסטיקה מולטי-מודאלית בחולים מבוגרים לאחר דום לבי 8 איור תרשים נוירופרוגנוסטי",
+          "font_size": 12.24,
+          "y_top": 98.58,
+          "y_bottom": 110.82,
+          "ratio_to_body": 1.8,
+          "line_count": 1
+        },
+        {
+          "text": "ניהול קליני",
+          "font_size": 8.16,
+          "y_top": 129.92,
+          "y_bottom": 147.87,
+          "ratio_to_body": 1.2,
+          "line_count": 2
+        },
+        {
+          "text": "דימות",
+          "font_size": 8.16,
+          "y_top": 190.06,
+          "y_bottom": 198.22,
+          "ratio_to_body": 1.2,
+          "line_count": 1
+        },
+        {
+          "text": "אלקטרופיזיולוגיה",
+          "font_size": 8.16,
+          "y_top": 252.14,
+          "y_bottom": 260.3,
+          "ratio_to_body": 1.2,
+          "line_count": 1
+        },
+        {
+          "text": "בדיקה קלינית",
+          "font_size": 8.16,
+          "y_top": 312.13,
+          "y_bottom": 330.08,
+          "ratio_to_body": 1.2,
+          "line_count": 2
+        },
+        {
+          "text": "סמנים ביולוגיים בנסיוב N20 SSEP",
+          "font_size": 8.16,
+          "y_top": 372.92,
+          "y_bottom": 266.11,
+          "ratio_to_body": 1.2,
+          "line_count": 3
+        },
+        {
+          "text": "דיכוי התפרצות )Burst suppression(",
+          "font_size": 4.76,
+          "y_top": 274.76,
+          "y_bottom": 285.23,
+          "ratio_to_body": 0.7,
+          "line_count": 2
+        },
+        {
+          "text": "סטטוס אפילפטיקוס קבוע",
+          "font_size": 6.8,
+          "y_top": 291.41,
+          "y_bottom": 305.01,
+          "ratio_to_body": 1.0,
+          "line_count": 2
+        },
+        {
+          "text": "בדיקת גודל אישון כמותית רפלקס האישון",
+          "font_size": 6.8,
+          "y_top": 334.35,
+          "y_bottom": 326.8,
+          "ratio_to_body": 1.0,
+          "line_count": 3
+        },
+        {
+          "text": "רפלקס הקרנית myoclonus Status )בצע רישום )EEG",
+          "font_size": 6.8,
+          "y_top": 356.22,
+          "y_bottom": 326.83,
+          "ratio_to_body": 1.0,
+          "line_count": 2
+        },
+        {
+          "text": "NSE בנסיוב CT MRI של הראש הגבל תכשירי סדציהושיכוך כאבים ככל האפשר חימום מחדש TTM )בהקדם האפשרי( נורמותרמיה מבוקרת",
+          "font_size": 6.8,
+          "y_top": 398.65,
+          "y_bottom": 166.79,
+          "ratio_to_body": 1.0,
+          "line_count": 4
+        },
+        {
+          "text": "ש ל ב ב ד י ק ו ת א ב ח ו ן ל פ ר ו ג נ ו ס ט י ק צ י ה ר ב - א ו פ נ י ת ל פ ח ו ת 2 7 ש ע ו ת ל א ח ר נ ו ר מ ו ת ר מ י ה",
+          "font_size": 6.8,
+          "y_top": 290.84,
+          "y_bottom": 330.29,
+          "ratio_to_body": 1.0,
+          "line_count": 5
+        },
+        {
+          "text": "שעות 24 שעות 72 שעות ROSC 48 ROSC זמן לאחר",
+          "font_size": 7.81,
+          "y_top": 450.03,
+          "y_bottom": 473.91,
+          "ratio_to_body": 1.15,
+          "line_count": 2
+        },
+        {
+          "text": "12 American Heart Association",
+          "font_size": 8.5,
+          "y_top": 766.55,
+          "y_bottom": 776.11,
+          "ratio_to_body": 1.25,
+          "line_count": 1
+        }
+      ]
+    }
+  ]
+}

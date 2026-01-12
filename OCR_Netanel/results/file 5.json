@@ -1,0 +1,58 @@
+{
+  "character_error_rate": 1.164,
+  "word_error_rate": 0.5199,
+  "line_accuracy": 0.2018,
+  "final_score": 0.1024,
+  "common_errors": [
+    {
+      "expected": " ",
+      "ocr": " ",
+      "count": 1866
+    },
+    {
+      "expected": "י",
+      "ocr": " ",
+      "count": 999
+    },
+    {
+      "expected": " ",
+      "ocr": "י",
+      "count": 980
+    },
+    {
+      "expected": "ו",
+      "ocr": " ",
+      "count": 951
+    },
+    {
+      "expected": " ",
+      "ocr": "ו",
+      "count": 910
+    },
+    {
+      "expected": "ה",
+      "ocr": " ",
+      "count": 696
+    },
+    {
+      "expected": " ",
+      "ocr": "ה",
+      "count": 666
+    },
+    {
+      "expected": "י",
+      "ocr": "י",
+      "count": 614
+    },
+    {
+      "expected": "ו",
+      "ocr": "ו",
+      "count": 602
+    },
+    {
+      "expected": "ו",
+      "ocr": "י",
+      "count": 587
+    }
+  ]
+}
