@@ -4,7 +4,7 @@
     {
       "page_num": 1,
       "stats": {
-        "median_font_size": 11.82,
+        "median_font_size": 14.0,
         "max_font_size": 20.0
       },
       "blocks": [
@@ -13,7 +13,8 @@
           "font_size": 14.0,
           "y_top": 37.24,
           "y_bottom": 51.24,
-          "ratio_to_body": 1.18,
+          "ratio_to_body": 1.0,
+          "type": "text",
           "line_count": 1
         },
         {
@@ -21,7 +22,8 @@
           "font_size": 20.0,
           "y_top": 163.04,
           "y_bottom": 283.04,
-          "ratio_to_body": 1.69,
+          "ratio_to_body": 1.43,
+          "type": "text",
           "line_count": 6
         },
         {
@@ -29,7 +31,8 @@
           "font_size": 10.0,
           "y_top": 388.08,
           "y_bottom": 398.08,
-          "ratio_to_body": 0.85,
+          "ratio_to_body": 0.71,
+          "type": "text",
           "line_count": 1
         },
         {
@@ -37,32 +40,54 @@
           "font_size": 11.82,
           "y_top": 432.47,
           "y_bottom": 444.29,
+          "ratio_to_body": 0.84,
+          "type": "text",
+          "line_count": 1
+        },
+        {
+          "text": "| טיפול לאחר דום לב | דפיברילציה | ם איכותית\nהחייאת לב-ריאה | מערך התגובה\nבחירו הפעלה של | ומניעה זיהוי\nמוקדם |\n| --- | --- | --- | --- | --- |",
+          "type": "table",
+          "y_top": 547.3936,
+          "y_bottom": 571.0366,
+          "font_size": 11.0,
           "ratio_to_body": 1.0,
           "line_count": 1
         },
         {
-          "text": "החייאת לב-ריאה איכותית טיפול לאחר דום לב הפעלה של מערך התגובה בחירום התאוששות זיהוי מוקדם ומניעה דפיברילציה",
+          "text": "התאוששות",
           "font_size": 8.87,
-          "y_top": 551.33,
-          "y_bottom": 565.43,
-          "ratio_to_body": 0.75,
-          "line_count": 9
+          "y_top": 556.51,
+          "y_bottom": 565.37,
+          "ratio_to_body": 0.63,
+          "type": "text",
+          "line_count": 1
         },
         {
           "text": "(OHCA דום לב מחוץ לבית חולים )",
           "font_size": 11.82,
           "y_top": 604.13,
           "y_bottom": 615.95,
+          "ratio_to_body": 0.84,
+          "type": "text",
+          "line_count": 1
+        },
+        {
+          "text": "| טיפול לאחר דום לב | החייאה מתקדמת | דפיברילציה | איכותית החייאת\nלב-ריאה | מערך התגובה\nבחירום הפעלה של |\n| --- | --- | --- | --- | --- |",
+          "type": "table",
+          "y_top": 718.1268,
+          "y_bottom": 741.7687999999999,
+          "font_size": 11.0,
           "ratio_to_body": 1.0,
           "line_count": 1
         },
         {
-          "text": "7 eccguidelines.heart.org דפיברילציה החייאת לב-ריאה איכותית טיפול לאחר דום לב הפעלה של מערך התגובה בחירום התאוששות החייאה מתקדמת",
+          "text": "7 eccguidelines.heart.org התאוששות",
           "font_size": 8.5,
           "y_top": 766.55,
           "y_bottom": 736.1,
-          "ratio_to_body": 0.72,
-          "line_count": 8
+          "ratio_to_body": 0.61,
+          "type": "text",
+          "line_count": 2
         }
       ]
     }

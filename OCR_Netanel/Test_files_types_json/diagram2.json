@@ -14,6 +14,7 @@
           "y_top": 215.59,
           "y_bottom": 237.59,
           "ratio_to_body": 1.05,
+          "type": "text",
           "line_count": 2
         },
         {
@@ -22,23 +23,8 @@
           "y_top": 276.76,
           "y_bottom": 299.76,
           "ratio_to_body": 1.16,
+          "type": "text",
           "line_count": 4
-        },
-        {
-          "text": "דרגה 2b 32%",
-          "font_size": 11.0,
-          "y_top": 378.07,
-          "y_bottom": 401.07,
-          "ratio_to_body": 1.16,
-          "line_count": 2
-        },
-        {
-          "text": "דרגה 2a 27% דרגה 1 : 33% דרגות ההמלצה LOE A רמת הראיות",
-          "font_size": 11.0,
-          "y_top": 433.88,
-          "y_bottom": 267.57,
-          "ratio_to_body": 1.16,
-          "line_count": 7
         },
         {
           "text": "LOE B-R 11% 1%",
@@ -46,15 +32,8 @@
           "y_top": 321.86,
           "y_bottom": 299.36,
           "ratio_to_body": 1.16,
+          "type": "text",
           "line_count": 3
-        },
-        {
-          "text": "LOE C-LD 51% LOE C-EO 17%",
-          "font_size": 11.0,
-          "y_top": 423.33,
-          "y_bottom": 351.88,
-          "ratio_to_body": 1.16,
-          "line_count": 5
         },
         {
           "text": "LOE B-NR 20%",
@@ -62,7 +41,35 @@
           "y_top": 373.8,
           "y_bottom": 396.8,
           "ratio_to_body": 1.16,
+          "type": "text",
           "line_count": 2
+        },
+        {
+          "text": "דרגה 2b 32%",
+          "font_size": 11.0,
+          "y_top": 378.07,
+          "y_bottom": 401.07,
+          "ratio_to_body": 1.16,
+          "type": "text",
+          "line_count": 2
+        },
+        {
+          "text": "LOE C-LD 51% LOE C-EO 17%",
+          "font_size": 11.0,
+          "y_top": 423.33,
+          "y_bottom": 351.88,
+          "ratio_to_body": 1.16,
+          "type": "text",
+          "line_count": 5
+        },
+        {
+          "text": "דרגה 2a 27% דרגה 1 : 33% דרגות ההמלצה LOE A רמת הראיות",
+          "font_size": 11.0,
+          "y_top": 433.88,
+          "y_bottom": 267.57,
+          "ratio_to_body": 1.16,
+          "type": "text",
+          "line_count": 7
         },
         {
           "text": "ההמלצות לסעד חיים בסיסי ומתקדם למבוגרים, סעד חיים בסיסי ומתקדם לילדים ותינוקות, לסעד חיים ליילודים, 491 *התוצאות הן האחוז מתוך מדעי הוראת החייאה ומערכות טיפולי = אקראיי R = לא אקראי; NR = רמת הראיות; LOE = נתונים מוגבלים; LD = דעת מומחה; EO קיצורים:",
@@ -70,6 +77,7 @@
           "y_top": 513.87,
           "y_bottom": 542.5,
           "ratio_to_body": 0.84,
+          "type": "text",
           "line_count": 3
         },
         {
@@ -78,6 +86,7 @@
           "y_top": 609.02,
           "y_bottom": 633.02,
           "ratio_to_body": 2.53,
+          "type": "text",
           "line_count": 1
         },
         {
@@ -86,6 +95,7 @@
           "y_top": 634.38,
           "y_bottom": 725.48,
           "ratio_to_body": 1.0,
+          "type": "text",
           "line_count": 8
         },
         {
@@ -94,6 +104,7 @@
           "y_top": 766.55,
           "y_bottom": 775.05,
           "ratio_to_body": 0.89,
+          "type": "text",
           "line_count": 1
         }
       ]

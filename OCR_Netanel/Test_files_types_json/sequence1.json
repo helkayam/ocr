@@ -14,6 +14,7 @@
           "y_top": 42.79,
           "y_bottom": 61.4,
           "ratio_to_body": 1.39,
+          "type": "text",
           "line_count": 1
         },
         {
@@ -22,6 +23,7 @@
           "y_top": 70.01,
           "y_bottom": 85.13,
           "ratio_to_body": 1.17,
+          "type": "text",
           "line_count": 1
         },
         {
@@ -30,6 +32,7 @@
           "y_top": 87.25,
           "y_bottom": 131.41,
           "ratio_to_body": 1.0,
+          "type": "text",
           "line_count": 3
         },
         {
@@ -38,6 +41,7 @@
           "y_top": 140.84,
           "y_bottom": 155.96,
           "ratio_to_body": 1.17,
+          "type": "text",
           "line_count": 1
         },
         {
@@ -46,6 +50,7 @@
           "y_top": 157.83,
           "y_bottom": 233.26,
           "ratio_to_body": 1.0,
+          "type": "text",
           "line_count": 5
         },
         {
@@ -54,6 +59,7 @@
           "y_top": 242.17,
           "y_bottom": 257.29,
           "ratio_to_body": 1.17,
+          "type": "text",
           "line_count": 1
         },
         {
@@ -62,6 +68,7 @@
           "y_top": 259.38,
           "y_bottom": 303.56,
           "ratio_to_body": 1.0,
+          "type": "text",
           "line_count": 3
         },
         {
@@ -70,6 +77,7 @@
           "y_top": 312.99,
           "y_bottom": 328.11,
           "ratio_to_body": 1.17,
+          "type": "text",
           "line_count": 1
         },
         {
@@ -78,7 +86,17 @@
           "y_top": 330.2,
           "y_bottom": 401.26,
           "ratio_to_body": 1.0,
+          "type": "text",
           "line_count": 4
+        },
+        {
+          "text": "|  |\n| --- |\n|  |",
+          "type": "table",
+          "y_top": 421.23975,
+          "y_bottom": 452.43750000000006,
+          "font_size": 11.0,
+          "ratio_to_body": 1.0,
+          "line_count": 2
         },
         {
           "text": "מסוגלות ורצון לפעולה עידוד לפעילות",
@@ -86,15 +104,26 @@
           "y_top": 425.05,
           "y_bottom": 443.53,
           "ratio_to_body": 1.0,
+          "type": "text",
           "line_count": 3
         },
         {
-          "text": "צמצום התרגשות ותקשורת יעילה שאלות מחייבות מחשבה הצפה",
+          "text": "| הצפה |\n| --- |\n|  |",
+          "type": "table",
+          "y_top": 466.59000000000003,
+          "y_bottom": 497.7875,
+          "font_size": 11.0,
+          "ratio_to_body": 1.0,
+          "line_count": 2
+        },
+        {
+          "text": "צמצום התרגשות ותקשורת יעילה שאלות מחייבות מחשבה",
           "font_size": 12.96,
           "y_top": 470.43,
-          "y_bottom": 482.67,
+          "y_bottom": 494.67,
           "ratio_to_body": 1.0,
-          "line_count": 5
+          "type": "text",
+          "line_count": 4
         },
         {
           "text": "בלבול הבניית רציפות הבנה שהאירוע המאיים הסתיים",
@@ -102,6 +131,7 @@
           "y_top": 521.31,
           "y_bottom": 538.35,
           "ratio_to_body": 1.0,
+          "type": "text",
           "line_count": 3
         }
       ]

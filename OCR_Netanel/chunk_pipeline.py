@@ -36,25 +36,20 @@ class SmartChunker:
         return block.get("ratio_to_body", 1.0) > 1.15
 
     def create_chunks_from_file_data(self, ocr_data: Dict) -> List[Dict]:
-        """מקבל את המידע הגולמי של קובץ שלם ומחזיר רשימת צ'אנקים"""
+        """מקבל את ה-JSON של ה-OCR ומחזיר צ'אנקים מוגני טבלאות"""
         file_name = ocr_data.get("file_name", "unknown")
         all_blocks = []
         
-        # 1. Flattening: שיטוח כל העמודים לרשימה אחת רציפה
+        # 1. שיטוח הבלוקים
         for page in ocr_data.get("pages", []):
             page_num = page.get("page_num", 0)
-            # תמיכה במבנה החדש (blocks) או הישן (lines) ליתר ביטחון
-            blocks_list = page.get("blocks", page.get("lines", []))
-            
-            for block in blocks_list:
-                block["page_num"] = page_num # הוספת מספר עמוד לכל בלוק
+            for block in page.get("blocks", []):
+                block["page_num"] = page_num 
                 all_blocks.append(block)
 
         chunks = []
         current_chunk_blocks = []
         current_tokens = 0
-        
-        # מעקב הקשר (Context Tracking)
         last_h1 = ""
         last_h2 = ""
 
@@ -62,41 +57,34 @@ class SmartChunker:
         while i < len(all_blocks):
             block = all_blocks[i]
             block_text = block.get("text", "")
-            if not block_text.strip(): # דילוג על בלוקים ריקים
+            block_type = block.get("type", "text") # זיהוי אם זו טבלה
+            
+            if not block_text.strip():
                 i += 1
                 continue
 
             block_tokens = self._count_tokens(block_text)
             is_header = self._is_header(block)
 
-            # עדכון הקשר (Context Hierachy)
-            if is_header:
-                ratio = block.get("ratio_to_body", 1.0)
-                # אם היחס גדול מאוד (למשל 1.4) זו כותרת ראשית, אחרת משנית
-                if ratio > 1.4: 
-                    last_h1 = block_text
-                    last_h2 = "" # איפוס תת-כותרת בפרק חדש
-                else: 
-                    last_h2 = block_text
-
-            # --- לוגיקת החיתוך ---
+            # --- לוגיקת חיתוך חכמה ---
             
-            # האם הגענו לגבול?
             is_full = (current_tokens + block_tokens) > self.max_tokens
-            
-            # האם כדאי לחתוך לפני הכותרת הזו? (כדי שהכותרת תתחיל צ'אנק חדש)
-            # רק אם הצ'אנק הנוכחי כבר מלא חלקית (מעל 40%)
-            should_split_before_header = is_header and current_tokens > (self.max_tokens * 0.4)
+            should_split_before_header = is_header and current_tokens > (self.max_tokens * 0.1)
 
-            if (is_full or should_split_before_header) and current_chunk_blocks:
-                # שמירת הצ'אנק הנוכחי
+            # הגנה על טבלאות: אם הבלוק הבא הוא טבלה והצ'אנק כבר מלא חלקית, נחתוך לפניו
+            should_split_before_table = (block_type == "table") and (current_tokens > self.max_tokens * 0.3)
+
+            if (is_full or should_split_before_header or should_split_before_table) and current_chunk_blocks:
+                # סגירת הצ'אנק הנוכחי
                 chunks.append(self._finalize_chunk(current_chunk_blocks, file_name, last_h1, last_h2))
 
-                # חישוב חפיפה (Overlap) לצ'אנק הבא
+                # חפיפה (Overlap) - לא לוקחים טבלאות לחפיפה כדי לא לשבור פורמט
                 overlap_blocks = []
                 overlap_cnt = 0
-                # לוקחים בלוקים מהסוף להתחלה עד שמגיעים למכסת החפיפה
                 for prev_block in reversed(current_chunk_blocks):
+                    if prev_block.get("type") == "table":
+                        break # עוצרים חפיפה אם הגענו לטבלה
+                    
                     prev_len = self._count_tokens(prev_block["text"])
                     if overlap_cnt + prev_len <= self.overlap_tokens:
                         overlap_blocks.insert(0, prev_block)
@@ -104,16 +92,24 @@ class SmartChunker:
                     else:
                         break 
                 
-                # אתחול הצ'אנק הבא עם נתוני החפיפה
                 current_chunk_blocks = overlap_blocks[:]
                 current_tokens = overlap_cnt
-            
-            # הוספת הבלוק הנוכחי
+
+            # עדכון הקשר (Context) - קורה רק אחרי שהחלטנו אם לחתוך
+            if is_header:
+                ratio = block.get("ratio_to_body", 1.0)
+                if ratio > 1.4: 
+                    last_h1 = block_text
+                    last_h2 = "" 
+                else: 
+                    last_h2 = block_text
+
+            # הוספת הבלוק לצ'אנק
             current_chunk_blocks.append(block)
             current_tokens += block_tokens
             i += 1
 
-        # שמירת השאריות (הצ'אנק האחרון)
+        # שאריות
         if current_chunk_blocks:
             chunks.append(self._finalize_chunk(current_chunk_blocks, file_name, last_h1, last_h2))
 

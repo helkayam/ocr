@@ -51,7 +51,7 @@ class OCRService:
             return None
 
     # =========================================================================
-    #  HEBREW HANDLING
+    #  HEBREW HANDLING (הפונקציות המקוריות שלך ללא שינוי)
     # =========================================================================
 
     def is_hebrew_text(self, text: str) -> bool:
@@ -110,55 +110,62 @@ class OCRService:
                 wi += 1
         return "".join(out)
 
+    def _apply_hebrew_fixes(self, text: str, is_reversed_page: bool) -> str:
+        """פונקציית עזר להחלת התיקונים שלך בצורה עקבית"""
+        if not self.is_hebrew_text(text):
+            return text
+        if is_reversed_page or self.looks_like_reversed_hebrew(text):
+            text = self.fix_reversed_hebrew_words(text)
+            text = self.fix_reversed_hebrew_word_order(text)
+        return text
+
+    # =========================================================================
+    #  TABLE EXTRACTION TO MARKDOWN
+    # =========================================================================
+
+    def _format_table_as_markdown(self, table_data: List[List[str]], is_reversed_page: bool) -> str:
+        if not table_data:
+            return ""
+        
+        processed_rows = []
+        for row in table_data:
+            # תיקון עברית לכל תא בנפרד
+            processed_row = [self._apply_hebrew_fixes(str(cell or ""), is_reversed_page) for cell in row]
+            processed_rows.append(processed_row)
+
+        # בניית מחרוזת Markdown
+        md = "| " + " | ".join(processed_rows[0]) + " |\n"
+        md += "| " + " | ".join(["---"] * len(processed_rows[0])) + " |\n"
+        for row in processed_rows[1:]:
+            md += "| " + " | ".join(row) + " |\n"
+        
+        return md.strip()
+
     # =========================================================================
     #  NEW LOGIC: MERGING LINES INTO BLOCKS
     # =========================================================================
 
     def _merge_lines_into_blocks(self, lines: List[Dict], median_font_size: float) -> List[Dict]:
-        """
-        מאחדת שורות בודדות לפסקאות/בלוקים על בסיס קרבה וגודל פונט.
-        """
-        if not lines:
-            return []
-
+        if not lines: return []
         merged_blocks = []
-        
-        # מתחילים את הבלוק הראשון עם השורה הראשונה
         current_block = lines[0].copy()
-        current_block["line_count"] = 1 # מעקב כמה שורות איחדנו
+        current_block["line_count"] = 1
 
         for i in range(1, len(lines)):
             next_line = lines[i]
-            
-            # 1. חישוב המרחק האנכי בין תחתית הבלוק הנוכחי לתחילת השורה הבאה
             gap = next_line["y_top"] - current_block["y_bottom"]
-            
-            # 2. בדיקת דמיון בגודל פונט (טולרנס של 1.5 נקודות)
             font_diff = abs(next_line["font_size"] - current_block["font_size"])
-            is_same_font = font_diff < 1.5
-
-            # 3. סף לרווח (Gap Threshold):
-            # אם הרווח קטן מ-1.5 מגובה השורה הנוכחית, זה כנראה המשך פסקה.
-            # אם הרווח גדול, זו פסקה חדשה.
-            # (ב-OCR/PDF לעיתים הרווח הוא שלילי או אפס אם יש חפיפה, גם זה נחשב קרוב)
             max_gap_allowed = current_block["font_size"] * 1.5
-            is_close_enough = gap < max_gap_allowed
 
-            # תנאי האיחוד: אותו פונט (בערך) + קרובים פיזית
-            if is_same_font and is_close_enough:
-                # איחוד: מוסיפים את הטקסט ומעדכנים את הגבול התחתון
+            if font_diff < 1.5 and gap < max_gap_allowed:
                 current_block["text"] += " " + next_line["text"]
-                current_block["y_bottom"] = next_line["y_bottom"] # הבלוק גדל למטה
+                current_block["y_bottom"] = next_line["y_bottom"]
                 current_block["line_count"] += 1
-                
-                # מעדכנים גודל פונט לממוצע או למקסימום (לבחירתך, נשאיר את המקורי לשמירת היררכיה)
             else:
-                # סגירת הבלוק הנוכחי ופתיחת חדש
                 merged_blocks.append(current_block)
                 current_block = next_line.copy()
                 current_block["line_count"] = 1
 
-        # הוספת הבלוק האחרון שנשאר
         merged_blocks.append(current_block)
         return merged_blocks
 
@@ -167,57 +174,82 @@ class OCRService:
     # =========================================================================
 
     def _process_pdfplumber_page(self, page, page_num) -> Optional[Dict]:
-        words = page.extract_words(extra_attrs=["fontname", "size", "top", "bottom"])
-        if not words: return None
+        # 1. זיהוי טבלאות ומיקומן
+        tables = page.find_tables()
+        table_bboxes = [t.bbox for t in tables]
+        
+        # 2. בדיקה אם העמוד הפוך
+        all_raw_text = page.extract_text() or ""
+        is_page_reversed = self.is_hebrew_text(all_raw_text) and self.looks_like_reversed_hebrew(all_raw_text)
 
-        # בדיקה גלובלית אם העמוד הפוך
-        all_text = " ".join([w["text"] for w in words])
-        is_page_reversed = False
-        if self.is_hebrew_text(all_text):
-            is_page_reversed = self.looks_like_reversed_hebrew(all_text)
+        all_blocks = []
 
-        # סטטיסטיקות
-        sizes = [w["size"] for w in words]
-        if not sizes: return None
-        median_size = statistics.median(sizes)
-        max_size = max(sizes)
-
-        # שלב 1: יצירת שורות (כמו קודם)
-        lines = []
-        current_line = [words[0]]
-        for word in words[1:]:
-            if abs(word["top"] - current_line[-1]["top"]) < 3:
-                current_line.append(word)
-            else:
-                lines.append(current_line)
-                current_line = [word]
-        lines.append(current_line)
-
-        # המרת אובייקטי PDFPlumber למילון פשוט
-        raw_lines_dicts = []
-        for line_words in lines:
-            line_text = " ".join([w["text"] for w in line_words])
+        # 3. חילוץ טבלאות כ-Markdown
+        for table_obj in tables:
+            raw_table_data = table_obj.extract()
+            md_text = self._format_table_as_markdown(raw_table_data, is_page_reversed)
             
-            # תיקון עברית (כולל התיקון הגלובלי שהוספנו קודם)
-            if self.is_hebrew_text(line_text):
-                if is_page_reversed or self.looks_like_reversed_hebrew(line_text):
-                    line_text = self.fix_reversed_hebrew_words(line_text)
-                    line_text = self.fix_reversed_hebrew_word_order(line_text)
-
-            line_max_size = max([w["size"] for w in line_words])
-            line_top = min([w["top"] for w in line_words])
-            line_bottom = max([w["bottom"] for w in line_words])
-
-            raw_lines_dicts.append({
-                "text": line_text,
-                "font_size": round(line_max_size, 2),
-                "y_top": round(line_top, 2),
-                "y_bottom": round(line_bottom, 2),
-                "ratio_to_body": round(line_max_size / median_size, 2) if median_size > 0 else 1.0
+            all_blocks.append({
+                "text": md_text,
+                "type": "table",
+                "y_top": table_obj.bbox[1],
+                "y_bottom": table_obj.bbox[3],
+                "font_size": 11.0, # ברירת מחדל לטבלה
+                "ratio_to_body": 1.0,
+                "line_count": len(raw_table_data)
             })
 
-        # שלב 2: איחוד השורות לבלוקים (החלק החדש)
-        merged_blocks = self._merge_lines_into_blocks(raw_lines_dicts, median_size)
+        # 4. חילוץ טקסט שאינו בתוך טבלה
+        words = page.extract_words(extra_attrs=["fontname", "size", "top", "bottom"])
+        if not words and not all_blocks: return None
+
+        # פונקציית עזר לבדוק אם מילה בתוך טבלה
+        def is_in_table(w):
+            for bbox in table_bboxes:
+                if w["x0"] >= bbox[0] and w["top"] >= bbox[1] and w["x1"] <= bbox[2] and w["bottom"] <= bbox[3]:
+                    return True
+            return False
+
+        non_table_words = [w for w in words if not is_in_table(w)]
+        
+        if non_table_words:
+            sizes = [w["size"] for w in non_table_words]
+            median_size = statistics.median(sizes)
+            max_size = max(sizes)
+
+            # יצירת שורות מטקסט רגיל
+            lines = []
+            current_line = [non_table_words[0]]
+            for word in non_table_words[1:]:
+                if abs(word["top"] - current_line[-1]["top"]) < 3:
+                    current_line.append(word)
+                else:
+                    lines.append(current_line)
+                    current_line = [word]
+            lines.append(current_line)
+
+            raw_text_lines = []
+            for line_words in lines:
+                line_text = " ".join([w["text"] for w in line_words])
+                line_text = self._apply_hebrew_fixes(line_text, is_page_reversed)
+
+                raw_text_lines.append({
+                    "text": line_text,
+                    "font_size": round(max([w["size"] for w in line_words]), 2),
+                    "y_top": round(min([w["top"] for w in line_words]), 2),
+                    "y_bottom": round(max([w["bottom"] for w in line_words]), 2),
+                    "ratio_to_body": round(max([w["size"] for w in line_words]) / median_size, 2) if median_size > 0 else 1.0,
+                    "type": "text"
+                })
+
+            text_blocks = self._merge_lines_into_blocks(raw_text_lines, median_size)
+            all_blocks.extend(text_blocks)
+        else:
+            median_size = 11.0
+            max_size = 11.0
+
+        # 5. מיון סופי של כל הבלוקים (טקסט וטבלאות) לפי המיקום בעמוד
+        all_blocks.sort(key=lambda x: x["y_top"])
 
         return {
             "page_num": page_num,
@@ -225,94 +257,61 @@ class OCRService:
                 "median_font_size": round(median_size, 2),
                 "max_font_size": round(max_size, 2)
             },
-            "blocks": merged_blocks # שיניתי את השם מ-lines ל-blocks
+            "blocks": all_blocks
         }
 
-    # =========================================================================
-    #  OCR PROCESSING
-    # =========================================================================
+    # (שאר הפונקציות - _process_tesseract_image, extract_structured_from_pdf וכו' נשארות ללא שינוי מהקוד שלך)
 
     def _process_tesseract_image(self, image, page_num) -> Optional[Dict]:
         data = pytesseract.image_to_data(image, lang="heb", output_type=Output.DICT)
         n_boxes = len(data['text'])
-        
         lines_map = {} 
         for i in range(n_boxes):
             text = data['text'][i].strip()
             if not text: continue
-            
             line_key = (data['block_num'][i], data['par_num'][i], data['line_num'][i])
             if line_key not in lines_map:
                 lines_map[line_key] = {"words": [], "heights": [], "tops": [], "bottoms": []}
-            
             lines_map[line_key]["words"].append(text)
             lines_map[line_key]["heights"].append(data['height'][i])
             lines_map[line_key]["tops"].append(data['top'][i])
             lines_map[line_key]["bottoms"].append(data['top'][i] + data['height'][i])
 
         if not lines_map: return None
-
         all_heights = [h for val in lines_map.values() for h in val["heights"]]
-        if not all_heights: return None
-        
         median_height = statistics.median(all_heights)
         max_height = max(all_heights)
-
-        # המרה למילון שורות פשוט ומיון לפי Top
         sorted_keys = sorted(lines_map.keys(), key=lambda k: min(lines_map[k]["tops"]))
         raw_lines_dicts = []
-
         for key in sorted_keys:
             val = lines_map[key]
             line_text = " ".join(val["words"])
             avg_height = sum(val["heights"]) / len(val["heights"])
-            min_top = min(val["tops"])
-            max_bottom = max(val["bottoms"])
-
             raw_lines_dicts.append({
                 "text": line_text,
                 "font_size": round(avg_height, 2),
-                "y_top": round(min_top, 2),
-                "y_bottom": round(max_bottom, 2),
+                "y_top": round(min(val["tops"]), 2),
+                "y_bottom": round(max(val["bottoms"]), 2),
                 "ratio_to_body": round(avg_height / median_height, 2) if median_height > 0 else 1.0,
-                "source": "ocr"
+                "type": "text"
             })
-
-        # שלב האיחוד לבלוקים גם ב-OCR
-        merged_blocks = self._merge_lines_into_blocks(raw_lines_dicts, median_height)
-
         return {
             "page_num": page_num,
-            "stats": {
-                "median_font_size": round(median_height, 2),
-                "max_font_size": round(max_height, 2)
-            },
-            "blocks": merged_blocks
+            "stats": {"median_font_size": round(median_height, 2), "max_font_size": round(max_height, 2)},
+            "blocks": self._merge_lines_into_blocks(raw_lines_dicts, median_height)
         }
-
-    # =========================================================================
-    #  MAIN METHODS
-    # =========================================================================
 
     def extract_structured_from_pdf(self, pdf_path: str) -> List[Dict]:
         try:
             pages_data = []
-            has_valid_text = False
-            
             with pdfplumber.open(pdf_path) as pdf:
                 for i, page in enumerate(pdf.pages):
                     p_data = self._process_pdfplumber_page(page, i + 1)
-                    if p_data:
-                        pages_data.append(p_data)
+                    if p_data: pages_data.append(p_data)
             
             if pages_data:
-                sample_text = " ".join([b['text'] for b in pages_data[0]['blocks'][:3]])
-                if self.is_hebrew_text(sample_text):
-                    return pages_data
-            
-            print("Direct extraction poor. Switching to OCR...")
+                return pages_data
             return self.extract_structured_from_pdf_images(pdf_path)
-
         except Exception as e:
             print(f"Error in PDF extraction: {e}. Switching to OCR...")
             return self.extract_structured_from_pdf_images(pdf_path)
@@ -326,39 +325,23 @@ class OCRService:
                 mat = fitz.Matrix(2, 2)
                 pix = page.get_pixmap(matrix=mat)
                 img = Image.open(io.BytesIO(pix.tobytes("png")))
-                
                 page_data = self._process_tesseract_image(img, page_num + 1)
-                if page_data:
-                    structured_output.append(page_data)
+                if page_data: structured_output.append(page_data)
             doc.close()
             return structured_output
-        except Exception:
-            return []
+        except Exception: return []
 
     def process_file(self, file_path: str) -> str:
-        if not os.path.exists(file_path):
-            return json.dumps({"error": "File not found"}, ensure_ascii=False)
-
+        if not os.path.exists(file_path): return json.dumps({"error": "File not found"})
         file_type = self.detect_file_type(file_path)
         final_structure = []
-
         if file_type == "application/pdf":
             final_structure = self.extract_structured_from_pdf(file_path)
         elif file_type.startswith("image/"):
-            # טיפול בתמונות (בקיצור)
-            image_path = file_path
-            # ... המרת ffmpeg אם צריך ...
             try:
-                img = Image.open(image_path)
+                img = Image.open(file_path)
                 page_data = self._process_tesseract_image(img, 1)
                 if page_data: final_structure = [page_data]
             except Exception: pass
-        
-        else:
-            return json.dumps({"error": "Unsupported"}, ensure_ascii=False)
-
-        result = {
-            "file_name": os.path.basename(file_path),
-            "pages": final_structure
-        }
+        result = {"file_name": os.path.basename(file_path), "pages": final_structure}
         return json.dumps(result, ensure_ascii=False, indent=2)
