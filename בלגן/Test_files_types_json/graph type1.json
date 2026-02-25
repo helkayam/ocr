@@ -1,0 +1,113 @@
+{
+  "file_name": "graph type1.pdf",
+  "pages": [
+    {
+      "page_num": 1,
+      "stats": {
+        "median_font_size": 6.8,
+        "max_font_size": 12.24
+      },
+      "blocks": [
+        {
+          "text": "יאהגישה המומלצת לנוירופרוגנוסטיקה מולטי-מודאלית בחולים מבוגרים לאחר דום לבי 8 איור תרשים נוירופרוגנוסטי",
+          "font_size": 12.24,
+          "y_top": 98.58,
+          "y_bottom": 110.82,
+          "ratio_to_body": 1.8,
+          "type": "text",
+          "line_count": 1
+        },
+        {
+          "text": "ניהול קליני",
+          "font_size": 8.16,
+          "y_top": 129.92,
+          "y_bottom": 147.87,
+          "ratio_to_body": 1.2,
+          "type": "text",
+          "line_count": 2
+        },
+        {
+          "text": "| ל האפשר | כאבים ככ | הושיכוך | שירי סדצי | הגבל תכ |  |  |  |  |  |\n| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n|  |  |  |  |  |  |  |  |  |  |\n|  | בוקרת | תרמיה מ | נורמו |  |  |  | מחדש | חימום |  |\n|  |  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |  |\n|  |  |  |  | M | RI |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |  |\n|  |  |  |  | N20 | SSEP |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |  |\n| תפרצות | דיכוי ה |  |  |  |  |  |  |  |  |\n| )Burst sup | pression( |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |  |\n| פילפטיקוס | סטטוס א |  |  |  |  |  |  |  |  |\n| וע | קב |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |  |\n| האישון | רפלקס |  |  | ) | שום EEG | )בצע רי | Status m | yoclonu | s |\n| דל אישון | בדיקת גו |  |  |  |  |  |  |  |  |\n| תית | כמו |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |  |\n| הקרנית | רפלקס |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  | בנסיוב | NSE |  |  |\n|  |  |  |  |  |  |  |  |  |  |",
+          "type": "table",
+          "y_top": 145.0408,
+          "y_bottom": 431.62589999999994,
+          "font_size": 11.0,
+          "ratio_to_body": 1.0,
+          "line_count": 27
+        },
+        {
+          "text": "|  |  |  |\n| --- | --- | --- |\n| אפשרי( | בהקדם ה | )TTM |\n|  |  |  |\n|  |  |  |\n|  | הראש | לשCT |\n|  |  |  |",
+          "type": "table",
+          "y_top": 150.16329999999994,
+          "y_bottom": 431.62589999999994,
+          "font_size": 11.0,
+          "ratio_to_body": 1.0,
+          "line_count": 6
+        },
+        {
+          "text": "דימות",
+          "font_size": 8.16,
+          "y_top": 190.06,
+          "y_bottom": 198.22,
+          "ratio_to_body": 1.2,
+          "type": "text",
+          "line_count": 1
+        },
+        {
+          "text": "אלקטרופיזיולוגיה",
+          "font_size": 8.16,
+          "y_top": 252.14,
+          "y_bottom": 260.3,
+          "ratio_to_body": 1.2,
+          "type": "text",
+          "line_count": 1
+        },
+        {
+          "text": "ש ל ב ב ד י ק ו ת א ב ח ו ן ל פ ר ו ג נ ו ס ט י ק צ י ה ר ב - א ו פ נ י ת ל פ ח ו ת 2 7 ש ע ו ת ל א ח ר נ ו ר מ ו ת ר מ י ה",
+          "font_size": 6.8,
+          "y_top": 290.84,
+          "y_bottom": 330.29,
+          "ratio_to_body": 1.0,
+          "type": "text",
+          "line_count": 5
+        },
+        {
+          "text": "בדיקה קלינית",
+          "font_size": 8.16,
+          "y_top": 312.13,
+          "y_bottom": 330.08,
+          "ratio_to_body": 1.2,
+          "type": "text",
+          "line_count": 2
+        },
+        {
+          "text": "סמנים ביולוגיים בנסיוב אפילפטיקוס האפשר",
+          "font_size": 8.16,
+          "y_top": 372.92,
+          "y_bottom": 158.63,
+          "ratio_to_body": 1.2,
+          "type": "text",
+          "line_count": 4
+        },
+        {
+          "text": "שעות 24 שעות 72 שעות ROSC 48 ROSC זמן לאחר",
+          "font_size": 7.81,
+          "y_top": 450.03,
+          "y_bottom": 473.91,
+          "ratio_to_body": 1.15,
+          "type": "text",
+          "line_count": 2
+        },
+        {
+          "text": "12 American Heart Association",
+          "font_size": 8.5,
+          "y_top": 766.55,
+          "y_bottom": 776.11,
+          "ratio_to_body": 1.25,
+          "type": "text",
+          "line_count": 1
+        }
+      ]
+    }
+  ]
+}
