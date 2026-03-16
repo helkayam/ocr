@@ -1,1 +1,7 @@
-ocr_extract_model_venv/
+venv/
+__pycache__/
+*.pyc
+chunks.json
+embeddings_cache.pt
+test_pdf/
+test_files_json/
