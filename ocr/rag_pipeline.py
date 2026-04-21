@@ -2,14 +2,33 @@ import os
 import json
 from groq import Groq
 from search_engine import LocalVectorSearch
+from bidi.algorithm import get_display
+import arabic_reshaper
+
+
+def fix_hebrew(text):
+    # מפצלים את הטקסט לשורות נפרדות
+    lines = text.split('\n')
+    fixed_lines = []
+    
+    for line in lines:
+        # מתקנים כל שורה בנפרד
+        reshaped_line = arabic_reshaper.reshape(line)
+        display_line = get_display(reshaped_line)
+        fixed_lines.append(display_line)
+        
+    # מחברים את השורות חזרה עם ירידת שורה
+    return '\n'.join(fixed_lines)
 
 # ==========================================
 #  הגדרות
 # ==========================================
-GROQ_API_KEY = "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"
+groq_api_key = os.getenv("GROQ_API_KEY")
 CHUNKS_FILE = "chunks.json" # הקובץ שנוצר מהצאנקר שלך
 
 class HebrewRAG:
+
+
     def __init__(self, api_key: str, chunks_path: str):
         self.client = Groq(api_key=api_key)
         # טעינת מנוע החיפוש המקומי שכתבנו
@@ -64,17 +83,19 @@ if __name__ == "__main__":
     rag_system = HebrewRAG(GROQ_API_KEY, CHUNKS_FILE)
     
     while True:
-        user_input = input("\nשאלי שאלה על הקובץ (או 'exit' ליציאה): ")
+        # מדפיסים את ההנחיה בשורה נפרדת עם התיקון
+        print(fix_hebrew("\nשאלי שאלה על הקובץ (או 'exit' ליציאה):"))
+        # מקבלים קלט נקי בלי שום פונקציה מסביב
+        user_input = input("> ") 
+        
         if user_input.lower() == 'exit':
             break
-            
+        
+        if not user_input.strip():
+            continue
+
         answer, sources = rag_system.generate_answer(user_input)
         
         print("\n" + "="*50)
         print(f"תשובה:\n{answer}")
         print("="*50)
-        
-        print("\nהצ'אנקים ששימשו את המודל:")
-        for s in sources:
-            # מדפיס את ה-ID והעמודים כפי שמופיעים ב-JSON
-            print(f"- {s['chunk_id']} (ציון דמיון: {s['score']})")
