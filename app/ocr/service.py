@@ -174,81 +174,53 @@ class OCRService:
     # =========================================================================
 
     def _process_pdfplumber_page(self, page, page_num) -> Optional[Dict]:
-        # 1. זיהוי טבלאות ומיקומן
-        tables = page.find_tables()
-        table_bboxes = [t.bbox for t in tables]
-        
-        # 2. בדיקה אם העמוד הפוך
+        # 1. בדיקה אם העמוד הפוך (נשאר כפי שהיה)
         all_raw_text = page.extract_text() or ""
         is_page_reversed = self.is_hebrew_text(all_raw_text) and self.looks_like_reversed_hebrew(all_raw_text)
 
         all_blocks = []
 
-        # 3. חילוץ טבלאות כ-Markdown
-        for table_obj in tables:
-            raw_table_data = table_obj.extract()
-            md_text = self._format_table_as_markdown(raw_table_data, is_page_reversed)
-            
-            all_blocks.append({
-                "text": md_text,
-                "type": "table",
-                "y_top": table_obj.bbox[1],
-                "y_bottom": table_obj.bbox[3],
-                "font_size": 11.0, # ברירת מחדל לטבלה
-                "ratio_to_body": 1.0,
-                "line_count": len(raw_table_data)
+        # 2. חילוץ כל המילים מהעמוד ללא סינון טבלאות
+        words = page.extract_words(extra_attrs=["fontname", "size", "top", "bottom"])
+        if not words: 
+            return None
+
+        # חישוב סטטיסטיקות גופנים עבור כל העמוד
+        sizes = [w["size"] for w in words]
+        median_size = statistics.median(sizes)
+        max_size = max(sizes)
+
+        # 3. יצירת שורות מכל המילים שנמצאו
+        lines = []
+        current_line = [words[0]]
+        for word in words[1:]:
+            if abs(word["top"] - current_line[-1]["top"]) < 3:
+                current_line.append(word)
+            else:
+                lines.append(current_line)
+                current_line = [word]
+        lines.append(current_line)
+
+        # 4. עיבוד השורות לבלוקים של טקסט
+        raw_text_lines = []
+        for line_words in lines:
+            line_text = " ".join([w["text"] for w in line_words])
+            line_text = self._apply_hebrew_fixes(line_text, is_page_reversed)
+
+            raw_text_lines.append({
+                "text": line_text,
+                "font_size": round(max([w["size"] for w in line_words]), 2),
+                "y_top": round(min([w["top"] for w in line_words]), 2),
+                "y_bottom": round(max([w["bottom"] for w in line_words]), 2),
+                "ratio_to_body": round(max([w["size"] for w in line_words]) / median_size, 2) if median_size > 0 else 1.0,
+                "type": "text"
             })
 
-        # 4. חילוץ טקסט שאינו בתוך טבלה
-        words = page.extract_words(extra_attrs=["fontname", "size", "top", "bottom"])
-        if not words and not all_blocks: return None
+        # מיזוג שורות לבלוקים סמנטיים (פסקאות)
+        text_blocks = self._merge_lines_into_blocks(raw_text_lines, median_size)
+        all_blocks.extend(text_blocks)
 
-        # פונקציית עזר לבדוק אם מילה בתוך טבלה
-        def is_in_table(w):
-            for bbox in table_bboxes:
-                if w["x0"] >= bbox[0] and w["top"] >= bbox[1] and w["x1"] <= bbox[2] and w["bottom"] <= bbox[3]:
-                    return True
-            return False
-
-        non_table_words = [w for w in words if not is_in_table(w)]
-        
-        if non_table_words:
-            sizes = [w["size"] for w in non_table_words]
-            median_size = statistics.median(sizes)
-            max_size = max(sizes)
-
-            # יצירת שורות מטקסט רגיל
-            lines = []
-            current_line = [non_table_words[0]]
-            for word in non_table_words[1:]:
-                if abs(word["top"] - current_line[-1]["top"]) < 3:
-                    current_line.append(word)
-                else:
-                    lines.append(current_line)
-                    current_line = [word]
-            lines.append(current_line)
-
-            raw_text_lines = []
-            for line_words in lines:
-                line_text = " ".join([w["text"] for w in line_words])
-                line_text = self._apply_hebrew_fixes(line_text, is_page_reversed)
-
-                raw_text_lines.append({
-                    "text": line_text,
-                    "font_size": round(max([w["size"] for w in line_words]), 2),
-                    "y_top": round(min([w["top"] for w in line_words]), 2),
-                    "y_bottom": round(max([w["bottom"] for w in line_words]), 2),
-                    "ratio_to_body": round(max([w["size"] for w in line_words]) / median_size, 2) if median_size > 0 else 1.0,
-                    "type": "text"
-                })
-
-            text_blocks = self._merge_lines_into_blocks(raw_text_lines, median_size)
-            all_blocks.extend(text_blocks)
-        else:
-            median_size = 11.0
-            max_size = 11.0
-
-        # 5. מיון סופי של כל הבלוקים (טקסט וטבלאות) לפי המיקום בעמוד
+        # 5. מיון סופי לפי מיקום אנכי
         all_blocks.sort(key=lambda x: x["y_top"])
 
         return {
