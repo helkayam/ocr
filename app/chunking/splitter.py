@@ -71,6 +71,9 @@ def _split_text(text: str, chunk_size: int, chunk_overlap: int) -> List[str]:
     Overlap: seeks the last sentence-ending punctuation inside the overlap window
     so the carried-over context always begins at a complete sentence boundary.
     Falls back to a word boundary, then the raw character offset.
+
+    Guarantees start advances by at least (chunk_size - chunk_overlap) per
+    iteration to prevent staircase micro-steps on short blocks.
     """
     text = text.strip()
     if not text:
@@ -78,6 +81,7 @@ def _split_text(text: str, chunk_size: int, chunk_overlap: int) -> List[str]:
     if len(text) <= chunk_size:
         return [text]
 
+    min_step = max(1, chunk_size - chunk_overlap)
     chunks: List[str] = []
     start = 0
 
@@ -90,29 +94,33 @@ def _split_text(text: str, chunk_size: int, chunk_overlap: int) -> List[str]:
         cut = _find_split_point(remaining, chunk_size)
         chunks.append(remaining[:cut].rstrip())
 
-        # Semantic overlap: prefer starting at a sentence boundary.
-        raw = max(0, cut - chunk_overlap)
-        overlap_start: Optional[int] = None
+        # Only apply semantic overlap when there is enough text left to justify it.
+        if len(remaining) - cut > chunk_size:
+            raw = max(0, cut - chunk_overlap)
+            overlap_start: Optional[int] = None
 
-        for i in range(raw, cut):
-            if remaining[i] in _SENTENCE_END:
-                j = i + 1
-                while j < cut and remaining[j] in (" ", "\n"):
-                    j += 1
-                if j < cut:
-                    overlap_start = j
-                    break
+            for i in range(raw, cut):
+                if remaining[i] in _SENTENCE_END:
+                    j = i + 1
+                    while j < cut and remaining[j] in (" ", "\n"):
+                        j += 1
+                    if j < cut:
+                        overlap_start = j
+                        break
 
-        if overlap_start is None:
-            # Snap to word boundary
-            pos = raw
-            while pos < cut and remaining[pos] not in (" ", "\n"):
-                pos += 1
-            while pos < cut and remaining[pos] in (" ", "\n"):
-                pos += 1
-            overlap_start = pos if pos < cut else raw
+            if overlap_start is None:
+                pos = raw
+                while pos < cut and remaining[pos] not in (" ", "\n"):
+                    pos += 1
+                while pos < cut and remaining[pos] in (" ", "\n"):
+                    pos += 1
+                overlap_start = pos if pos < cut else raw
 
-        start += overlap_start if 0 < overlap_start < cut else cut
+            advance = overlap_start if 0 < overlap_start < cut else cut
+        else:
+            advance = cut
+
+        start += max(advance, min_step)
 
     return chunks
 
