@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(wsl -d Ubuntu -e bash -c \"cd /home/helkayam/ProtocolGenesis/ocr && source venv/bin/activate && python __api_probe.py 2>&1\")",
+      "PowerShell(wsl -d Ubuntu -e bash -c \"rm /home/helkayam/ProtocolGenesis/ocr/__api_probe.py && echo done\")",
+      "PowerShell(wsl -d Ubuntu -e bash -c \"cd /home/helkayam/ProtocolGenesis/ocr && source venv/bin/activate && python -m pytest tests/test_api.py -v 2>&1\")",
+      "PowerShell(wsl -d Ubuntu -e bash -c \"cd /home/helkayam/ProtocolGenesis/ocr && source venv/bin/activate && python -m pytest tests/ -v --tb=short 2>&1\")"
+    ]
+  }
+}
