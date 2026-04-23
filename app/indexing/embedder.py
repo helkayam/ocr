@@ -5,7 +5,7 @@ from typing import List
 from loguru import logger
 from sentence_transformers import SentenceTransformer
 
-MODEL_NAME = "dicta-il/alephbert"
+MODEL_NAME = "onlplab/alephbert-base"
 
 _model: SentenceTransformer | None = None
 
