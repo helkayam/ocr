@@ -112,7 +112,7 @@ def _split_text(text: str, chunk_size: int, chunk_overlap: int) -> List[str]:
                 pos += 1
             overlap_start = pos if pos < cut else raw
 
-        start += overlap_start if overlap_start < cut else cut
+        start += overlap_start if 0 < overlap_start < cut else cut
 
     return chunks
 
