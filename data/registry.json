@@ -5,5 +5,12 @@
     "status": "ocr_completed",
     "created_at": "2026-04-23T12:45:51.021295Z",
     "file_hash": "1095caabdac887586d14ee2d26f9e2007332c9a1c1610a05a5cfcaaebbb157a7"
+  },
+  "0f215308-ab1c-429c-ad8d-708371c1266d": {
+    "document_id": "0f215308-ab1c-429c-ad8d-708371c1266d",
+    "file_name": "txt.pdf",
+    "status": "chunked",
+    "created_at": "2026-04-27T10:51:54.322363Z",
+    "file_hash": "897434ff2353491fe170336ddb44a38a5a07666e3d85eb0cce99e189726a6c71"
   }
 }

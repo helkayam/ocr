@@ -9,9 +9,12 @@ Usage examples:
     python main.py reindex <doc_id>
     python main.py --debug ingest path/to/document.pdf
 """
+
 from __future__ import annotations
+__import__('pysqlite3')
 
 import sys
+sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 
 import click
 from loguru import logger
