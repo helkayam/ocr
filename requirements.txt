@@ -13,7 +13,7 @@ pydantic
 python-dotenv
 loguru
 sentence-transformers
-chromadb
+chromadb>=0.4.22,<1.0.0
 groq
 tenacity
 fastapi
