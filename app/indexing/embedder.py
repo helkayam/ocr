@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from typing import List
+from typing import List, Optional
 
 from loguru import logger
 from sentence_transformers import SentenceTransformer
 
 MODEL_NAME = "onlplab/alephbert-base"
 
-_model: SentenceTransformer | None = None
+_model: Optional[SentenceTransformer] = None
 
 
 def get_model() -> SentenceTransformer:

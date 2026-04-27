@@ -134,7 +134,7 @@ def ask_cmd(ctx: click.Context, query: str, top_k: int) -> None:
 
     if response.sources:
         click.echo(click.style(" Sources", fg="yellow", bold=True))
-        seen: set[tuple] = set()
+        seen = set()
         for s in response.sources:
             key = (s.document_id, s.page_num)
             if key not in seen:
