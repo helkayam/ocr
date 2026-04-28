@@ -200,6 +200,44 @@ def reindex(ctx: click.Context, doc_id: str) -> None:
 
 
 # ---------------------------------------------------------------------------
+# evaluate
+# ---------------------------------------------------------------------------
+
+@cli.command("evaluate")
+@click.option(
+    "--dataset",
+    default="data/golden_set.json",
+    show_default=True,
+    type=click.Path(dir_okay=False),
+    help="Path to the golden dataset JSON file.",
+)
+@click.option(
+    "--top-k",
+    default=5,
+    show_default=True,
+    type=click.IntRange(1, 50),
+    help="Number of chunks to retrieve per query.",
+)
+@click.pass_context
+def evaluate_cmd(ctx: click.Context, dataset: str, top_k: int) -> None:
+    """Run the RAG evaluation suite against a golden dataset (Phase 10)."""
+    from app.pipeline import evaluate_pipeline
+
+    try:
+        evaluate_pipeline(dataset, top_k=top_k)
+    except FileNotFoundError as exc:
+        _handle_error(ctx, exc, "Dataset not found")
+        return
+    except Exception as exc:
+        _handle_error(ctx, exc, "Evaluation failed")
+        return
+
+    _separator()
+    click.echo(click.style(" Evaluation complete", fg="green", bold=True))
+    _separator()
+
+
+# ---------------------------------------------------------------------------
 # Entry point
 # ---------------------------------------------------------------------------
 

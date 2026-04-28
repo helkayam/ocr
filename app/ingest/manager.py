@@ -37,12 +37,15 @@ def ingest(file_path: Path | str) -> str:
     file_hash = _sha256(path)
     logger.debug("SHA-256: {}", file_hash)
 
-    if registry.exists_by_hash(file_hash):
-        raise ValueError(
-            f"Duplicate file rejected — hash {file_hash!r} already exists in registry"
+    existing_id = registry.get_id_by_hash(file_hash)
+    if existing_id:
+        document_id = existing_id
+        logger.info(
+            "Document ID {} already exists. Performing UPSERT to update registry and vectors.",
+            document_id,
         )
-
-    document_id = str(uuid.uuid4())
+    else:
+        document_id = str(uuid.uuid4())
 
     RAW_DIR.mkdir(parents=True, exist_ok=True)
     dest = RAW_DIR / f"{document_id}.pdf"
@@ -56,7 +59,7 @@ def ingest(file_path: Path | str) -> str:
         created_at=datetime.now(timezone.utc),
         file_hash=file_hash,
     )
-    registry.add(record)
+    registry.upsert(record)
 
     logger.info("Ingest complete: file={} document_id={}", path.name, document_id)
     return document_id

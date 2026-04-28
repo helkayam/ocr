@@ -55,6 +55,21 @@ def exists_by_hash(file_hash: str) -> bool:
     return any(v["file_hash"] == file_hash for v in data.values())
 
 
+def get_id_by_hash(file_hash: str) -> Optional[str]:
+    data = _load()
+    for doc_id, v in data.items():
+        if v["file_hash"] == file_hash:
+            return doc_id
+    return None
+
+
+def upsert(record: DocumentRecord) -> None:
+    data = _load()
+    data[record.document_id] = record.model_dump(mode="json")
+    _save(data)
+    logger.info("Registry: upserted document_id={}", record.document_id)
+
+
 def delete(document_id: str) -> None:
     data = _load()
     if document_id not in data:

@@ -91,12 +91,16 @@ def generate(query: str, context: List[SearchResult]) -> RAGResponse:
         raise EnvironmentError("GROQ_API_KEY is not set. Add it to your .env file.")
 
     client = groq_sdk.Groq(api_key=api_key)
+    user_message = _build_user_message(query, context)
     messages = [
         {"role": "system", "content": _SYSTEM_PROMPT},
-        {"role": "user", "content": _build_user_message(query, context)},
+        {"role": "user", "content": user_message},
     ]
 
     logger.info("RAG generate: query={!r} context_chunks={}", query, len(context))
+    logger.info("\n====== SYSTEM PROMPT ======\n{}\n===========================", _SYSTEM_PROMPT)
+    logger.info("\n====== FULL USER MESSAGE (Context + Query) ======\n{}\n=================================================", user_message)
+
     answer = _call_groq_api(client, messages)
     logger.info("RAG answer received ({} chars)", len(answer))
 

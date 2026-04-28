@@ -66,4 +66,15 @@ def search(
         )
 
     logger.debug("Search returned {} results", len(results))
+
+    for i, r in enumerate(results, start=1):
+        logger.info(
+            "\n--- Chunk {} (Page {}, doc={}, score={:.4f}) ---\n{}\n",
+            i,
+            r.page_num,
+            r.document_id,
+            r.score,
+            r.text,
+        )
+
     return results

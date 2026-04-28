@@ -95,3 +95,22 @@ class RAGResponse(BaseModel):
     query: str
     answer: str
     sources: List[CitedSource]
+
+
+# ---------------------------------------------------------------------------
+# Evaluation schema (Phase 10)
+# ---------------------------------------------------------------------------
+
+class GoldenQuestion(BaseModel):
+    query: str
+    query_type: str = "in_context"  # "in_context" | "out_of_context"
+    expected_doc_id: Optional[str] = None
+    expected_page: Optional[int] = None
+
+
+class EvalResult(BaseModel):
+    query: str
+    query_type: str
+    recall_hit: Optional[bool] = None       # None when not applicable
+    faithfulness_pass: Optional[bool] = None  # None when not applicable
+    answer: str = ""

@@ -1,0 +1,121 @@
+ [
+    {
+        "query": "מהן סמכויותיו של יושב ראש הכנסת לפי סעיף 2 לתקנון?",
+        "query_type": "in_context",
+        "expected_doc_id": "knesset_rules",
+        "expected_page": 12
+    },
+    {
+        "query": "באילו ימים ושעות מתקיימות בדרך כלל ישיבות הכנסת?",
+        "query_type": "in_context",
+        "expected_doc_id": "knesset_rules",
+        "expected_page": 28
+    },
+    {
+        "query": "מהו התהליך להגשת בקשה לתיקון פרוטוקול 'דברי הכנסת'?",
+        "query_type": "in_context",
+        "expected_doc_id": "knesset_rules",
+        "expected_page": 145
+    },
+    {
+        "query": "מי רשאי לשאת נאום בכורה במליאת הכנסת?",
+        "query_type": "in_context",
+        "expected_doc_id": "knesset_rules",
+        "expected_page": 160
+    },
+    {
+        "query": "כיצד נקבע סדר היום של ישיבות הכנסת?",
+        "query_type": "in_context",
+        "expected_doc_id": "knesset_rules",
+        "expected_page": 35
+    },
+    {
+        "query": "מהן החובות של סגני יושב ראש הכנסת בעת ניהול ישיבה?",
+        "query_type": "in_context",
+        "expected_doc_id": "knesset_rules",
+        "expected_page": 18
+    },
+    {
+        "query": "תוך כמה זמן על דובר להגיש את תיקוניו לפרוטוקול הישיבה?",
+        "query_type": "in_context",
+        "expected_doc_id": "knesset_rules",
+        "expected_page": 146
+    },
+    {
+        "query": "מי מוסמך לאשר חריגה מתקציב הכנסת לפי התקנון?",
+        "query_type": "in_context",
+        "expected_doc_id": "knesset_rules",
+        "expected_page": 22
+    },
+    {
+        "query": "האם יושב ראש הכנסת יכול לכהן כחבר בוועדת הכנסת?",
+        "query_type": "in_context",
+        "expected_doc_id": "knesset_rules",
+        "expected_page": 44
+    },
+    {
+        "query": "מהו הנוהל לנשיאת נאום פרידה של שר שהתפטר מהממשלה?",
+        "query_type": "in_context",
+        "expected_doc_id": "knesset_rules",
+        "expected_page": 58
+    },
+    {
+        "query": "האם חבר כנסת יכול לשאת נאום בכורה לפני שחתם על הצהרת אמונים?",
+        "query_type": "in_context",
+        "expected_doc_id": "knesset_rules",
+        "expected_page": 160
+    },
+    {
+        "query": "האם לפי התקנון מותר לקיים ישיבות מליאה ביום שבת?",
+        "query_type": "in_context",
+        "expected_doc_id": "knesset_rules",
+        "expected_page": 28
+    },
+    {
+        "query": "האם מותר ליושב ראש הכנסת לכלול פרסומות מסחריות בפרסומי הכנסת?",
+        "query_type": "in_context",
+        "expected_doc_id": "knesset_rules",
+        "expected_page": 22
+    },
+    {
+        "query": "האם חבר כנסת יכול להצביע בשמו של חבר כנסת אחר שנעדר מהמליאה?",
+        "query_type": "in_context",
+        "expected_doc_id": "knesset_rules",
+        "expected_page": 82
+    },
+    {
+        "query": "האם יש הגבלת זמן לנאום של יושב ראש ועדה המציג חוק חדש?",
+        "query_type": "in_context",
+        "expected_doc_id": "knesset_rules",
+        "expected_page": 110
+    },
+    {
+        "query": "מהו גובה הקנס על חניה באדום-לבן בעיריית ירושלים?",
+        "query_type": "out_of_context",
+        "expected_doc_id": null,
+        "expected_page": null
+    },
+    {
+        "query": "איך מגישים תביעה קטנה נגד חברת תעופה על ביטול טיסה?",
+        "query_type": "out_of_context",
+        "expected_doc_id": null,
+        "expected_page": null
+    },
+    {
+        "query": "מהן הנחיות משרד הבריאות לגבי כמות הסוכר המותרת בבתי ספר?",
+        "query_type": "out_of_context",
+        "expected_doc_id": null,
+        "expected_page": null
+    },
+    {
+        "query": "מהו המתכון המומלץ להכנת חומוס ביתי?",
+        "query_type": "out_of_context",
+        "expected_doc_id": null,
+        "expected_page": null
+    },
+    {
+        "query": "מי זכתה באליפות המדינה בכדורגל בשנת 2024?",
+        "query_type": "out_of_context",
+        "expected_doc_id": null,
+        "expected_page": null
+    }]

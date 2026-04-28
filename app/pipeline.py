@@ -87,6 +87,15 @@ def delete_pipeline(doc_id: str) -> None:
     logger.info("Pipeline: delete complete — document_id={}", doc_id)
 
 
+def evaluate_pipeline(dataset_path: str | Path, top_k: int = 5) -> None:
+    """Phase 10.  Load the golden dataset and run the evaluation suite."""
+    from app.rag.evaluate import RAGEvaluator
+
+    logger.info("Pipeline: evaluate start — {}", dataset_path)
+    RAGEvaluator(top_k=top_k).run_suite(dataset_path)
+    logger.info("Pipeline: evaluate complete")
+
+
 def reindex_pipeline(doc_id: str) -> int:
     """Delete vectors from ChromaDB and re-run Phase 5 for *doc_id*.
 

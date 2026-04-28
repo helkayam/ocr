@@ -6,11 +6,18 @@
     "created_at": "2026-04-23T12:45:51.021295Z",
     "file_hash": "1095caabdac887586d14ee2d26f9e2007332c9a1c1610a05a5cfcaaebbb157a7"
   },
-  "0f215308-ab1c-429c-ad8d-708371c1266d": {
-    "document_id": "0f215308-ab1c-429c-ad8d-708371c1266d",
-    "file_name": "txt.pdf",
-    "status": "chunked",
-    "created_at": "2026-04-27T10:51:54.322363Z",
+  "47481ab3-b090-41df-98f1-b646bd522e84": {
+    "document_id": "47481ab3-b090-41df-98f1-b646bd522e84",
+    "file_name": "monopol.pdf",
+    "status": "indexed",
+    "created_at": "2026-04-28T13:18:38.527989Z",
     "file_hash": "897434ff2353491fe170336ddb44a38a5a07666e3d85eb0cce99e189726a6c71"
+  },
+  "e690a511-0bc2-4e07-9af0-5ac1d4e3199b": {
+    "document_id": "e690a511-0bc2-4e07-9af0-5ac1d4e3199b",
+    "file_name": "RulesOfProcedure.pdf",
+    "status": "indexed",
+    "created_at": "2026-04-28T12:45:23.819590Z",
+    "file_hash": "98f45f94b6c21b355d296d8f16bdb1af6e0d71a08906783afe6b19cdb24d7e59"
   }
 }
