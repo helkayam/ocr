@@ -25,7 +25,7 @@ _MAX_RETRY_ATTEMPTS = 5
 # Prompt templates
 # ---------------------------------------------------------------------------
 
-_SYSTEM_PROMPT = """\
+SYSTEM_PROMPT = """
 You are a precise document analysis assistant. You MUST follow every rule below without exception.
 
 Rules:
@@ -34,7 +34,7 @@ Rules:
 3. After every factual claim, cite its source in the format: [מסמך: {document_id}, עמוד {page_num}].
 4. If the answer cannot be found in the provided context, respond with this exact phrase and nothing else:
    "המידע המבוקש לא נמצא במסמכים שסופקו."
-5. Never fabricate, paraphrase beyond what is stated, or infer facts not present in the context.\
+5. Never fabricate, paraphrase beyond what is stated, or infer facts not present in the context.
 """
 
 
@@ -43,13 +43,18 @@ def _build_user_message(query: str, context: List[SearchResult]) -> str:
         context_block = "(אין הקשר זמין)"
     else:
         passages = []
-        for r in context:
+        for i, r in enumerate(context, start=1):
             passages.append(
-                f"[מסמך: {r.document_id}, עמוד {r.page_num}]\n{r.text}"
+                f"[קטע {i} | מסמך: {r.document_id}, עמוד {r.page_num}]\n{r.text}"
             )
         context_block = "\n\n---\n\n".join(passages)
 
-    return f"שאלה: {query}\n\nהקשר:\n\n{context_block}"
+    return (
+        f"שאלה: {query}\n\n"
+        f"קטעי הקשר ({len(context)} קטעים):\n\n"
+        f"{context_block}\n\n"
+        "הוראה: יישם את פרוטוקול האימות בארבעה שלבים לפני שתנסח תשובה."
+    )
 
 
 # ---------------------------------------------------------------------------

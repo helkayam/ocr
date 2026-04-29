@@ -1,8 +1,23 @@
-venv/
+# Python
 __pycache__/
-*.pyc
-chunks.json
-embeddings_cache.pt
-test_pdf/
-test_files_json/
+*.py[cod]
+*$py.class
+venv/
+.venv/
 .env
+
+# Project Data (הכי חשוב!)
+data/raw/*
+data/ocr/*
+data/chunks/*
+data/index/*
+!data/**/.gitkeep
+
+# Logs & Cache
+*.log
+.pytest_cache/
+.ipynb_checkpoints/
+
+# OS files
+.DS_Store
+Thumbs.db

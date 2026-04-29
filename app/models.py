@@ -34,7 +34,7 @@ class PageStats(BaseModel):
 
 class Block(BaseModel):
     text: str
-    type: str  # "text" | "table"
+    type: str  # "text" | "table" | "header"
     y_top: float
     y_bottom: float
     font_size: float

@@ -1,6 +1,11 @@
-from __future__ import annotations
-
+import sys
 from pathlib import Path
+
+try:
+    import pysqlite3
+    sys.modules["sqlite3"] = pysqlite3
+except ImportError:
+    pass
 
 import chromadb
 
@@ -18,3 +23,18 @@ def get_collection(index_dir: Path = INDEX_DIR) -> chromadb.Collection:
     index_dir.mkdir(parents=True, exist_ok=True)
     client = chromadb.PersistentClient(path=str(index_dir))
     return client.get_or_create_collection(COLLECTION_NAME)
+
+
+def reset_collection(index_dir: Path = INDEX_DIR) -> chromadb.Collection:
+    """Delete and recreate the ChromaDB collection, erasing all vectors.
+
+    Used when the embedding model changes and the stored vectors have the
+    wrong dimensionality.  Safe to call on an empty or non-existent collection.
+    """
+    index_dir.mkdir(parents=True, exist_ok=True)
+    client = chromadb.PersistentClient(path=str(index_dir))
+    try:
+        client.delete_collection(COLLECTION_NAME)
+    except Exception:
+        pass
+    return client.create_collection(COLLECTION_NAME)

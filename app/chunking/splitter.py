@@ -1,79 +1,82 @@
-from __future__ import annotations
-
 import json
 from pathlib import Path
-from typing import List, Optional, Tuple
+from typing import Optional
 
 from loguru import logger
 
 import app.registry as registry
 from app.models import Block, Chunk, ChunkMetadata, DocumentStatus, OCRPage, OCRResult
 
-OCR_DIR = Path("data/ocr")
+OCR_DIR    = Path("data/ocr")
 CHUNKS_DIR = Path("data/chunks")
 
-# Blocks whose font is this multiple above the page median are treated as headers.
-_HEADER_RATIO_THRESHOLD = 1.2
-# Short lines under this length without terminal punctuation are header candidates.
-_HEADER_MAX_LEN = 60
-# Sentence-ending punctuation used for overlap snapping.
-_SENTENCE_END = frozenset(".!?")
-# Split separators tried in priority order (never split mid-word).
-_SEPARATORS = ["\n\n", "\n", " "]
+# ── Sizing constants (agreed in the architectural review) ─────────────────────
+# Small consecutive text blocks are aggregated until the combined character
+# count reaches MIN_CHUNK_SIZE.  Hebrew is dense — 300 chars gives the LLM
+# enough context without risking context-free micro-chunks.
+MIN_CHUNK_SIZE = 300
 
+# Blocks (or aggregated groups) that exceed MAX_CHUNK_SIZE are split with a
+# sliding window.  1500 chars ≈ 400–500 Hebrew tokens, well within LLM limits
+# while keeping each chunk semantically self-contained.
+MAX_CHUNK_SIZE = 1500
+
+# Overlap carried into each split chunk.  10% of MAX_CHUNK_SIZE ensures
+# sentences that straddle a boundary appear in both adjacent chunks.
+CHUNK_OVERLAP = 150
+
+# ── Header detection ──────────────────────────────────────────────────────────
+# Primary signal: OCR now emits type="header" directly (service.py).
+# Fallback: font-ratio heuristic for OCR files produced before this change.
+_HEADER_RATIO_THRESHOLD = 1.2
+
+_SENTENCE_END = frozenset(".!?")
+_SEPARATORS   = ["\n\n", "\n", " "]
+
+
+# ── Block classification ──────────────────────────────────────────────────────
 
 def _is_header(block: Block) -> bool:
-    """Font-ratio heuristic: a text block whose font is ≥1.2× the body median."""
-    return block.type == "text" and block.ratio_to_body >= _HEADER_RATIO_THRESHOLD
+    """True if this block is a section header.
 
-
-def _looks_like_header(block: Block, next_block: Optional[Block]) -> bool:
-    """Look-ahead heuristic: short line without terminal punctuation before a longer body.
-
-    Applied as a secondary check inside _chunk_page when the font-ratio heuristic
-    misses headers (common when the OCR reports uniform ratio_to_body values).
-    Only fires when the immediately following block is text and at least 3× longer,
-    which distinguishes a genuine heading from a short sentence mid-paragraph.
+    Checks the OCR-assigned type first (fast path for files produced by the
+    updated service.py).  Falls back to the font-ratio heuristic so that older
+    OCR JSON files continue to work correctly.
     """
-    if block.type != "text":
-        return False
-    text = block.text.strip()
-    if not text or len(text) > _HEADER_MAX_LEN or text[-1] in _SENTENCE_END:
-        return False
-    if next_block is None or next_block.type != "text":
-        return False
-    return len(next_block.text) > len(text) * 3
+    if block.type == "header":
+        return True
+    return (
+        block.type == "text"
+        and block.ratio_to_body >= _HEADER_RATIO_THRESHOLD
+        and block.line_count <= 2
+    )
 
+
+# ── Text splitting ────────────────────────────────────────────────────────────
 
 def _find_split_point(text: str, limit: int) -> int:
     """Return the rightmost natural split index at or before *limit* (never mid-word).
 
     Tries paragraph, line, and word separators in priority order, searching
-    *backwards* from *limit* so the left slice never exceeds the budget.
-    Falls back to scanning backwards for any whitespace; only hard-cuts when
-    the text contains absolutely no whitespace (e.g. a continuous run of chars).
+    backwards from *limit*.  Falls back to scanning backwards for any whitespace;
+    hard-cuts only when the text contains absolutely no whitespace.
     """
     for sep in _SEPARATORS:
         pos = text.rfind(sep, 0, limit)
         if pos > 0:
             return pos + len(sep)
-    # Fallback: scan backward for any whitespace — avoids mid-word cuts
     for i in range(limit - 1, 0, -1):
         if text[i] in (" ", "\n"):
             return i + 1
-    return limit  # only when the slice has zero whitespace (e.g. solid Hebrew run)
+    return limit
 
 
-def _split_text(text: str, chunk_size: int, chunk_overlap: int) -> List[str]:
+def _split_text(text: str, chunk_size: int, chunk_overlap: int) -> list[str]:
     """Sliding-window split that respects word and sentence boundaries.
 
-    Split priority: paragraph (\\n\\n) → line (\\n) → space — never mid-word.
+    Split priority: paragraph → line → space — never mid-word.
     Overlap: seeks the last sentence-ending punctuation inside the overlap window
-    so the carried-over context always begins at a complete sentence boundary.
-    Falls back to a word boundary, then the raw character offset.
-
-    Guarantees start advances by at least (chunk_size - chunk_overlap) per
-    iteration to prevent staircase micro-steps on short blocks.
+    so carried-over context always begins at a complete sentence boundary.
     """
     text = text.strip()
     if not text:
@@ -82,7 +85,7 @@ def _split_text(text: str, chunk_size: int, chunk_overlap: int) -> List[str]:
         return [text]
 
     min_step = max(1, chunk_size - chunk_overlap)
-    chunks: List[str] = []
+    chunks: list[str] = []
     start = 0
 
     while start < len(text):
@@ -94,7 +97,6 @@ def _split_text(text: str, chunk_size: int, chunk_overlap: int) -> List[str]:
         cut = _find_split_point(remaining, chunk_size)
         chunks.append(remaining[:cut].rstrip())
 
-        # Only apply semantic overlap when there is enough text left to justify it.
         if len(remaining) - cut > chunk_size:
             raw = max(0, cut - chunk_overlap)
             overlap_start: Optional[int] = None
@@ -125,6 +127,8 @@ def _split_text(text: str, chunk_size: int, chunk_overlap: int) -> List[str]:
     return chunks
 
 
+# ── Chunk construction ────────────────────────────────────────────────────────
+
 def _make_chunk(
     document_id: str,
     page_num: int,
@@ -151,82 +155,87 @@ def _make_chunk(
     )
 
 
-def _chunk_page(
-    document_id: str,
-    page_num: int,
-    blocks: List[Block],
-    chunk_size: int,
-    chunk_overlap: int,
-    pending_headers: Optional[List[Tuple[int, str]]] = None,
-) -> List[Chunk]:
-    """Produce chunks for a single OCR page.
+# ── Step A: block aggregation ─────────────────────────────────────────────────
 
-    *pending_headers* injects cross-page header context (a header at the bottom
-    of page N carried into the first content block of page N+1).  Any headers
-    still unconsumed at the end of the page are emitted as standalone
-    ``is_header=True`` chunks so the caller always receives a complete list.
+def _aggregate_blocks(blocks: list[Block]) -> list[Block]:
+    """Combine consecutive small text blocks into MIN_CHUNK_SIZE-or-larger units.
 
-    Tables are treated as atomic units: they are never split, regardless of size,
-    to preserve row integrity.
+    Walks the block list and accumulates adjacent "text" blocks into a running
+    buffer.  The buffer is flushed into a single merged Block when:
+      - Its combined character count reaches MIN_CHUNK_SIZE, or
+      - A header or table block is encountered (these are hard boundaries).
+
+    Any buffer content still pending at the end of the list is flushed as-is,
+    so no text is ever lost even if it never reaches MIN_CHUNK_SIZE.
+
+    Blocks that are individually >= MIN_CHUNK_SIZE pass through the accumulator
+    and are flushed immediately; they may be split in Step B if they exceed
+    MAX_CHUNK_SIZE.
     """
-    ph: List[Tuple[int, str]] = list(pending_headers) if pending_headers else []
-    chunks: List[Chunk] = []
+    result: list[Block] = []
 
-    for block_id, block in enumerate(blocks):
-        next_block = blocks[block_id + 1] if block_id + 1 < len(blocks) else None
-        is_hdr = _is_header(block) or _looks_like_header(block, next_block)
+    buf: list[str]       = []
+    buf_chars: int       = 0
+    buf_lines: int       = 0
+    anchor: Optional[Block] = None   # first block → provides y_top / font metadata
+    tail:   Optional[Block] = None   # last  block → provides y_bottom
 
-        if is_hdr:
-            ph.append((block_id, block.text))
+    def flush_buffer() -> None:
+        nonlocal buf, buf_chars, buf_lines, anchor, tail
+        if not buf:
+            return
+        result.append(Block(
+            text="\n".join(buf),
+            type="text",
+            y_top=anchor.y_top,
+            y_bottom=tail.y_bottom,
+            font_size=anchor.font_size,
+            ratio_to_body=anchor.ratio_to_body,
+            line_count=buf_lines,
+        ))
+        buf       = []
+        buf_chars = 0
+        buf_lines = 0
+        anchor    = None
+        tail      = None
+
+    for block in blocks:
+        if _is_header(block) or block.type == "table":
+            flush_buffer()
+            result.append(block)
             continue
 
-        header_prefix = "\n".join(t for _, t in ph)
-        header_block_ids = [bid for bid, _ in ph]
-        extra = {"header_block_ids": header_block_ids} if header_block_ids else {}
-        ph = []
+        # Accumulate this text block
+        buf.append(block.text)
+        buf_chars += len(block.text)
+        buf_lines += block.line_count
+        if anchor is None:
+            anchor = block
+        tail = block
 
-        content = f"{header_prefix}\n{block.text}".strip() if header_prefix else block.text
-        block_type = block.type
+        if buf_chars >= MIN_CHUNK_SIZE:
+            flush_buffer()
 
-        if block_type == "table":
-            # Tables are atomic: keep the entire block as one chunk.
-            chunks.append(
-                _make_chunk(document_id, page_num, block_id, 0, content, block_type, False, extra)
-            )
-        else:
-            for idx, sub in enumerate(_split_text(content, chunk_size, chunk_overlap)):
-                chunks.append(
-                    _make_chunk(
-                        document_id, page_num, block_id, idx,
-                        sub, block_type, False,
-                        extra if idx == 0 else {},
-                    )
-                )
-
-    # Flush any headers that had no following content on this page.
-    for bid, header_text in ph:
-        chunks.append(
-            _make_chunk(document_id, page_num, bid, 0, header_text, "text", True)
-        )
-
-    return chunks
+    flush_buffer()
+    return result
 
 
-def _merge_hanging_text(pages: List[OCRPage]) -> List[OCRPage]:
-    """Merge text fragments that span page boundaries.
+# ── Cross-page sentence repair ────────────────────────────────────────────────
+
+def _merge_hanging_text(pages: list[OCRPage]) -> list[OCRPage]:
+    """Prepend an incomplete sentence tail from page N to the first body block on page N+1.
 
     If the last non-header text block on page N does not end with sentence-
-    terminating punctuation (.!?), its text is prepended to the first non-table
-    text block on page N+1.  The merged block stays on page N; the donor block
-    is removed from page N+1.  This repairs sentences cut by PDF page breaks.
+    terminating punctuation, its text is merged into the first non-table text
+    block on page N+1.  The merged block stays on page N; the donor block is
+    removed from page N+1.
     """
     if len(pages) <= 1:
         return pages
 
-    page_blocks: List[List[Block]] = [list(p.blocks) for p in pages]
+    page_blocks: list[list[Block]] = [list(p.blocks) for p in pages]
 
     for i in range(len(pages) - 1):
-        # Locate the last non-header text block on page i.
         last_idx: Optional[int] = None
         for j in range(len(page_blocks[i]) - 1, -1, -1):
             b = page_blocks[i][j]
@@ -238,9 +247,8 @@ def _merge_hanging_text(pages: List[OCRPage]) -> List[OCRPage]:
 
         tail_text = page_blocks[i][last_idx].text.rstrip()
         if tail_text and tail_text[-1] in _SENTENCE_END:
-            continue  # sentence is complete — no merge needed
+            continue
 
-        # Locate the first non-table text block on the next page.
         first_idx: Optional[int] = None
         for j, b in enumerate(page_blocks[i + 1]):
             if b.type == "text" and not _is_header(b):
@@ -250,10 +258,9 @@ def _merge_hanging_text(pages: List[OCRPage]) -> List[OCRPage]:
             continue
 
         donor = page_blocks[i + 1][first_idx]
-        merged_text = tail_text + " " + donor.text.lstrip()
-        src = page_blocks[i][last_idx]
+        src   = page_blocks[i][last_idx]
         page_blocks[i][last_idx] = Block(
-            text=merged_text,
+            text=tail_text + " " + donor.text.lstrip(),
             type=src.type,
             y_top=src.y_top,
             y_bottom=src.y_bottom,
@@ -273,14 +280,29 @@ def _merge_hanging_text(pages: List[OCRPage]) -> List[OCRPage]:
     ]
 
 
-def split(document_id: str, chunk_size: int = 500, chunk_overlap: int = 50) -> List[Chunk]:
-    """Load the OCR JSON, produce metadata-aware chunks, persist, and update the registry.
+# ── Main entry point ──────────────────────────────────────────────────────────
 
-    Processing order:
-    1. Cross-page sentence merging — hanging text joined across page breaks.
-    2. Per-page chunking with cross-page header carry-over (a header at the
-       bottom of page N is held and prepended to the first body block of page N+1).
-    3. Trailing header flush at document end.
+def split(
+    document_id: str,
+    chunk_size: int = MAX_CHUNK_SIZE,
+    chunk_overlap: int = CHUNK_OVERLAP,
+) -> list[Chunk]:
+    """Load OCR JSON, produce metadata-aware chunks, persist, and update the registry.
+
+    Three-step pipeline per page:
+
+      A. Aggregate  — combine consecutive small text blocks into MIN_CHUNK_SIZE+
+                       units so the LLM always receives meaningful context.
+                       Headers and tables act as hard flush boundaries.
+
+      B. Split      — apply a sliding window to any block that exceeds chunk_size,
+                       respecting sentence and word boundaries.
+
+      C. Annotate   — prepend the in-scope section header to each non-header chunk
+                       so every chunk is self-contained for retrieval.
+
+    Cross-page sentence repair runs before the per-page loop.
+    Headers are carried forward across page boundaries until consumed by a body block.
     """
     ocr_path = OCR_DIR / f"{document_id}.json"
     if not ocr_path.exists():
@@ -289,54 +311,58 @@ def split(document_id: str, chunk_size: int = 500, chunk_overlap: int = 50) -> L
     ocr_result = OCRResult.model_validate_json(ocr_path.read_text(encoding="utf-8"))
     logger.info("Chunking start: document_id={} pages={}", document_id, len(ocr_result.pages))
 
+    # Cross-page sentence repair
     pages = _merge_hanging_text(ocr_result.pages)
 
-    all_chunks: List[Chunk] = []
-    # Headers carried forward across page boundaries (not flushed mid-document).
-    pending_headers: List[Tuple[int, str]] = []
+    all_chunks: list[Chunk]            = []
+    pending_headers: list[tuple[int, str]] = []   # carried across page boundaries
 
     for page in pages:
-        ph = pending_headers  # carry in from previous page
-        pending_headers = []
-        page_chunks: List[Chunk] = []
+        page_start = len(all_chunks)
 
-        for block_id, block in enumerate(page.blocks):
-            next_block = page.blocks[block_id + 1] if block_id + 1 < len(page.blocks) else None
-            is_hdr = _is_header(block) or _looks_like_header(block, next_block)
+        # Step A: aggregate small consecutive text blocks
+        aggregated = _aggregate_blocks(page.blocks)
 
-            if is_hdr:
-                ph.append((block_id, block.text))
+        for block_id, block in enumerate(aggregated):
+            if _is_header(block):
+                # Accumulate — will be prepended to the next body block
+                pending_headers.append((block_id, block.text))
                 continue
 
-            header_prefix = "\n".join(t for _, t in ph)
-            header_block_ids = [bid for bid, _ in ph]
-            extra = {"header_block_ids": header_block_ids} if header_block_ids else {}
-            ph = []
+            # Step C: build the header annotation for this block
+            header_prefix    = "\n".join(t for _, t in pending_headers)
+            header_block_ids = [bid for bid, _ in pending_headers]
+            extra            = {"header_block_ids": header_block_ids} if header_block_ids else {}
+            pending_headers  = []
 
             content = f"{header_prefix}\n{block.text}".strip() if header_prefix else block.text
 
             if block.type == "table":
-                page_chunks.append(
+                # Tables are atomic — never split regardless of size
+                all_chunks.append(
                     _make_chunk(document_id, page.page_num, block_id, 0,
-                                content, block.type, False, extra)
+                                content, "table", False, extra)
                 )
             else:
+                # Step B: split if over chunk_size
                 for idx, sub in enumerate(_split_text(content, chunk_size, chunk_overlap)):
-                    page_chunks.append(
+                    all_chunks.append(
                         _make_chunk(
                             document_id, page.page_num, block_id, idx,
-                            sub, block.type, False,
+                            sub, "text", False,
                             extra if idx == 0 else {},
                         )
                     )
 
-        # Carry unconsumed headers to the next page — do NOT flush here.
-        pending_headers = ph
+        logger.debug(
+            "Page {}: {} chunks ({} aggregated blocks from {} raw blocks)",
+            page.page_num,
+            len(all_chunks) - page_start,
+            len(aggregated),
+            len(page.blocks),
+        )
 
-        all_chunks.extend(page_chunks)
-        logger.debug("Page {}: {} chunks", page.page_num, len(page_chunks))
-
-    # Flush any headers that trailed the last content block in the document.
+    # Flush headers that trailed the last content block in the document
     if pending_headers:
         last_page = pages[-1].page_num if pages else 0
         for bid, header_text in pending_headers:
@@ -358,5 +384,8 @@ def split(document_id: str, chunk_size: int = 500, chunk_overlap: int = 50) -> L
     logger.debug("Chunks saved: {}", out_path)
 
     registry.update_status(document_id, DocumentStatus.chunked)
-    logger.info("Chunking complete: document_id={} total_chunks={}", document_id, len(all_chunks))
+    logger.info(
+        "Chunking complete: document_id={} total_chunks={}",
+        document_id, len(all_chunks),
+    )
     return all_chunks
