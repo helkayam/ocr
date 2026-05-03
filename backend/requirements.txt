@@ -1,0 +1,13 @@
+fastapi
+uvicorn[standard]
+python-multipart
+pydantic
+minio
+openai
+pypdf
+python-docx
+pyshp
+numpy
+# PostgreSQL driver — only needed when DATABASE_URL points to a Postgres server.
+# SQLite is used automatically when Postgres is unavailable (no extra package needed).
+psycopg2-binary

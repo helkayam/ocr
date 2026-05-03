@@ -6,18 +6,8 @@ These are deliberately kept separate from the internal domain models in
 from __future__ import annotations
 
 from datetime import datetime
-from typing import List
 
 from pydantic import BaseModel, Field
-
-
-# ---------------------------------------------------------------------------
-# Shared sub-objects
-# ---------------------------------------------------------------------------
-
-class CitedSourceOut(BaseModel):
-    document_id: str
-    page_num: int
 
 
 # ---------------------------------------------------------------------------
@@ -58,4 +48,3 @@ class QueryRequest(BaseModel):
 class QueryResponse(BaseModel):
     query: str
     answer: str
-    sources: List[CitedSourceOut]
