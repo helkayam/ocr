@@ -1,3 +1,4 @@
+import time
 from pathlib import Path
 from typing import Optional
 
@@ -42,6 +43,8 @@ def search(
     )
 
     # ── Stage 1: bi-encoder retrieval ────────────────────────────────────────
+    _t1 = time.perf_counter()
+
     query_vector = embedder.get_model().encode(
         [_QUERY_PREFIX + query],
         normalize_embeddings=True,
@@ -85,7 +88,7 @@ def search(
             )
         )
 
-    logger.debug("Stage 1 returned {} candidates", len(candidates))
+    logger.info("Latency - Retrieval (Stage 1): {:.2f}s ({} candidates)", time.perf_counter() - _t1, len(candidates))
 
     # ── Stage 2: cross-encoder reranking ─────────────────────────────────────
     results = reranker.rerank(query, candidates, top_k)

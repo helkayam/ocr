@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import time
 from typing import List
 
 import groq as groq_sdk
@@ -25,9 +26,8 @@ _MAX_RETRY_ATTEMPTS = 5
 # Prompt templates
 # ---------------------------------------------------------------------------
 
-SYSTEM_PROMPT = """
+_SYSTEM_PROMPT = """
 You are a precise document analysis assistant. You MUST follow every rule below without exception.
-
 Rules:
 1. Answer ONLY based on the context passages provided. Do not use outside knowledge.
 2. Always reply in Hebrew (עברית).
@@ -106,8 +106,9 @@ def generate(query: str, context: List[SearchResult]) -> RAGResponse:
     logger.info("\n====== SYSTEM PROMPT ======\n{}\n===========================", _SYSTEM_PROMPT)
     logger.info("\n====== FULL USER MESSAGE (Context + Query) ======\n{}\n=================================================", user_message)
 
+    _t1 = time.perf_counter()
     answer = _call_groq_api(client, messages)
-    logger.info("RAG answer received ({} chars)", len(answer))
+    logger.info("Latency - Generation (Stage 3): {:.2f}s ({} chars)", time.perf_counter() - _t1, len(answer))
 
     sources = [
         CitedSource(document_id=r.document_id, page_num=r.page_num)

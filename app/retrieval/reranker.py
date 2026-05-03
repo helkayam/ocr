@@ -1,3 +1,4 @@
+import time
 from typing import Optional
 
 from loguru import logger
@@ -31,10 +32,12 @@ def rerank(query: str, candidates: list[SearchResult], top_k: int) -> list[Searc
 
     model = get_model()
     pairs = [(query, r.text) for r in candidates]
-    scores: list[float] = model.predict(pairs).tolist()
 
+    _t1 = time.perf_counter()
+    scores: list[float] = model.predict(pairs).tolist()
     scored = sorted(zip(scores, candidates), key=lambda x: x[0], reverse=True)
     top = scored[:top_k]
+    logger.info("Latency - Reranking (Stage 2): {:.2f}s ({} candidates → top {})", time.perf_counter() - _t1, len(candidates), top_k)
 
     logger.debug(
         "Reranker: {} candidates → top {} | scores [{:.3f} … {:.3f}]",
