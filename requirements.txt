@@ -20,3 +20,10 @@ httpx
 pytest
 pysqlite3-binary
 requests
+# Protocol Genesis full-stack dependencies
+minio
+pypdf
+python-docx
+pyshp
+numpy
+psycopg2-binary

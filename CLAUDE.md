@@ -10,7 +10,7 @@ Build an incremental, highly structured PDF processing and RAG system. The syste
 * **Logging:** `loguru`
 * **OCR:** Custom `OCRService` (already implemented using `pdfplumber`, `pytesseract`). Location: `\\wsl.localhost\Ubuntu\home\helkayam\ProtocolGenesis\ocr\ocr_service.py`
 * **Embeddings — Stage 1 (Bi-Encoder):** `sentence-transformers` using **`intfloat/multilingual-e5-large`** (1024 dimensions). Mandatory prefix `"passage: "` for indexed chunks; `"query: "` for query embedding at retrieval time.
-* **Reranking — Stage 2 (Cross-Encoder):** `sentence-transformers` using **`BAAI/bge-reranker-v2-m3`** for precision reranking of Stage-1 candidates.
+* **Reranking — Stage 2 (Cross-Encoder):** **Jina Reranker API** (`jina-reranker-v2-base-multilingual`) via HTTP — no local model load. Requires `JINA_API_KEY` in `.env`.
 * **Vector DB:** ChromaDB (local storage in `./data/index`)
 * **LLM / RAG:** Groq API using **`llama-3.3-70b-versatile`** (with Rate-Limit handling)
 * **API Layer:** FastAPI, Uvicorn
@@ -25,7 +25,7 @@ The system must be designed to support two environments smoothly:
 1. **Incremental Phases:** You MUST develop this system phase by phase. Do NOT start a new phase until the current phase is fully implemented and passes its tests.
 2. **Existing OCR:** Do NOT write a new OCR engine. Review the existing `OCRService` code at its specific WSL path before integration to understand its exact JSON schema.
 3. **Data Persistence:** Every pipeline step must save its output (OCR JSON, Chunks JSON) to the filesystem in the `data/` directory. No transient-only states.
-4. **Secrets Management:** NEVER hardcode API keys. Always use `python-dotenv` to load variables like `GROQ_API_KEY` from a `.env` file.
+4. **Secrets Management:** NEVER hardcode API keys. Always use `python-dotenv` to load variables like `GROQ_API_KEY` and `JINA_API_KEY` from a `.env` file.
 5. **Environment & Dependencies:** Assume an active Python virtual environment. Update `requirements.txt` and install packages (`pip install`) into the active venv as needed.
 6. **Metadata-Awareness:** Leverage OCR metadata (block types, headers, etc.) to drive semantic decisions, especially during chunking.
 7. **Resilience:** Implement basic retry logic/error handling for external API calls (e.g., Groq) to handle rate limits (HTTP 429) or transient failures.
@@ -103,22 +103,43 @@ The system must be designed to support two environments smoothly:
 * Embed the user query using `multilingual-e5-large` with the mandatory `"query: "` prefix.
 * Query ChromaDB and retrieve the **Top-20** candidate chunks (deliberately over-fetches to give the reranker enough signal).
 
-### Stage 2 — Precision Reranking (Cross-Encoder)
+### Stage 2 — Precision Reranking (Jina API)
 * Create `app/retrieval/reranker.py`.
-* Load **`BAAI/bge-reranker-v2-m3`** as a `CrossEncoder`.
-* For each of the 20 candidates, score the `(query, chunk_text)` pair.
-* Sort by descending score and return only the **Top-5** chunks to the generator.
+* Call the **Jina Reranker API** (`jina-reranker-v2-base-multilingual`) with the query and all 20 candidate texts in a single HTTP request.
+* Load `JINA_API_KEY` from `.env` via `python-dotenv`. Never hardcode it.
+* Sort results by descending relevance score and return only the **Top-5** chunks to the generator.
 * Log the score of every candidate at `DEBUG` level to allow reranking audits.
+* Apply the same retry/back-off logic as Groq calls to handle API rate limits.
 
 ### Generator — Constraint-Aware Grounding
-* `app/rag/generator.py` must enforce a four-step validation protocol in its system prompt before producing any output:
-  1. **Extract Query Constraints:** Identify specific constraints in the query (section numbers, dates, clause IDs, named entities, numeric identifiers).
-  2. **Classify Each Passage:** Label every retrieved passage as `EXPLICIT MATCH` (constraint is directly and unambiguously named in the text), `PARTIAL MATCH` (related general information, constraint not explicitly named), or `IRRELEVANT`.
-  3. **Apply Grounding Rules:**
-     * `EXPLICIT MATCH` found → answer from those passages only, with per-claim citations `[מסמך: {document_id}, עמוד {page_num}]`.
-     * Only `PARTIAL MATCH` found → do NOT bridge general information to the specific constraint; instead explicitly acknowledge the mismatch and cite sources as "general only."
-     * No relevant passage → reply with the fixed phrase `"המידע המבוקש לא נמצא במסמכים שסופקו."` and nothing else.
-  4. **Hard Constraints:** Answer only in Hebrew; use only provided passages; treat proximity or topic similarity as insufficient to satisfy a specific constraint; prioritize integrity over helpfulness.
+* `app/rag/generator.py` enforces a **four-step internal protocol** (written in English in the system prompt for token efficiency; all reasoning stays invisible — never surfaced to the user):
+
+  **Step 1 — Extract Query Constraints:** Identify specific constraints in the query (section numbers, dates, clause IDs, named entities, numeric identifiers).
+
+  **Step 2 — Classify Each Passage (internal only):** For every retrieved passage assign one internal label — never printed in output:
+  * `EXPLICIT MATCH` — constraint is directly and unambiguously named in the passage text.
+  * `PARTIAL MATCH` — passage is topically related but does not explicitly name the constraint.
+  * `IRRELEVANT` — passage does not address the query.
+
+  **Step 3 — Apply Grounding Rules:**
+  * `EXPLICIT MATCH` found → answer from those passages only.
+  * Only `PARTIAL MATCH` found → do NOT infer or bridge to the specific constraint; acknowledge the mismatch explicitly.
+  * No relevant passage → reply verbatim: `"המידע המבוקש לא נמצא במסמכים שסופקו."` — nothing else.
+
+  **Step 4 — Hard Constraints (always enforced):**
+  * Answer only in Hebrew.
+  * Use only provided passages — no outside knowledge.
+  * Proximity or topic similarity does NOT satisfy a specific constraint.
+  * Prioritize factual integrity over appearing helpful.
+  * **No English labels** (`EXPLICIT MATCH`, etc.) in the final answer.
+  * **No JSON source blocks** or structured metadata blocks in the final answer.
+  * **No step-headers** or internal reasoning visible to the user.
+
+* **Output Format ("Bottom-line first"):** Every answer (when context supports one) must follow this exact structure:
+  1. **Concise summary** — one or two sentences stating the direct answer.
+  2. **Detailed Hebrew explanation** — full context with inline page citations formatted as `(עמוד X)` embedded naturally in the prose.
+  3. **Footer line** — `מספרי העמודים עליהם הסתמכתי: X, Y, Z` listing every page cited.
+
 * Implement robust retry logic for Groq API calls to handle HTTP 429 (Rate Limit) errors using exponential back-off (`tenacity`).
 
 ### Tasks

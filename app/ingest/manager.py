@@ -23,11 +23,15 @@ def _sha256(path: Path) -> str:
     return h.hexdigest()
 
 
-def ingest(file_path: Path | str) -> str:
+def ingest(file_path: Path | str, document_id: str | None = None) -> str:
     """Validate, deduplicate, copy, and register a PDF.
 
-    Returns the newly created document_id.
+    Returns the document_id (newly generated or the provided one).
     Raises ValueError on duplicate or invalid file.
+
+    Pass ``document_id`` to pin the ID (e.g. to bridge with an external system
+    that already assigned one). If a hash collision is found the pre-existing
+    document_id takes precedence over any caller-supplied value.
     """
     path = Path(file_path)
 
@@ -45,7 +49,7 @@ def ingest(file_path: Path | str) -> str:
             document_id,
         )
     else:
-        document_id = str(uuid.uuid4())
+        document_id = document_id or str(uuid.uuid4())
 
     RAW_DIR.mkdir(parents=True, exist_ok=True)
     dest = RAW_DIR / f"{document_id}.pdf"

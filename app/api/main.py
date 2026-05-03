@@ -22,7 +22,6 @@ from rq import Queue
 import app.registry as registry
 from app import pipeline
 from app.api.schemas import (
-    CitedSourceOut,
     DocumentOut,
     IngestResponse,
     QueryRequest,
@@ -236,11 +235,4 @@ def query_documents(req: QueryRequest) -> QueryResponse:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(exc))
 
     logger.info("Latency - Total /query: {:.2f}s | query={!r}", time.perf_counter() - _t0, req.query)
-    return QueryResponse(
-        query=rag.query,
-        answer=rag.answer,
-        sources=[
-            CitedSourceOut(document_id=s.document_id, page_num=s.page_num)
-            for s in rag.sources
-        ],
-    )
+    return QueryResponse(query=rag.query, answer=rag.answer)

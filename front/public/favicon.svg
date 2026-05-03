@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Shield body -->
+  <path d="M16 2 L28 7 L28 17 C28 23.5 22.8 29.2 16 31 C9.2 29.2 4 23.5 4 17 L4 7 Z" fill="#B30020"/>
+  <!-- Checkmark / document lines to suggest protocol/document -->
+  <rect x="10" y="11" width="12" height="1.8" rx="0.9" fill="white" opacity="0.9"/>
+  <rect x="10" y="15" width="9" height="1.8" rx="0.9" fill="white" opacity="0.9"/>
+  <rect x="10" y="19" width="7" height="1.8" rx="0.9" fill="white" opacity="0.9"/>
+</svg>

@@ -1,0 +1,29 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "ברז כיבוי ראשי",
+        "type": "fire_hydrant",
+        "status": "active"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [34.7818, 32.0853]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "נקודת ריכוז א'",
+        "type": "assembly_point",
+        "capacity": "500 persons"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [34.7850, 32.0900]
+      }
+    }
+  ]
+}
