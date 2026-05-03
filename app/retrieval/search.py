@@ -13,7 +13,8 @@ INDEX_DIR = Path("data/index")
 _QUERY_PREFIX = "query: "
 
 # Stage-1: how many candidates to pull from ChromaDB before reranking.
-# Wide net compensates for bi-encoder imprecision; reranker then picks the best.
+# 20 gives the Jina reranker a wide enough net to promote the correct chunks.
+# Cost is negligible — reranking is now a single API call regardless of candidate count.
 _TOP_CANDIDATES = 20
 
 
@@ -22,7 +23,7 @@ def search(
     top_k: int = 5,
     document_id: Optional[str] = None,
 ) -> list[SearchResult]:
-    """Two-stage retrieval: bi-encoder recall (top-20) → cross-encoder rerank (top-k).
+    """Two-stage retrieval: bi-encoder recall (top-20) → Jina reranker API (top-k).
 
     Stage 1 — Recall:
         Embed *query* with the E5 'query: ' prefix and run ANN search in ChromaDB
@@ -89,6 +90,14 @@ def search(
         )
 
     logger.info("Latency - Retrieval (Stage 1): {:.2f}s ({} candidates)", time.perf_counter() - _t1, len(candidates))
+
+    logger.info("── Stage 1 candidates before reranking ──────────────────────────────")
+    for i, c in enumerate(candidates, start=1):
+        logger.info(
+            "\n--- Candidate {:>2}/{} (Page {}, doc={}, bi-encoder distance={:.4f}) ---\n{}\n",
+            i, len(candidates), c.page_num, c.document_id, c.score, c.text,
+        )
+    logger.info("─────────────────────────────────────────────────────────────────────")
 
     # ── Stage 2: cross-encoder reranking ─────────────────────────────────────
     results = reranker.rerank(query, candidates, top_k)

@@ -31,7 +31,6 @@ from app.api.schemas import (
 )
 from app.indexing import embedder as embedder_module
 from app.ingest import manager as ingest_manager
-from app.retrieval import reranker as reranker_module
 from app.worker.tasks import process_document
 
 _REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379")
@@ -46,9 +45,7 @@ _QUEUE_NAME = "ocr"
 async def lifespan(app: FastAPI):
     logger.info("Startup: pre-loading embedding model ({})…", embedder_module.MODEL_NAME)
     embedder_module.get_model()
-    logger.info("Startup: pre-loading reranker model ({})…", reranker_module.MODEL_NAME)
-    reranker_module.get_model()
-    logger.info("Startup: all models ready — server accepting requests")
+    logger.info("Startup: embedding model ready — reranker is Jina API (no local load)")
     yield
     logger.info("Shutdown: server stopping")
 
@@ -230,12 +227,7 @@ def reindex_document(doc_id: str) -> ReindexResponse:
     summary="Ask a question and receive a Hebrew answer with source citations",
 )
 def query_documents(req: QueryRequest) -> QueryResponse:
-    """Two-stage retrieval (bi-encoder → batch reranker) then grounded generation.
-
-    Both models are already loaded in memory from startup, so this endpoint
-    has no cold-start penalty.  The reranker scores all candidates in a single
-    batched forward pass via CrossEncoder.predict().
-    """
+    """Two-stage retrieval (bi-encoder → Jina reranker API) then grounded generation."""
     _t0 = time.perf_counter()
     try:
         rag = pipeline.ask_pipeline(req.query, top_k=req.top_k)
