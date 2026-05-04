@@ -10,26 +10,19 @@ from app.models import Block, Chunk, ChunkMetadata, DocumentStatus, OCRPage, OCR
 OCR_DIR    = Path("data/ocr")
 CHUNKS_DIR = Path("data/chunks")
 
-# ── Sizing constants (agreed in the architectural review) ─────────────────────
-# Small consecutive text blocks are aggregated until the combined character
-# count reaches MIN_CHUNK_SIZE.  Hebrew is dense — 300 chars gives the LLM
-# enough context without risking context-free micro-chunks.
-MIN_CHUNK_SIZE = 300
-
-# Blocks (or aggregated groups) that exceed MAX_CHUNK_SIZE are split with a
-# sliding window.  1500 chars ≈ 400–500 Hebrew tokens, well within LLM limits
-# while keeping each chunk semantically self-contained.
-MAX_CHUNK_SIZE = 1500
-
-# Overlap carried into each split chunk.  10% of MAX_CHUNK_SIZE ensures
-# sentences that straddle a boundary appear in both adjacent chunks.
-CHUNK_OVERLAP = 150
+# ── Sizing constants ──────────────────────────────────────────────────────────
+# Parent chunks (1500 chars) carry full semantic context — sent to the LLM.
+# Child chunks (400 chars) are the units actually embedded and stored in
+# ChromaDB.  Each child stores parent_text in its extra so retrieval can
+# return rich context without sacrificing embedding precision.
+MIN_CHUNK_SIZE      = 300    # aggregate consecutive small blocks up to this floor
+PARENT_CHUNK_SIZE   = 1500   # max chars for a parent (context) chunk
+PARENT_CHUNK_OVERLAP = 150
+CHILD_CHUNK_SIZE    = 400    # max chars for a child (embedding) chunk
+CHILD_CHUNK_OVERLAP = 50
 
 # ── Header detection ──────────────────────────────────────────────────────────
-# Primary signal: OCR now emits type="header" directly (service.py).
-# Fallback: font-ratio heuristic for OCR files produced before this change.
 _HEADER_RATIO_THRESHOLD = 1.2
-
 _SENTENCE_END = frozenset(".!?")
 _SEPARATORS   = ["\n\n", "\n", " "]
 
@@ -37,12 +30,6 @@ _SEPARATORS   = ["\n\n", "\n", " "]
 # ── Block classification ──────────────────────────────────────────────────────
 
 def _is_header(block: Block) -> bool:
-    """True if this block is a section header.
-
-    Checks the OCR-assigned type first (fast path for files produced by the
-    updated service.py).  Falls back to the font-ratio heuristic so that older
-    OCR JSON files continue to work correctly.
-    """
     if block.type == "header":
         return True
     return (
@@ -55,12 +42,6 @@ def _is_header(block: Block) -> bool:
 # ── Text splitting ────────────────────────────────────────────────────────────
 
 def _find_split_point(text: str, limit: int) -> int:
-    """Return the rightmost natural split index at or before *limit* (never mid-word).
-
-    Tries paragraph, line, and word separators in priority order, searching
-    backwards from *limit*.  Falls back to scanning backwards for any whitespace;
-    hard-cuts only when the text contains absolutely no whitespace.
-    """
     for sep in _SEPARATORS:
         pos = text.rfind(sep, 0, limit)
         if pos > 0:
@@ -72,12 +53,7 @@ def _find_split_point(text: str, limit: int) -> int:
 
 
 def _split_text(text: str, chunk_size: int, chunk_overlap: int) -> list[str]:
-    """Sliding-window split that respects word and sentence boundaries.
-
-    Split priority: paragraph → line → space — never mid-word.
-    Overlap: seeks the last sentence-ending punctuation inside the overlap window
-    so carried-over context always begins at a complete sentence boundary.
-    """
+    """Sliding-window split that respects word and sentence boundaries."""
     text = text.strip()
     if not text:
         return []
@@ -155,30 +131,68 @@ def _make_chunk(
     )
 
 
+def _child_chunks_from_parent(parent: Chunk) -> list[Chunk]:
+    """Split a parent chunk into smaller child chunks for embedding.
+
+    Each child embeds a focused ~400-char window while carrying the full
+    parent text in extra["parent_text"].  At retrieval time the caller
+    returns parent_text to the LLM so it always gets rich context.
+
+    Tables are never sub-split — a table child equals its parent verbatim.
+    """
+    parent_extra = {
+        **parent.metadata.extra,
+        "parent_text": parent.text,
+        "parent_chunk_id": parent.chunk_id,
+    }
+
+    if parent.metadata.block_type == "table":
+        return [Chunk(
+            chunk_id=f"{parent.chunk_id}_0",
+            document_id=parent.document_id,
+            page=parent.page,
+            text=parent.text,
+            metadata=ChunkMetadata(
+                document_id=parent.metadata.document_id,
+                page_num=parent.metadata.page_num,
+                block_id=parent.metadata.block_id,
+                is_header=parent.metadata.is_header,
+                block_type=parent.metadata.block_type,
+                extra=parent_extra,
+            ),
+        )]
+
+    child_texts = _split_text(parent.text, CHILD_CHUNK_SIZE, CHILD_CHUNK_OVERLAP)
+    return [
+        Chunk(
+            chunk_id=f"{parent.chunk_id}_{i}",
+            document_id=parent.document_id,
+            page=parent.page,
+            text=text,
+            metadata=ChunkMetadata(
+                document_id=parent.metadata.document_id,
+                page_num=parent.metadata.page_num,
+                block_id=parent.metadata.block_id,
+                is_header=parent.metadata.is_header,
+                block_type=parent.metadata.block_type,
+                extra=parent_extra,
+            ),
+        )
+        for i, text in enumerate(child_texts)
+    ]
+
+
 # ── Step A: block aggregation ─────────────────────────────────────────────────
 
 def _aggregate_blocks(blocks: list[Block]) -> list[Block]:
-    """Combine consecutive small text blocks into MIN_CHUNK_SIZE-or-larger units.
-
-    Walks the block list and accumulates adjacent "text" blocks into a running
-    buffer.  The buffer is flushed into a single merged Block when:
-      - Its combined character count reaches MIN_CHUNK_SIZE, or
-      - A header or table block is encountered (these are hard boundaries).
-
-    Any buffer content still pending at the end of the list is flushed as-is,
-    so no text is ever lost even if it never reaches MIN_CHUNK_SIZE.
-
-    Blocks that are individually >= MIN_CHUNK_SIZE pass through the accumulator
-    and are flushed immediately; they may be split in Step B if they exceed
-    MAX_CHUNK_SIZE.
-    """
+    """Combine consecutive small text blocks into MIN_CHUNK_SIZE-or-larger units."""
     result: list[Block] = []
 
-    buf: list[str]       = []
-    buf_chars: int       = 0
-    buf_lines: int       = 0
-    anchor: Optional[Block] = None   # first block → provides y_top / font metadata
-    tail:   Optional[Block] = None   # last  block → provides y_bottom
+    buf: list[str]          = []
+    buf_chars: int          = 0
+    buf_lines: int          = 0
+    anchor: Optional[Block] = None
+    tail:   Optional[Block] = None
 
     def flush_buffer() -> None:
         nonlocal buf, buf_chars, buf_lines, anchor, tail
@@ -205,7 +219,6 @@ def _aggregate_blocks(blocks: list[Block]) -> list[Block]:
             result.append(block)
             continue
 
-        # Accumulate this text block
         buf.append(block.text)
         buf_chars += len(block.text)
         buf_lines += block.line_count
@@ -223,13 +236,7 @@ def _aggregate_blocks(blocks: list[Block]) -> list[Block]:
 # ── Cross-page sentence repair ────────────────────────────────────────────────
 
 def _merge_hanging_text(pages: list[OCRPage]) -> list[OCRPage]:
-    """Prepend an incomplete sentence tail from page N to the first body block on page N+1.
-
-    If the last non-header text block on page N does not end with sentence-
-    terminating punctuation, its text is merged into the first non-table text
-    block on page N+1.  The merged block stays on page N; the donor block is
-    removed from page N+1.
-    """
+    """Prepend an incomplete sentence tail from page N to the first body block on page N+1."""
     if len(pages) <= 1:
         return pages
 
@@ -284,25 +291,23 @@ def _merge_hanging_text(pages: list[OCRPage]) -> list[OCRPage]:
 
 def split(
     document_id: str,
-    chunk_size: int = MAX_CHUNK_SIZE,
-    chunk_overlap: int = CHUNK_OVERLAP,
+    chunk_size: int = PARENT_CHUNK_SIZE,
+    chunk_overlap: int = PARENT_CHUNK_OVERLAP,
 ) -> list[Chunk]:
-    """Load OCR JSON, produce metadata-aware chunks, persist, and update the registry.
+    """Load OCR JSON, produce parent-child chunks, persist, and update registry.
 
-    Three-step pipeline per page:
-
-      A. Aggregate  — combine consecutive small text blocks into MIN_CHUNK_SIZE+
-                       units so the LLM always receives meaningful context.
-                       Headers and tables act as hard flush boundaries.
-
-      B. Split      — apply a sliding window to any block that exceeds chunk_size,
-                       respecting sentence and word boundaries.
-
-      C. Annotate   — prepend the in-scope section header to each non-header chunk
-                       so every chunk is self-contained for retrieval.
+    Pipeline per page:
+      A. Aggregate  — merge consecutive small text blocks into MIN_CHUNK_SIZE+
+                       units.  Headers and tables are hard flush boundaries.
+      B. Annotate   — prepend the in-scope section header to body blocks.
+      C. Split      — apply sliding window (chunk_size / chunk_overlap) to get
+                       parent chunks (~1500 chars).
+      D. Sub-split  — divide each parent into child chunks (CHILD_CHUNK_SIZE)
+                       for embedding.  Every child stores parent_text in
+                       metadata.extra so the LLM receives full context.
 
     Cross-page sentence repair runs before the per-page loop.
-    Headers are carried forward across page boundaries until consumed by a body block.
+    The file saved to disk contains child chunks (the units stored in ChromaDB).
     """
     ocr_path = OCR_DIR / f"{document_id}.json"
     if not ocr_path.exists():
@@ -311,25 +316,21 @@ def split(
     ocr_result = OCRResult.model_validate_json(ocr_path.read_text(encoding="utf-8"))
     logger.info("Chunking start: document_id={} pages={}", document_id, len(ocr_result.pages))
 
-    # Cross-page sentence repair
     pages = _merge_hanging_text(ocr_result.pages)
 
-    all_chunks: list[Chunk]            = []
-    pending_headers: list[tuple[int, str]] = []   # carried across page boundaries
+    all_children: list[Chunk]                = []
+    pending_headers: list[tuple[int, str]]   = []
 
     for page in pages:
-        page_start = len(all_chunks)
+        page_child_start = len(all_children)
 
-        # Step A: aggregate small consecutive text blocks
         aggregated = _aggregate_blocks(page.blocks)
 
         for block_id, block in enumerate(aggregated):
             if _is_header(block):
-                # Accumulate — will be prepended to the next body block
                 pending_headers.append((block_id, block.text))
                 continue
 
-            # Step C: build the header annotation for this block
             header_prefix    = "\n".join(t for _, t in pending_headers)
             header_block_ids = [bid for bid, _ in pending_headers]
             extra            = {"header_block_ids": header_block_ids} if header_block_ids else {}
@@ -338,26 +339,24 @@ def split(
             content = f"{header_prefix}\n{block.text}".strip() if header_prefix else block.text
 
             if block.type == "table":
-                # Tables are atomic — never split regardless of size
-                all_chunks.append(
-                    _make_chunk(document_id, page.page_num, block_id, 0,
-                                content, "table", False, extra)
+                parent = _make_chunk(
+                    document_id, page.page_num, block_id, 0,
+                    content, "table", False, extra,
                 )
+                all_children.extend(_child_chunks_from_parent(parent))
             else:
-                # Step B: split if over chunk_size
                 for idx, sub in enumerate(_split_text(content, chunk_size, chunk_overlap)):
-                    all_chunks.append(
-                        _make_chunk(
-                            document_id, page.page_num, block_id, idx,
-                            sub, "text", False,
-                            extra if idx == 0 else {},
-                        )
+                    parent = _make_chunk(
+                        document_id, page.page_num, block_id, idx,
+                        sub, "text", False,
+                        extra if idx == 0 else {},
                     )
+                    all_children.extend(_child_chunks_from_parent(parent))
 
         logger.debug(
-            "Page {}: {} chunks ({} aggregated blocks from {} raw blocks)",
+            "Page {}: {} child chunks ({} aggregated blocks from {} raw blocks)",
             page.page_num,
-            len(all_chunks) - page_start,
+            len(all_children) - page_child_start,
             len(aggregated),
             len(page.blocks),
         )
@@ -366,16 +365,15 @@ def split(
     if pending_headers:
         last_page = pages[-1].page_num if pages else 0
         for bid, header_text in pending_headers:
-            all_chunks.append(
-                _make_chunk(document_id, last_page, bid, 0, header_text, "text", True)
-            )
+            parent = _make_chunk(document_id, last_page, bid, 0, header_text, "text", True)
+            all_children.extend(_child_chunks_from_parent(parent))
         logger.debug("Flushed {} trailing header(s) at document end", len(pending_headers))
 
     CHUNKS_DIR.mkdir(parents=True, exist_ok=True)
     out_path = CHUNKS_DIR / f"{document_id}_chunks.json"
     out_path.write_text(
         json.dumps(
-            [c.model_dump(mode="json") for c in all_chunks],
+            [c.model_dump(mode="json") for c in all_children],
             ensure_ascii=False,
             indent=2,
         ),
@@ -385,7 +383,7 @@ def split(
 
     registry.update_status(document_id, DocumentStatus.chunked)
     logger.info(
-        "Chunking complete: document_id={} total_chunks={}",
-        document_id, len(all_chunks),
+        "Chunking complete: document_id={} total_child_chunks={}",
+        document_id, len(all_children),
     )
-    return all_chunks
+    return all_children

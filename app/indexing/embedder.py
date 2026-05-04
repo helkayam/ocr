@@ -3,7 +3,7 @@ from typing import Optional
 from loguru import logger
 from sentence_transformers import SentenceTransformer
 
-MODEL_NAME = "intfloat/multilingual-e5-large"
+MODEL_NAME = "intfloat/multilingual-e5-small"
 
 _PASSAGE_PREFIX = "passage: "
 
@@ -11,7 +11,7 @@ _model: Optional[SentenceTransformer] = None
 
 
 def get_model() -> SentenceTransformer:
-    """Lazy-load and cache the multilingual-e5-large model (loaded once per process)."""
+    """Lazy-load and cache the embedding model (loaded once per process)."""
     global _model
     if _model is None:
         logger.info("Loading embedding model: {}", MODEL_NAME)
@@ -40,5 +40,5 @@ def embed(texts: list[str]) -> list[list[float]]:
     if not texts:
         return []
     prefixed = [_PASSAGE_PREFIX + t for t in texts]
-    vectors = get_model().encode(prefixed, normalize_embeddings=True, show_progress_bar=False)
+    vectors = get_model().encode(prefixed, normalize_embeddings=True, show_progress_bar=True)
     return vectors.tolist()

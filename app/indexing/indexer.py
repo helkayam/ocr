@@ -5,6 +5,7 @@ from loguru import logger
 
 import app.registry as registry
 from app.indexing import db, embedder
+from app.indexing.bm25_store import BM25Store
 from app.models import Chunk, DocumentStatus
 
 CHUNKS_DIR = Path("data/chunks")
@@ -48,18 +49,19 @@ def _collection_embedding_dim(collection) -> int | None:
 
 
 def index(document_id: str) -> int:
-    """Embed and upsert all chunks for *document_id* into ChromaDB.
+    """Embed and upsert all child chunks for *document_id* into ChromaDB and BM25.
 
-    Processes chunks in batches of UPSERT_BATCH_SIZE to keep memory bounded.
-    Detects embedding dimension mismatches (e.g. after a model change) and
-    resets the entire collection before indexing so no stale vectors remain.
-    Registry is updated to DocumentStatus.indexed ONLY after:
-      1. All batches upsert without exception.
-      2. A post-loop count query confirms every vector landed in ChromaDB.
-    On any failure the registry is set to DocumentStatus.error and the
-    exception is re-raised so the caller can surface it.
+    Processing order:
+      1. Embed child chunks in batches of UPSERT_BATCH_SIZE (memory-bounded).
+      2. Upsert each batch into ChromaDB.  On dimension mismatch both the
+         ChromaDB collection and the BM25 corpus are reset before retrying.
+      3. After all batches succeed, bulk-upsert into BM25 in a single rebuild.
+      4. Verify ChromaDB stored count equals chunk count before marking indexed.
 
-    Returns the number of chunks indexed.
+    BM25 failure is non-fatal: a warning is logged but the document is still
+    marked indexed (ChromaDB is the primary index).
+
+    Returns the number of child chunks indexed.
     """
     chunks = _load_chunks(document_id)
     total  = len(chunks)
@@ -71,36 +73,63 @@ def index(document_id: str) -> int:
         return 0
 
     collection   = db.get_collection(INDEX_DIR)
+    bm25         = BM25Store(INDEX_DIR)
     expected_dim = embedder.get_embedding_dim()
     existing_dim = _collection_embedding_dim(collection)
 
     if existing_dim is not None and existing_dim != expected_dim:
         logger.warning(
             "Dimension mismatch: collection has {}d vectors, embedder produces {}d "
-            "— deleting and recreating collection",
+            "— resetting ChromaDB collection and BM25 index",
             existing_dim, expected_dim,
         )
         collection = db.reset_collection(INDEX_DIR)
+        bm25.reset()
 
-    num_batches = (total + UPSERT_BATCH_SIZE - 1) // UPSERT_BATCH_SIZE
-    batch_num   = 0
+    num_batches     = (total + UPSERT_BATCH_SIZE - 1) // UPSERT_BATCH_SIZE
+    batch_num       = 0
+    _dim_reset_done = False
+    bm25_entries: list[dict] = []
+
+    def _upsert(col, batch, vectors):
+        col.upsert(
+            ids=[c.chunk_id for c in batch],
+            embeddings=vectors,
+            documents=[c.text for c in batch],
+            metadatas=[_to_chroma_metadata(c) for c in batch],
+        )
 
     try:
         for batch_num, batch_start in enumerate(
             range(0, total, UPSERT_BATCH_SIZE), start=1
         ):
-            batch = chunks[batch_start : batch_start + UPSERT_BATCH_SIZE]
+            batch   = chunks[batch_start : batch_start + UPSERT_BATCH_SIZE]
             vectors = embedder.embed([c.text for c in batch])
-            collection.upsert(
-                ids=[c.chunk_id for c in batch],
-                embeddings=vectors,
-                documents=[c.text for c in batch],
-                metadatas=[_to_chroma_metadata(c) for c in batch],
+            try:
+                _upsert(collection, batch, vectors)
+            except Exception as upsert_exc:
+                if "dimension" in str(upsert_exc).lower() and not _dim_reset_done:
+                    logger.warning(
+                        "Dimension mismatch on upsert (batch {}) — resetting and retrying",
+                        batch_num,
+                    )
+                    collection = db.reset_collection(INDEX_DIR)
+                    bm25.reset()
+                    _dim_reset_done = True
+                    _upsert(collection, batch, vectors)
+                else:
+                    raise
+
+            # Collect BM25 entries during the same pass — single rebuild at the end
+            bm25_entries.extend(
+                {"chunk_id": c.chunk_id, "document_id": c.document_id, "text": c.text}
+                for c in batch
             )
             logger.debug(
                 "Upserted batch {}/{} ({} chunks) for document_id={}",
                 batch_num, num_batches, len(batch), document_id,
             )
+
     except Exception as exc:
         logger.error(
             "Indexing failed at batch {}/{} for document_id={}: {}",
@@ -109,7 +138,7 @@ def index(document_id: str) -> int:
         registry.update_status(document_id, DocumentStatus.error)
         raise
 
-    # Verify every vector actually landed before marking the document as indexed.
+    # Verify every vector actually landed before marking the document as indexed
     result = collection.get(
         where={"document_id": {"$eq": document_id}},
         include=[],
@@ -124,17 +153,40 @@ def index(document_id: str) -> int:
         registry.update_status(document_id, DocumentStatus.error)
         raise RuntimeError(msg)
 
+    # BM25 bulk upsert — single rebuild regardless of batch count
+    try:
+        bm25.add_chunks(bm25_entries)
+        logger.info(
+            "BM25 indexing complete: document_id={} entries={}", document_id, len(bm25_entries)
+        )
+    except Exception as bm25_exc:
+        logger.warning(
+            "BM25 indexing failed for document_id={} (non-fatal, dense index is intact): {}",
+            document_id, bm25_exc,
+        )
+
     registry.update_status(document_id, DocumentStatus.indexed)
     logger.info("Indexing complete: document_id={} vectors={}", document_id, total)
     return total
 
 
 def delete_document(document_id: str) -> None:
-    """Remove every chunk belonging to *document_id* from ChromaDB.
+    """Remove every chunk belonging to *document_id* from ChromaDB and BM25.
 
     Safe to call even if the document has no vectors (no-op in that case).
     """
     logger.info("Deleting vectors: document_id={}", document_id)
+
     collection = db.get_collection(INDEX_DIR)
     collection.delete(where={"document_id": document_id})
+
+    try:
+        bm25 = BM25Store(INDEX_DIR)
+        bm25.delete_document(document_id)
+    except Exception as bm25_exc:
+        logger.warning(
+            "BM25 deletion failed for document_id={} (non-fatal): {}",
+            document_id, bm25_exc,
+        )
+
     logger.info("Vectors deleted: document_id={}", document_id)
