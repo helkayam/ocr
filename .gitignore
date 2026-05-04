@@ -10,8 +10,12 @@ venv/
 data/raw/*
 data/ocr/*
 data/chunks/*
-data/index/*
+data/index/
+data/cache/
 !data/**/.gitkeep
+
+# SQLite databases
+*.sqlite3
 
 # Logs & Cache
 *.log
