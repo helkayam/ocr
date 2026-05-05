@@ -48,19 +48,38 @@ def _fuse_rrf(dense_ids: list[str], sparse_ids: list[str]) -> list[str]:
 
 # ── Dense-only search (default pipeline) ─────────────────────────────────────
 
+def _build_where(
+    workspace_id: Optional[str],
+    document_id: Optional[str],
+) -> Optional[dict]:
+    """Return a ChromaDB ``where`` filter dict, or None for an unfiltered query.
+
+    ``document_id`` is the stricter scope and takes precedence when both are
+    supplied — it already implies a specific workspace.
+    """
+    if document_id:
+        return {"document_id": document_id}
+    if workspace_id:
+        return {"workspace_id": workspace_id}
+    return None
+
+
 def search(
     query: str,
     top_k: int = 5,
+    workspace_id: Optional[str] = None,
     document_id: Optional[str] = None,
 ) -> list[SearchResult]:
     """Two-stage dense retrieval: bi-encoder recall (top-20) → Jina reranker (top-k).
 
+    Pass *workspace_id* to restrict results to a single workspace.  Pass
+    *document_id* for an even stricter single-document scope (takes precedence).
     The text in each SearchResult is the *parent* chunk so the LLM always
     receives full semantic context regardless of child chunk size.
     """
     logger.debug(
-        "Search start: query={!r} top_k={} candidates={} filter={}",
-        query, top_k, _TOP_CANDIDATES, document_id,
+        "Search start: query={!r} top_k={} candidates={} workspace={} doc_filter={}",
+        query, top_k, _TOP_CANDIDATES, workspace_id, document_id,
     )
 
     _t1 = time.perf_counter()
@@ -84,8 +103,9 @@ def search(
         n_results=n_candidates,
         include=["documents", "metadatas", "distances"],
     )
-    if document_id:
-        kwargs["where"] = {"document_id": document_id}
+    where = _build_where(workspace_id, document_id)
+    if where:
+        kwargs["where"] = where
 
     raw = collection.query(**kwargs)
 
@@ -136,18 +156,24 @@ def search(
 def hybrid_search(
     query: str,
     top_k: int = 5,
+    workspace_id: Optional[str] = None,
     document_id: Optional[str] = None,
     bm25_candidates: int = _TOP_CANDIDATES,
     dense_candidates: int = _TOP_CANDIDATES,
 ) -> list[SearchResult]:
     """Hybrid retrieval: Dense + BM25 fused via RRF → Jina reranker (top-k).
 
+    Pass *workspace_id* to restrict both the dense and sparse retrieval stages
+    to a single workspace.  *document_id* is the stricter scope and takes
+    precedence when both are supplied.
+
     Stage 1a — Dense recall:
         Embed query with E5 'query: ' prefix, fetch *dense_candidates* from
-        ChromaDB.
+        ChromaDB (filtered by workspace/document if provided).
 
     Stage 1b — Sparse recall:
-        Tokenise query, fetch *bm25_candidates* from the BM25 corpus.
+        Tokenise query, fetch *bm25_candidates* from the BM25 corpus
+        (filtered by workspace_id if provided).
         Falls back gracefully to dense-only when the BM25 index is empty.
 
     Stage 1c — RRF fusion:
@@ -162,8 +188,8 @@ def hybrid_search(
     dates, named entities) that may not surface from semantic similarity alone.
     """
     logger.debug(
-        "Hybrid search start: query={!r} top_k={} dense={} bm25={} filter={}",
-        query, top_k, dense_candidates, bm25_candidates, document_id,
+        "Hybrid search start: query={!r} top_k={} dense={} bm25={} workspace={} doc_filter={}",
+        query, top_k, dense_candidates, bm25_candidates, workspace_id, document_id,
     )
     _t0 = time.perf_counter()
 
@@ -186,8 +212,9 @@ def hybrid_search(
         n_results=n_dense,
         include=["documents", "metadatas", "distances"],
     )
-    if document_id:
-        dense_kwargs["where"] = {"document_id": document_id}
+    where = _build_where(workspace_id, document_id)
+    if where:
+        dense_kwargs["where"] = where
 
     raw_dense  = collection.query(**dense_kwargs)
     dense_ids  = raw_dense["ids"][0]
@@ -211,9 +238,12 @@ def hybrid_search(
     logger.debug("Dense stage: {} candidates in {:.2f}s", len(dense_ids), time.perf_counter() - _t0)
 
     # ── Stage 1b: BM25 sparse retrieval ──────────────────────────────────
+    # Use workspace_id filter (document_id supersedes it, but BM25 doesn't
+    # have per-document scope; fall back to workspace filter in that case).
+    bm25_workspace = workspace_id if not document_id else None
     _t1        = time.perf_counter()
     bm25_store = db.get_bm25_store(INDEX_DIR)
-    bm25_hits  = bm25_store.search(query, top_k=bm25_candidates)
+    bm25_hits  = bm25_store.search(query, top_k=bm25_candidates, workspace_id=bm25_workspace)
     sparse_ids = [cid for cid, _ in bm25_hits]
     logger.debug("BM25 stage: {} candidates in {:.2f}s", len(sparse_ids), time.perf_counter() - _t1)
 

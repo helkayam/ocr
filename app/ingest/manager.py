@@ -23,7 +23,12 @@ def _sha256(path: Path) -> str:
     return h.hexdigest()
 
 
-def ingest(file_path: Path | str, document_id: str | None = None) -> str:
+def ingest(
+    file_path: Path | str,
+    document_id: str | None = None,
+    workspace_id: str = "__legacy__",
+    file_name: str | None = None,
+) -> str:
     """Validate, deduplicate, copy, and register a PDF.
 
     Returns the document_id (newly generated or the provided one).
@@ -35,7 +40,7 @@ def ingest(file_path: Path | str, document_id: str | None = None) -> str:
     """
     path = Path(file_path)
 
-    logger.info("Ingest start: {}", path)
+    logger.info("Ingest start: {} workspace={}", path, workspace_id)
     validate_pdf(path)
 
     file_hash = _sha256(path)
@@ -58,12 +63,13 @@ def ingest(file_path: Path | str, document_id: str | None = None) -> str:
 
     record = DocumentRecord(
         document_id=document_id,
-        file_name=path.name,
+        file_name=file_name or path.name,
         status=DocumentStatus.pending,
         created_at=datetime.now(timezone.utc),
         file_hash=file_hash,
+        workspace_id=workspace_id,
     )
     registry.upsert(record)
 
-    logger.info("Ingest complete: file={} document_id={}", path.name, document_id)
+    logger.info("Ingest complete: file={} document_id={} workspace={}", path.name, document_id, workspace_id)
     return document_id

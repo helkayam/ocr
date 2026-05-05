@@ -1,30 +1,18 @@
 {
-  "756a98c0-a413-495d-8ce5-ec59bc6e189c": {
-    "document_id": "756a98c0-a413-495d-8ce5-ec59bc6e189c",
-    "file_name": "BinaSikum.pdf",
+  "dfae4d0d-81fc-4214-94d5-c2493b883b4d": {
+    "document_id": "dfae4d0d-81fc-4214-94d5-c2493b883b4d",
+    "file_name": "tmp5c6ybb8s.pdf",
     "status": "indexed",
-    "created_at": "2026-04-28T07:31:25.515301Z",
-    "file_hash": "1095caabdac887586d14ee2d26f9e2007332c9a1c1610a05a5cfcaaebbb157a7"
+    "created_at": "2026-05-05T14:12:00.276219Z",
+    "file_hash": "cfb9175f41d70cd42d65c96f5d2a6ff93c031f23d7cba4095279394eecc39d4c",
+    "workspace_id": "0fff6cb7-8721-4399-a8fd-95d2d9b1c73e"
   },
-  "47481ab3-b090-41df-98f1-b646bd522e84": {
-    "document_id": "47481ab3-b090-41df-98f1-b646bd522e84",
-    "file_name": "monopol.pdf",
-    "status": "indexed",
-    "created_at": "2026-04-29T10:39:54.392941Z",
-    "file_hash": "897434ff2353491fe170336ddb44a38a5a07666e3d85eb0cce99e189726a6c71"
-  },
-  "5c2e5ceb-4181-459c-9653-ea2efa7080c7": {
-    "document_id": "5c2e5ceb-4181-459c-9653-ea2efa7080c7",
-    "file_name": "פרק ה -- יחידות 9 עד 14.pdf",
-    "status": "indexed",
-    "created_at": "2026-05-03T16:08:20.799812Z",
-    "file_hash": "a47bf70d8dc63e2a36cbb527838ae91c93a72c974b6a5b25a46bc79b0d37dee9"
-  },
-  "b6c31394-ab61-41ca-a38c-86ec063e61d0": {
-    "document_id": "b6c31394-ab61-41ca-a38c-86ec063e61d0",
+  "0a6eb6ce-fa4c-4483-ac9d-470bc49e9b57": {
+    "document_id": "0a6eb6ce-fa4c-4483-ac9d-470bc49e9b57",
     "file_name": "RulesOfProcedure.pdf",
     "status": "indexed",
-    "created_at": "2026-05-04T14:45:56.486900Z",
-    "file_hash": "98f45f94b6c21b355d296d8f16bdb1af6e0d71a08906783afe6b19cdb24d7e59"
+    "created_at": "2026-05-05T14:28:36.814828Z",
+    "file_hash": "98f45f94b6c21b355d296d8f16bdb1af6e0d71a08906783afe6b19cdb24d7e59",
+    "workspace_id": "0fff6cb7-8721-4399-a8fd-95d2d9b1c73e"
   }
 }

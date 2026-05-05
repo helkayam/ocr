@@ -14,18 +14,34 @@ INDEX_DIR  = Path("data/index")
 UPSERT_BATCH_SIZE = 100
 
 
-def _load_chunks(document_id: str) -> list[Chunk]:
+def _load_chunks(document_id: str) -> tuple[str, list[Chunk]]:
+    """Return ``(workspace_id, chunks)`` from the chunks file.
+
+    ``document_id`` is stored only at the root of the JSON envelope — it is
+    injected into each Chunk in-memory here so downstream code can use
+    ``chunk.document_id`` without knowing the envelope format.
+    """
     path = CHUNKS_DIR / f"{document_id}_chunks.json"
     if not path.exists():
         raise FileNotFoundError(f"Chunks file not found: {path}")
     raw = json.loads(path.read_text(encoding="utf-8"))
-    return [Chunk(**item) for item in raw]
+    if isinstance(raw, list):
+        # Legacy flat-list format: document_id was stored per-chunk
+        return "__legacy__", [Chunk(**item) for item in raw]
+    workspace_id = raw.get("workspace_id", "__legacy__")
+    doc_id = raw.get("document_id", document_id)
+    return workspace_id, [Chunk(**item, document_id=doc_id) for item in raw["chunks"]]
 
 
-def _to_chroma_metadata(chunk: Chunk) -> dict:
-    """Flatten ChunkMetadata to a ChromaDB-compatible dict (scalar values only)."""
+def _to_chroma_metadata(chunk: Chunk, workspace_id: str) -> dict:
+    """Flatten ChunkMetadata to a ChromaDB-compatible dict (scalar values only).
+
+    ``document_id`` and ``workspace_id`` are injected from the root envelope,
+    not stored inside individual chunk objects on disk.
+    """
     return {
-        "document_id": chunk.metadata.document_id,
+        "document_id": chunk.document_id,
+        "workspace_id": workspace_id,
         "page_num":    chunk.metadata.page_num,
         "block_id":    chunk.metadata.block_id,
         "is_header":   chunk.metadata.is_header,
@@ -63,9 +79,9 @@ def index(document_id: str) -> int:
 
     Returns the number of child chunks indexed.
     """
-    chunks = _load_chunks(document_id)
+    workspace_id, chunks = _load_chunks(document_id)
     total  = len(chunks)
-    logger.info("Indexing start: document_id={} chunks={}", document_id, total)
+    logger.info("Indexing start: document_id={} workspace={} chunks={}", document_id, workspace_id, total)
 
     if not chunks:
         logger.warning("No chunks to index for document_id={}", document_id)
@@ -96,7 +112,7 @@ def index(document_id: str) -> int:
             ids=[c.chunk_id for c in batch],
             embeddings=vectors,
             documents=[c.text for c in batch],
-            metadatas=[_to_chroma_metadata(c) for c in batch],
+            metadatas=[_to_chroma_metadata(c, workspace_id) for c in batch],
         )
 
     try:
@@ -122,7 +138,12 @@ def index(document_id: str) -> int:
 
             # Collect BM25 entries during the same pass — single rebuild at the end
             bm25_entries.extend(
-                {"chunk_id": c.chunk_id, "document_id": c.document_id, "text": c.text}
+                {
+                    "chunk_id": c.chunk_id,
+                    "document_id": c.document_id,
+                    "workspace_id": workspace_id,
+                    "text": c.text,
+                }
                 for c in batch
             )
             logger.debug(

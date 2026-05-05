@@ -9,46 +9,13 @@ import tempfile
 from pathlib import Path
 from typing import List
 
-from fastapi import APIRouter, BackgroundTasks, File, HTTPException, UploadFile, status
-from pydantic import BaseModel, Field
+from fastapi import APIRouter, BackgroundTasks, File, Form, HTTPException, UploadFile, status
 
 from app import pipeline
 import app.registry as rag_registry
 from app.ingest import manager as ingest_manager
 from app.worker.tasks import process_document
-
-
-# ---------------------------------------------------------------------------
-# Schemas
-# ---------------------------------------------------------------------------
-
-class DocumentOut(BaseModel):
-    document_id: str
-    file_name: str
-    status: str
-    created_at: str
-    file_hash: str
-
-
-class IngestResponse(BaseModel):
-    document_id: str
-    file_name: str
-    status: str
-
-
-class ReindexResponse(BaseModel):
-    document_id: str
-    chunks_indexed: int
-
-
-class QueryRequest(BaseModel):
-    query: str = Field(..., min_length=1)
-    top_k: int = Field(default=5, ge=1, le=50)
-
-
-class QueryResponse(BaseModel):
-    query: str
-    answer: str
+from .schemas import DocumentOut, IngestResponse, ReindexResponse, QueryRequest, QueryResponse
 
 
 # ---------------------------------------------------------------------------
@@ -87,7 +54,11 @@ def list_documents():
     response_model=IngestResponse,
     status_code=status.HTTP_202_ACCEPTED,
 )
-async def upload_document(background_tasks: BackgroundTasks, file: UploadFile = File(...)):
+async def upload_document(
+    background_tasks: BackgroundTasks,
+    file: UploadFile = File(...),
+    workspace_id: str = Form(default="__legacy__"),
+):
     content = await file.read()
     original_name = Path(file.filename).name if file.filename else "upload.pdf"
 
@@ -95,7 +66,7 @@ async def upload_document(background_tasks: BackgroundTasks, file: UploadFile = 
         tmp_path = Path(tmpdir) / original_name
         tmp_path.write_bytes(content)
         try:
-            doc_id = ingest_manager.ingest(str(tmp_path))
+            doc_id = ingest_manager.ingest(str(tmp_path), workspace_id=workspace_id)
         except ValueError as exc:
             msg = str(exc)
             code = status.HTTP_409_CONFLICT if "Duplicate" in msg else status.HTTP_422_UNPROCESSABLE_ENTITY
@@ -103,7 +74,7 @@ async def upload_document(background_tasks: BackgroundTasks, file: UploadFile = 
         except Exception as exc:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(exc))
 
-    background_tasks.add_task(process_document, doc_id)
+    background_tasks.add_task(process_document, doc_id, workspace_id)
     record = rag_registry.get(doc_id)
     return IngestResponse(document_id=doc_id, file_name=record.file_name, status=record.status.value)
 
@@ -162,7 +133,7 @@ def reindex_document(doc_id: str):
 @query_router.post("/query/", response_model=QueryResponse)
 def query_documents(req: QueryRequest):
     try:
-        rag = pipeline.ask_pipeline(req.query, top_k=req.top_k)
+        rag = pipeline.ask_pipeline(req.query, top_k=req.top_k, workspace_id=req.workspace_id)
     except Exception as exc:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(exc))
     return QueryResponse(query=rag.query, answer=rag.answer)

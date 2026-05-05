@@ -3,7 +3,7 @@ import { FileItem, FileType } from '@/types/files';
 import { FileTypeIcon } from './FileTypeIcon';
 import { FileStatusBadge } from './FileStatusBadge';
 import { Button } from '@/components/ui/button';
-import { ArrowUpDown, ArrowUp, ArrowDown, Eye, MoreHorizontal, Trash2, Download } from 'lucide-react';
+import { ArrowUpDown, ArrowUp, ArrowDown, Eye, MoreHorizontal, Trash2, Download, ScanSearch } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   DropdownMenu,
@@ -15,6 +15,7 @@ import {
 interface FileListTableProps {
   files: FileItem[];
   onViewDetails: (file: FileItem) => void;
+  onPreview?: (file: FileItem) => void;
   onDelete?: (id: string) => void;
 }
 
@@ -38,7 +39,7 @@ function formatDate(date: Date | null | undefined): string {
   }).format(date);
 }
 
-export function FileListTable({ files, onViewDetails, onDelete }: FileListTableProps) {
+export function FileListTable({ files, onViewDetails, onPreview, onDelete }: FileListTableProps) {
   const [sortField, setSortField] = useState<SortField>('date');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
@@ -163,7 +164,7 @@ export function FileListTable({ files, onViewDetails, onDelete }: FileListTableP
                   </span>
                 </td>
                 <td className="px-4 py-3">
-                  <FileStatusBadge status={file.status} />
+                  <FileStatusBadge status={file.status} processingStatus={file.processing_status} />
                 </td>
                 <td className="px-4 py-3">
                   <div className="flex items-center justify-end gap-1">
@@ -184,6 +185,15 @@ export function FileListTable({ files, onViewDetails, onDelete }: FileListTableP
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-40">
+                        {file.type === 'pdf' && (
+                          <DropdownMenuItem
+                            disabled={!file.preview_url}
+                            onClick={() => onPreview?.(file)}
+                          >
+                            <ScanSearch className="h-4 w-4 mr-2" />
+                            Preview
+                          </DropdownMenuItem>
+                        )}
                         <DropdownMenuItem
                           disabled={!file.download_url}
                           onClick={() => {
@@ -199,7 +209,7 @@ export function FileListTable({ files, onViewDetails, onDelete }: FileListTableP
                           <Download className="h-4 w-4 mr-2" />
                           Download
                         </DropdownMenuItem>
-                        <DropdownMenuItem 
+                        <DropdownMenuItem
                           className="text-destructive focus:text-destructive"
                           onClick={() => onDelete?.(file.id)}
                         >

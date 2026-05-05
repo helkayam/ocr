@@ -47,7 +47,10 @@ def update_status(document_id: str, status: DocumentStatus) -> None:
 def get(document_id: str) -> Optional[DocumentRecord]:
     data = _load()
     raw = data.get(document_id)
-    return DocumentRecord(**raw) if raw else None
+    if not raw:
+        return None
+    raw.setdefault("workspace_id", "__legacy__")
+    return DocumentRecord(**raw)
 
 
 def exists_by_hash(file_hash: str) -> bool:
@@ -81,4 +84,13 @@ def delete(document_id: str) -> None:
 
 def list_all() -> List[DocumentRecord]:
     data = _load()
-    return [DocumentRecord(**v) for v in data.values()]
+    records = []
+    for v in data.values():
+        v.setdefault("workspace_id", "__legacy__")
+        records.append(DocumentRecord(**v))
+    return records
+
+
+def get_by_workspace(workspace_id: str) -> List[DocumentRecord]:
+    """Return all records belonging to *workspace_id*."""
+    return [r for r in list_all() if r.workspace_id == workspace_id]

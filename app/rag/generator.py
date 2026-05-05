@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 import time
-from typing import List
+from typing import List, Optional
 
 import groq as groq_sdk
 from dotenv import load_dotenv
@@ -128,10 +128,15 @@ def generate(query: str, context: List[SearchResult]) -> RAGResponse:
     return RAGResponse(query=query, answer=answer, sources=sources)
 
 
-def answer(query: str, top_k: int = 5) -> RAGResponse:
+def answer(
+    query: str,
+    top_k: int = 5,
+    workspace_id: Optional[str] = None,
+) -> RAGResponse:
     """End-to-end RAG: retrieve context from ChromaDB, then generate an answer.
 
+    Pass *workspace_id* to restrict retrieval to a single workspace.
     This is the primary entry point for the CLI and API layers.
     """
-    context = retrieval_search.search(query, top_k=top_k)
+    context = retrieval_search.search(query, top_k=top_k, workspace_id=workspace_id)
     return generate(query, context)

@@ -1,8 +1,8 @@
 """Synchronous pipeline orchestration.
 
 Each function represents one user-facing operation and chains the phase
-modules in the correct order. Both the CLI (main.py) and the REST API
-(app/api/main.py) import from here — never duplicate this logic.
+modules in the correct order. Both the CLI (main.py) and the HTTP API
+(backend/api/rag_router.py) import from here — never duplicate this logic.
 """
 from __future__ import annotations
 
@@ -25,30 +25,40 @@ from app.ocr.processor import OCR_DIR
 from app.chunking.splitter import CHUNKS_DIR
 
 
-def ingest_pipeline(file_path: str | Path) -> str:
+def ingest_pipeline(
+    file_path: str | Path,
+    workspace_id: str = "__legacy__",
+) -> str:
     """Phase 2 → 3 → 4 → 5.  Returns the new document_id."""
-    logger.info("Pipeline: ingest start — {}", file_path)
+    logger.info("Pipeline: ingest start — {} workspace={}", file_path, workspace_id)
 
-    doc_id = ingest_manager.ingest(file_path)
+    doc_id = ingest_manager.ingest(file_path, workspace_id=workspace_id)
     logger.info("  [1/4] Ingested  → document_id={}", doc_id)
 
     ocr_processor.process(doc_id)
     logger.info("  [2/4] OCR complete")
 
-    chunks = splitter.split(doc_id)
+    chunks = splitter.split(doc_id, workspace_id=workspace_id)
     logger.info("  [3/4] Chunked   → {} chunks", len(chunks))
 
     count = indexer.index(doc_id)
     logger.info("  [4/4] Indexed   → {} vectors", count)
 
-    logger.info("Pipeline: ingest complete — document_id={}", doc_id)
+    logger.info("Pipeline: ingest complete — document_id={} workspace={}", doc_id, workspace_id)
     return doc_id
 
 
-def ask_pipeline(query: str, top_k: int = 5) -> RAGResponse:
-    """Phase 6.  Returns a RAGResponse with answer and cited sources."""
-    logger.info("Pipeline: ask — {!r}", query)
-    response = generator.answer(query, top_k=top_k)
+def ask_pipeline(
+    query: str,
+    top_k: int = 5,
+    workspace_id: str | None = None,
+) -> RAGResponse:
+    """Phase 6.  Returns a RAGResponse with answer and cited sources.
+
+    Pass *workspace_id* to restrict retrieval to a single workspace.
+    """
+    logger.info("Pipeline: ask — {!r} workspace={}", query, workspace_id)
+    response = generator.answer(query, top_k=top_k, workspace_id=workspace_id)
     logger.info("Pipeline: ask complete")
     return response
 

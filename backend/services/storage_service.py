@@ -83,6 +83,18 @@ def generate_download_url(object_name: str) -> str:
     )
 
 
+def generate_preview_url(object_name: str) -> str:
+    """Return a URL that serves the file inline (for in-browser preview)."""
+    if _use_local:
+        return f"{PUBLIC_API_URL}/files/local-download/{object_name}?inline=true"
+    return _client().presigned_get_object(
+        MINIO_BUCKET,
+        object_name,
+        expires=timedelta(seconds=3600),
+        response_headers={"response-content-disposition": "inline"},
+    )
+
+
 def generate_presigned_upload_url(object_name: str, expires: int = 3600) -> str:
     if _use_local:
         return f"{PUBLIC_API_URL}/files/local-upload/{object_name}"

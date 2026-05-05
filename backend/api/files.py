@@ -1,10 +1,12 @@
 import mimetypes
 import os
+import tempfile
 import uuid
 from pathlib import Path
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException, Query, Request
 from fastapi.responses import FileResponse
+from loguru import logger
 from typing import Optional, List
 
 from .schemas import (
@@ -28,34 +30,14 @@ from services.geo_service import parse_geojson, store_geo_layer
 router = APIRouter(prefix="/files", tags=["files"])
 
 
-def _process_pdf_rag(file_id: str, object_name: str, filename: str) -> None:
-    """Download PDF from storage, register in RAG system, and run the full pipeline."""
-    import tempfile
-    from app.ingest import manager as ingest_manager
+def _run_rag_pipeline(file_id: str, workspace_id: str = "__legacy__") -> None:
+    """Run the RAG pipeline for an already-ingested document."""
     from app.worker.tasks import process_document
 
     try:
-        raw = get_file_bytes(object_name)
-    except Exception as e:
-        print(f"[rag_bridge] Could not download {object_name}: {e}")
-        return
-
-    with tempfile.TemporaryDirectory() as tmpdir:
-        tmp_path = Path(tmpdir) / filename
-        tmp_path.write_bytes(raw)
-        try:
-            ingest_manager.ingest(str(tmp_path), document_id=file_id)
-        except ValueError as e:
-            # Duplicate hash — existing document already registered, still process
-            print(f"[rag_bridge] ingest warning for {file_id}: {e}")
-        except Exception as e:
-            print(f"[rag_bridge] ingest failed for {file_id}: {e}")
-            return
-
-    try:
-        process_document(file_id)
-    except Exception as e:
-        print(f"[rag_bridge] RAG processing failed for {file_id}: {e}")
+        process_document(file_id, workspace_id=workspace_id)
+    except Exception:
+        logger.exception("[rag_bridge] RAG processing failed for {}", file_id)
 
 
 # ─── Upload flow ─────────────────────────────────────────────────────────────
@@ -75,13 +57,45 @@ def confirm_upload(request: ConfirmUploadRequest, background_tasks: BackgroundTa
 
     fname_lower = request.filename.lower()
     if fname_lower.endswith(".pdf"):
-        # Route PDFs through the full RAG pipeline (OCR → chunk → ChromaDB)
-        background_tasks.add_task(
-            _process_pdf_rag,
-            request.file_id,
-            object_name,
-            request.filename,
-        )
+        from app.ingest import manager as ingest_manager
+
+        # Step 1: pull bytes from storage (MinIO or local_storage/)
+        try:
+            raw = get_file_bytes(object_name)
+            logger.info("[rag_bridge] Step 1 — retrieved {} bytes for file_id={}", len(raw), request.file_id)
+        except Exception as e:
+            logger.error("[rag_bridge] Could not retrieve {}: {}", object_name, e)
+            return ConfirmUploadResponse(file=file_item)
+
+        # Step 2: write to a temp file OUTSIDE data/raw/ so ingest_manager can
+        # shutil.copy2() it into data/raw/{file_id}.pdf without SameFileError.
+        with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
+            tmp.write(raw)
+            tmp_path = tmp.name
+        logger.info("[rag_bridge] Step 2 — file saved to disk: {}", tmp_path)
+
+        # Step 3: run CLI-equivalent ingest (validate → hash → copy to data/raw/ → registry)
+        try:
+            ingest_manager.ingest(
+                tmp_path,
+                document_id=request.file_id,
+                workspace_id=request.workspace_id,
+                file_name=request.filename,
+            )
+            logger.info("[rag_bridge] Step 3 — registry updated for document_id={}", request.file_id)
+        except ValueError as e:
+            # Duplicate hash — already registered; still safe to re-process
+            logger.warning("[rag_bridge] ingest duplicate for {}: {}", request.file_id, e)
+        except Exception as e:
+            logger.exception("[rag_bridge] ingest failed for {}", request.file_id)
+            Path(tmp_path).unlink(missing_ok=True)
+            return ConfirmUploadResponse(file=file_item)
+
+        Path(tmp_path).unlink(missing_ok=True)
+
+        # Step 4: file is on disk and in registry — safe to queue the pipeline
+        logger.info("[rag_bridge] Step 4 — task queued for document_id={}", request.file_id)
+        background_tasks.add_task(_run_rag_pipeline, request.file_id, request.workspace_id)
     elif fname_lower.endswith(".docx"):
         background_tasks.add_task(
             process_file,
@@ -126,7 +140,7 @@ async def local_upload(object_name: str, request: Request):
 # ─── Local-storage download / serve ──────────────────────────────────────────
 
 @router.get("/local-download/{object_name:path}")
-def local_download(object_name: str):
+def local_download(object_name: str, inline: bool = Query(default=False)):
     """Serve a file stored in local_storage/ (used in local mode)."""
     try:
         path = get_local_path(object_name)
@@ -135,6 +149,8 @@ def local_download(object_name: str):
     if not path.exists():
         raise HTTPException(status_code=404, detail="File not found")
     mime, _ = mimetypes.guess_type(path.name)
+    if inline:
+        return FileResponse(str(path), media_type=mime or "application/octet-stream")
     return FileResponse(
         str(path),
         media_type=mime or "application/octet-stream",
@@ -154,19 +170,28 @@ def _rag_status(file_id: str) -> Optional[str]:
         return None
 
 
+def _load_rag_registry() -> dict:
+    """Load the entire registry once and return a {doc_id: status} map."""
+    try:
+        import app.registry as rag_registry
+        return {r.document_id: r.status.value for r in rag_registry.list_all()}
+    except Exception:
+        return {}
+
+
 @router.get("", response_model=List[FileItem])
 def list_files(workspace_id: Optional[str] = Query(None)):
     items = file_service.list_files(workspace_id)
-    # Enrich PDF processing_status from RAG registry when available
+    if not items:
+        return items
+    # Bulk-load registry once — avoids N file reads for N PDF files
+    registry_map = _load_rag_registry()
     enriched = []
     for item in items:
         if item.type.value == "pdf":
-            rag_stat = _rag_status(item.id)
+            rag_stat = registry_map.get(item.id)
             if rag_stat:
-                # Rebuild FileItem with updated processing_status surfaced via metadata
-                # (FileItem doesn't have processing_status; we embed it in the status field
-                #  for PDFs so the frontend can poll progress)
-                pass  # status is in item.status; RAG progress exposed via /files/{id}/status
+                item = item.model_copy(update={"processing_status": rag_stat})
         enriched.append(item)
     return enriched
 

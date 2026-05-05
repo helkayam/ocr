@@ -94,7 +94,7 @@ export const api = {
   },
 
   rag: {
-    query: (body: { query: string; top_k?: number }): Promise<RagAnswer> =>
+    query: (body: { query: string; top_k?: number; workspace_id?: string }): Promise<RagAnswer> =>
       post('/query/', body),
   },
 

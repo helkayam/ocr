@@ -43,7 +43,7 @@ class BM25Store:
     def __init__(self, index_dir: Path) -> None:
         self._dir          = Path(index_dir)
         self._corpus_path  = self._dir / _CORPUS_FILE
-        # list[{"chunk_id": str, "document_id": str, "text": str}]
+        # list[{"chunk_id": str, "document_id": str, "workspace_id": str, "text": str}]
         self._corpus: list[dict] = []
         self._bm25: Optional[BM25Okapi] = None
         self._load()
@@ -101,8 +101,17 @@ class BM25Store:
         logger.info("BM25: removed {} entries for document_id={}", removed, document_id)
         return removed
 
-    def search(self, query: str, top_k: int = 20) -> list[tuple[str, float]]:
+    def search(
+        self,
+        query: str,
+        top_k: int = 20,
+        workspace_id: Optional[str] = None,
+    ) -> list[tuple[str, float]]:
         """Return up to *top_k* ``(chunk_id, bm25_score)`` pairs, descending by score.
+
+        When *workspace_id* is provided only entries belonging to that workspace
+        are considered.  Legacy entries without a ``workspace_id`` key are
+        treated as ``"__legacy__"`` for backwards compatibility.
 
         Returns an empty list when the index is empty.
         """
@@ -110,12 +119,11 @@ class BM25Store:
             logger.debug("BM25: search on empty index — returning []")
             return []
         scores = self._bm25.get_scores(_tokenize(query))
-        ranked = sorted(
-            zip([c["chunk_id"] for c in self._corpus], scores.tolist()),
-            key=lambda x: x[1],
-            reverse=True,
-        )
-        return ranked[:top_k]
+        pairs = list(zip([c["chunk_id"] for c in self._corpus], scores.tolist()))
+        if workspace_id is not None:
+            ws_map = {c["chunk_id"]: c.get("workspace_id", "__legacy__") for c in self._corpus}
+            pairs = [(cid, sc) for cid, sc in pairs if ws_map.get(cid) == workspace_id]
+        return sorted(pairs, key=lambda x: x[1], reverse=True)[:top_k]
 
     def get_text(self, chunk_id: str) -> Optional[str]:
         """Return the stored text for *chunk_id*, or None if not found."""

@@ -8,6 +8,7 @@ import { FileListTable } from '@/components/FileListTable';
 import { FileFilters } from '@/components/FileFilters';
 import { SearchBar } from '@/components/SearchBar';
 import { MetadataModal } from '@/components/MetadataModal';
+import { PDFPreviewModal } from '@/components/PDFPreviewModal';
 import { QueryBox } from '@/components/QueryBox';
 import { FileItem, FileType, UploadQueueItem } from '@/types/files';
 import { api } from '@/lib/api';
@@ -25,10 +26,18 @@ export default function WorkspaceDetails() {
     enabled: !!id,
   });
 
-  const { data: files = [], refetch: refetchFiles } = useQuery({
+  const { data: files = [], isLoading: filesLoading, refetch: refetchFiles } = useQuery({
     queryKey: ['files', id],
     queryFn: () => api.files.list(id!),
     enabled: !!id,
+    refetchInterval: (query) => {
+      const data = query.state.data;
+      if (!data) return false;
+      const hasActive = data.some(
+        f => f.processing_status && !['indexed', 'error'].includes(f.processing_status)
+      );
+      return hasActive ? 3_000 : false;
+    },
   });
 
   const [uploadQueue, setUploadQueue] = useState<UploadQueueItem[]>([]);
@@ -36,6 +45,8 @@ export default function WorkspaceDetails() {
   const [selectedTypes, setSelectedTypes] = useState<FileType[]>([]);
   const [selectedFile, setSelectedFile] = useState<FileItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [previewFile, setPreviewFile] = useState<FileItem | null>(null);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
   const handleFilesSelected = useCallback(async (newFiles: File[]) => {
     const queueItems: UploadQueueItem[] = newFiles.map(file => ({
@@ -111,6 +122,11 @@ export default function WorkspaceDetails() {
     setIsModalOpen(true);
   }, []);
 
+  const handlePreview = useCallback((file: FileItem) => {
+    setPreviewFile(file);
+    setIsPreviewOpen(true);
+  }, []);
+
   const handleDeleteFile = useCallback(async (fileId: string) => {
     try {
       await api.files.delete(fileId);
@@ -180,11 +196,20 @@ export default function WorkspaceDetails() {
             </div>
 
             <div className="animate-fade-in" style={{ animationDelay: '100ms' }}>
-              <FileListTable
-                files={filteredFiles}
-                onViewDetails={handleViewDetails}
-                onDelete={handleDeleteFile}
-              />
+              {filesLoading ? (
+                <div className="space-y-2">
+                  {[1, 2, 3, 4].map(i => (
+                    <div key={i} className="h-14 rounded-lg bg-card border border-border animate-pulse" />
+                  ))}
+                </div>
+              ) : (
+                <FileListTable
+                  files={filteredFiles}
+                  onViewDetails={handleViewDetails}
+                  onPreview={handlePreview}
+                  onDelete={handleDeleteFile}
+                />
+              )}
             </div>
           </div>
         </div>
@@ -194,6 +219,12 @@ export default function WorkspaceDetails() {
         file={selectedFile}
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+      />
+
+      <PDFPreviewModal
+        file={previewFile}
+        isOpen={isPreviewOpen}
+        onClose={() => setIsPreviewOpen(false)}
       />
     </div>
   );

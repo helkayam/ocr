@@ -37,6 +37,8 @@ export interface FileItem {
   error?: string;
   metadata?: FileMetadata;
   download_url?: string;
+  preview_url?: string;
+  processing_status?: string;
 }
 
 export interface Workspace {

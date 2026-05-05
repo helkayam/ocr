@@ -4,7 +4,7 @@ from uuid import uuid4
 
 from api.schemas import FileItem, FileType, FileStatus, ConfirmUploadRequest
 from db import get_db, db_available
-from services.storage_service import generate_download_url
+from services.storage_service import generate_download_url, generate_preview_url
 
 # In-memory fallback
 _files_mem: Dict[str, dict] = {}
@@ -81,6 +81,7 @@ def create_file(request: ConfirmUploadRequest, object_name: str = "") -> FileIte
         status=FileStatus.COMPLETED,
         progress=100,
         download_url=generate_download_url(object_name),
+        preview_url=generate_preview_url(object_name),
     )
 
 
@@ -132,4 +133,6 @@ def _row_to_file_item(d: dict) -> FileItem:
         status=FileStatus.COMPLETED,
         progress=100,
         download_url=generate_download_url(obj) if obj else None,
+        preview_url=generate_preview_url(obj) if obj else None,
+        processing_status=d.get("processing_status"),
     )

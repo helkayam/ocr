@@ -21,6 +21,7 @@ class DocumentRecord(BaseModel):
     status: DocumentStatus
     created_at: datetime
     file_hash: str
+    workspace_id: str = "__legacy__"
 
 
 # ---------------------------------------------------------------------------
@@ -58,7 +59,6 @@ class OCRResult(BaseModel):
 # ---------------------------------------------------------------------------
 
 class ChunkMetadata(BaseModel):
-    document_id: str
     page_num: int
     block_id: int
     is_header: bool
@@ -68,7 +68,7 @@ class ChunkMetadata(BaseModel):
 
 class Chunk(BaseModel):
     chunk_id: str
-    document_id: str
+    document_id: str = ""   # populated from root envelope at load time; excluded from disk
     page: int
     text: str
     metadata: ChunkMetadata

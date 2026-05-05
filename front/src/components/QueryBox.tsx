@@ -27,7 +27,7 @@ export function QueryBox({ workspaceId }: QueryBoxProps) {
   });
 
   const ragMutation = useMutation({
-    mutationFn: (q: string) => api.rag.query({ query: q, top_k: 5 }),
+    mutationFn: (q: string) => api.rag.query({ query: q, top_k: 5, workspace_id: workspaceId }),
     onSuccess: (data) => setRagAnswer(data),
   });
 

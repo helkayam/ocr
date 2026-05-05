@@ -105,6 +105,11 @@ def _split_text(text: str, chunk_size: int, chunk_overlap: int) -> list[str]:
 
 # ── Chunk construction ────────────────────────────────────────────────────────
 
+def _doc_prefix(document_id: str) -> str:
+    """First 12 hex chars of UUID (dashes stripped) for compact, unique chunk IDs."""
+    return document_id.replace("-", "")[:12]
+
+
 def _make_chunk(
     document_id: str,
     page_num: int,
@@ -116,12 +121,11 @@ def _make_chunk(
     extra: Optional[dict] = None,
 ) -> Chunk:
     return Chunk(
-        chunk_id=f"{document_id}_{page_num}_{block_id}_{chunk_idx}",
+        chunk_id=f"{_doc_prefix(document_id)}_{page_num}_{block_id}_{chunk_idx}",
         document_id=document_id,
         page=page_num,
         text=text,
         metadata=ChunkMetadata(
-            document_id=document_id,
             page_num=page_num,
             block_id=block_id,
             is_header=is_header,
@@ -129,6 +133,13 @@ def _make_chunk(
             extra=extra or {},
         ),
     )
+
+
+def _chunk_to_disk(c: Chunk) -> dict:
+    """Serialize a chunk for disk, omitting document_id (stored once at root)."""
+    d = c.model_dump(mode="json")
+    d.pop("document_id", None)
+    return d
 
 
 def _child_chunks_from_parent(parent: Chunk) -> list[Chunk]:
@@ -153,7 +164,6 @@ def _child_chunks_from_parent(parent: Chunk) -> list[Chunk]:
             page=parent.page,
             text=parent.text,
             metadata=ChunkMetadata(
-                document_id=parent.metadata.document_id,
                 page_num=parent.metadata.page_num,
                 block_id=parent.metadata.block_id,
                 is_header=parent.metadata.is_header,
@@ -170,7 +180,6 @@ def _child_chunks_from_parent(parent: Chunk) -> list[Chunk]:
             page=parent.page,
             text=text,
             metadata=ChunkMetadata(
-                document_id=parent.metadata.document_id,
                 page_num=parent.metadata.page_num,
                 block_id=parent.metadata.block_id,
                 is_header=parent.metadata.is_header,
@@ -291,6 +300,7 @@ def _merge_hanging_text(pages: list[OCRPage]) -> list[OCRPage]:
 
 def split(
     document_id: str,
+    workspace_id: str = "__legacy__",
     chunk_size: int = PARENT_CHUNK_SIZE,
     chunk_overlap: int = PARENT_CHUNK_OVERLAP,
 ) -> list[Chunk]:
@@ -307,14 +317,18 @@ def split(
                        metadata.extra so the LLM receives full context.
 
     Cross-page sentence repair runs before the per-page loop.
-    The file saved to disk contains child chunks (the units stored in ChromaDB).
+    The file saved to disk wraps child chunks under a root object that carries
+    ``workspace_id`` once, avoiding per-chunk duplication.
     """
     ocr_path = OCR_DIR / f"{document_id}.json"
     if not ocr_path.exists():
         raise FileNotFoundError(f"OCR JSON not found for document_id={document_id}: {ocr_path}")
 
     ocr_result = OCRResult.model_validate_json(ocr_path.read_text(encoding="utf-8"))
-    logger.info("Chunking start: document_id={} pages={}", document_id, len(ocr_result.pages))
+    logger.info(
+        "Chunking start: document_id={} workspace={} pages={}",
+        document_id, workspace_id, len(ocr_result.pages),
+    )
 
     pages = _merge_hanging_text(ocr_result.pages)
 
@@ -373,7 +387,11 @@ def split(
     out_path = CHUNKS_DIR / f"{document_id}_chunks.json"
     out_path.write_text(
         json.dumps(
-            [c.model_dump(mode="json") for c in all_children],
+            {
+                "document_id": document_id,
+                "workspace_id": workspace_id,
+                "chunks": [_chunk_to_disk(c) for c in all_children],
+            },
             ensure_ascii=False,
             indent=2,
         ),

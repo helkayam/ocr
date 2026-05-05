@@ -52,6 +52,8 @@ class FileItem(BaseModel):
     error: Optional[str] = None
     metadata: Optional[FileMetadata] = None
     download_url: Optional[str] = None
+    preview_url: Optional[str] = None
+    processing_status: Optional[str] = None
 
 
 class Workspace(BaseModel):
@@ -95,4 +97,36 @@ class UploadUrlResponse(BaseModel):
 class ConfirmUploadResponse(BaseModel):
     file: FileItem
     status: str = "ok"
+
+
+# ── RAG pipeline schemas ──────────────────────────────────────────────────────
+
+class DocumentOut(BaseModel):
+    document_id: str
+    file_name: str
+    status: str
+    created_at: str
+    file_hash: str
+
+
+class IngestResponse(BaseModel):
+    document_id: str
+    file_name: str
+    status: str
+
+
+class ReindexResponse(BaseModel):
+    document_id: str
+    chunks_indexed: int
+
+
+class QueryRequest(BaseModel):
+    query: str = Field(..., min_length=1)
+    top_k: int = Field(default=5, ge=1, le=50)
+    workspace_id: Optional[str] = Field(default=None)
+
+
+class QueryResponse(BaseModel):
+    query: str
+    answer: str
 

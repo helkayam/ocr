@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, status
 from typing import List
 from .schemas import Workspace, WorkspaceCreateRequest
 from services import workspace_service
@@ -23,3 +23,10 @@ def get_workspace(id: str):
     if workspace is None:
         raise HTTPException(status_code=404, detail="Workspace not found")
     return workspace
+
+
+@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_workspace(id: str):
+    deleted = workspace_service.delete_workspace(id)
+    if not deleted:
+        raise HTTPException(status_code=404, detail="Workspace not found")

@@ -4,7 +4,13 @@
       "PowerShell(wsl -d Ubuntu -e bash -c \"cd /home/helkayam/ProtocolGenesis/ocr && source venv/bin/activate && python __api_probe.py 2>&1\")",
       "PowerShell(wsl -d Ubuntu -e bash -c \"rm /home/helkayam/ProtocolGenesis/ocr/__api_probe.py && echo done\")",
       "PowerShell(wsl -d Ubuntu -e bash -c \"cd /home/helkayam/ProtocolGenesis/ocr && source venv/bin/activate && python -m pytest tests/test_api.py -v 2>&1\")",
-      "PowerShell(wsl -d Ubuntu -e bash -c \"cd /home/helkayam/ProtocolGenesis/ocr && source venv/bin/activate && python -m pytest tests/ -v --tb=short 2>&1\")"
+      "PowerShell(wsl -d Ubuntu -e bash -c \"cd /home/helkayam/ProtocolGenesis/ocr && source venv/bin/activate && python -m pytest tests/ -v --tb=short 2>&1\")",
+      "mcp__sequential-thinking__sequentialthinking",
+      "Bash(rm -rf data/raw/* data/ocr/* data/chunks/* data/index/*)",
+      "Bash(echo '{}')",
+      "Bash(python3 -m json.tool)",
+      "mcp__playwright__browser_navigate",
+      "Bash(curl -s \"http://localhost:8000/files/c2063c37-c8be-435d-9648-4695ee7685b3/status\")"
     ]
   }
 }

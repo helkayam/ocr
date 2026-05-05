@@ -58,6 +58,17 @@ def get_workspace(workspace_id: str) -> Optional[Workspace]:
     return _dict_to_workspace(d) if d else None
 
 
+def delete_workspace(workspace_id: str) -> bool:
+    if db_available():
+        with get_db() as cur:
+            cur.execute("DELETE FROM workspaces WHERE workspace_id = %s", (workspace_id,))
+            return cur.rowcount > 0
+    if workspace_id in _workspaces_mem:
+        del _workspaces_mem[workspace_id]
+        return True
+    return False
+
+
 def increment_file_stats(workspace_id: str, file_size: int) -> None:
     if db_available():
         with get_db() as cur:
