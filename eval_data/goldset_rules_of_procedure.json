@@ -1,0 +1,362 @@
+[
+  {
+    "question_id": "q_001",
+    "document_id": "RulesOfProcedure.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "האם ימי הפגרה נספרים בחישוב התקופות המוגדרות בתקנון הכנסת?",
+    "expected_answer": "כן, ימי הפגרה יבואו במניין התקופות, אלא אם כן נאמר אחרת.[cite: 1]",
+    "expected_pages": [2],
+    "question_type": "explicit"
+  },
+  {
+    "question_id": "q_002",
+    "document_id": "RulesOfProcedure.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "בתוך כמה ימים צריכה הכנסת לבחור יושב ראש חדש במקרה שמשרתו של יושב ראש הכנסת התפנתה?",
+    "expected_answer": "בתוך 21 ימים.[cite: 1]",
+    "expected_pages": [4],
+    "question_type": "explicit"
+  },
+  {
+    "question_id": "q_003",
+    "document_id": "RulesOfProcedure.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "כעבור כמה זמן נכנסת לתוקף התפטרותו של יושב ראש הכנסת לאחר שהניח את כתב ההתפטרות על שולחן הכנסת?",
+    "expected_answer": "כעבור 48 שעות.[cite: 1]",
+    "expected_pages": [6],
+    "question_type": "explicit"
+  },
+  {
+    "question_id": "q_004",
+    "document_id": "RulesOfProcedure.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "על אילו גופים מנהליים אחראי יושב ראש הכנסת באופן ישיר?",
+    "expected_answer": "על מינהל הכנסת ועל מזכירות הכנסת.[cite: 1]",
+    "expected_pages": [7],
+    "question_type": "explicit"
+  },
+  {
+    "question_id": "q_005",
+    "document_id": "RulesOfProcedure.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "כיצד מוגדרת \"סיעה\" בכנסת לעניין התקנון?",
+    "expected_answer": "רשימת מועמדים שמתוכה נבחרו חברים לכנסת.[cite: 1]",
+    "expected_pages": [9],
+    "question_type": "explicit"
+  },
+  {
+    "question_id": "q_006",
+    "document_id": "RulesOfProcedure.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "האם סיעה רשאית להחליף את יושב ראש הסיעה או את ממלא מקומו לאחר שנבחרו?",
+    "expected_answer": "כן, הסיעה רשאית להחליפם בכל עת.[cite: 1]",
+    "expected_pages": [11],
+    "question_type": "explicit"
+  },
+  {
+    "question_id": "q_007",
+    "document_id": "RulesOfProcedure.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "למי צריכה סיעה להודיע על כתובת הדואר האלקטרוני שלה לצורך מסירת הודעות בימים שבהם מליאת הכנסת אינה מתכנסת?",
+    "expected_answer": "למזכיר הכנסת.[cite: 1]",
+    "expected_pages": [13],
+    "question_type": "explicit"
+  },
+  {
+    "question_id": "q_008",
+    "document_id": "RulesOfProcedure.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "למי חייב חבר כנסת להודיע כאשר הוא נוסע לחוץ לארץ?",
+    "expected_answer": "ליושב ראש הכנסת.[cite: 1]",
+    "expected_pages": [14],
+    "question_type": "explicit"
+  },
+  {
+    "question_id": "q_009",
+    "document_id": "RulesOfProcedure.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "מהי דרישת המינימום לנוכחות נציגות ממשלתית במהלך ישיבה של מליאת הכנסת?",
+    "expected_answer": "בכל ישיבה ובמשך כל הישיבה, חייב להיות נוכח לפחות אחד משרי הממשלה.[cite: 1]",
+    "expected_pages": [16],
+    "question_type": "explicit"
+  },
+  {
+    "question_id": "q_010",
+    "document_id": "RulesOfProcedure.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "מי מוסמך לאפשר לחבר כנסת שהתפטר מכהונתו לשאת נאום פרידה במליאה?",
+    "expected_answer": "יושב ראש הכנסת.[cite: 1]",
+    "expected_pages": [19],
+    "question_type": "explicit"
+  },
+  {
+    "question_id": "q_011",
+    "document_id": "RulesOfProcedure.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "מהי מסגרת הזמן המינימלית המוקצבת לכל נואם המשתתף בדיון סיעתי?",
+    "expected_answer": "לא תפחת משלוש דקות לכל נואם.[cite: 1]",
+    "expected_pages": [21],
+    "question_type": "explicit"
+  },
+  {
+    "question_id": "q_012",
+    "document_id": "RulesOfProcedure.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "מהו הזמן המרבי המוקצב לחבר כנסת כדי לנמק הצעה לסדר ניהול הישיבה או סדר ההצבעה?",
+    "expected_answer": "דקה אחת.[cite: 1]",
+    "expected_pages": [23],
+    "question_type": "explicit"
+  },
+  {
+    "question_id": "q_013",
+    "document_id": "RulesOfProcedure.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "מהו הזמן המוקצב למסירת הודעת סיעה (שלא השתתפה בדיון ובהצבעה) בנושא שאינו הצעת חוק?",
+    "expected_answer": "מסגרת זמן שלא תעלה על חמש דקות.[cite: 1]",
+    "expected_pages": [24],
+    "question_type": "explicit"
+  },
+  {
+    "question_id": "q_014",
+    "document_id": "RulesOfProcedure.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "כיצד נדרש חבר כנסת למסור את בחירתו כאשר מתקיימת הצבעה שמית?",
+    "expected_answer": "עליו לקום ולומר בקול רם את הצבעתו (או לומר שאינו משתתף).[cite: 1]",
+    "expected_pages": [26],
+    "question_type": "explicit"
+  },
+  {
+    "question_id": "q_015",
+    "document_id": "RulesOfProcedure.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "היכן מפורסם הפרוטוקול הרשמי ותוצאות ההצבעות האלקטרוניות של ישיבות מליאת הכנסת?",
+    "expected_answer": "באתר האינטרנט של הכנסת.[cite: 1]",
+    "expected_pages": [28],
+    "question_type": "explicit"
+  },
+  {
+    "question_id": "q_016",
+    "document_id": "RulesOfProcedure.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "במקרה שהכנסת החליטה להשעות את יושב ראש הכנסת או את אחד מסגניו, באילו תנאים תסתיים ההשעיה וכיצד נבחר מחליף לסגן יו\"ר לתקופת ההשעיה?",
+    "expected_answer": "ההשעיה תסתיים עם מתן פסק דין סופי המזכה אותו או שאינו קובע שיש עם העבירה קלון, או אם נקבע שתהיה לו חסינות, או עם תום תקופת הכהונה של הכנסת, אלא אם נקבעה תקופה קצרה יותר. במקרה של השעיית סגן יו\"ר, הכנסת רשאית לבחור חבר כנסת אחר במקומו בהצבעה גלויה, שיכהן בתפקיד רק בתקופת ההשעיה.[cite: 1]",
+    "expected_pages": [4, 6],
+    "question_type": "multi-hop"
+  },
+  {
+    "question_id": "q_017",
+    "document_id": "RulesOfProcedure.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "למי מגישים יושב ראש הכנסת וסגן יושב ראש הכנסת את כתב התפטרותם, ומתי ההתפטרות נכנסת לתוקף?",
+    "expected_answer": "יושב ראש הכנסת מניח את כתב ההתפטרות על שולחן הכנסת (או מוסר למזכיר הכנסת במקרה של פגרה), ואילו סגן היושב ראש מוסר את כתב ההתפטרות ליושב ראש הכנסת. בשני המקרים, ההתפטרות נכנסת לתוקף כעבור 48 שעות ממועד ההגשה או המסירה, זולת אם המתפטר חזר בו קודם לכן.[cite: 1]",
+    "expected_pages": [6, 7],
+    "question_type": "multi-hop"
+  },
+  {
+    "question_id": "q_018",
+    "document_id": "RulesOfProcedure.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "אילו אישים שאינם חברי כנסת רשאים לנאום במליאת הכנסת, ומה הדין לגבי נאום פרידה של שר שאינו חבר כנסת שכהונתו הופסקה?",
+    "expected_answer": "שרים וסגני שרים שאינם חברי כנסת, נשיא המדינה, ומוזמנים כגון ראש מדינה או פרלמנט זר רשאים לנאום במליאה. שר שכהונתו הופסקה רשאי לשאת נאום פרידה במליאה, אך ורק אם הוא מכהן כחבר כנסת במועד הישיבה שבה נמסרה ההודעה על הפסקת הכהונה.[cite: 1]",
+    "expected_pages": [18, 19],
+    "question_type": "multi-hop"
+  },
+  {
+    "question_id": "q_019",
+    "document_id": "RulesOfProcedure.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "מהו ההבדל במסגרת הזמן המוקצבת לכל נואם בין דיון סיעתי לדיון אישי, ומה קורה אם חבר כנסת נעדר מהמליאה כשמגיע תורו לנאום?",
+    "expected_answer": "בדיון סיעתי הזמן לכל נואם לא יפחת משלוש דקות, ואם הנואם נעדר ללא הודעה מראש, אינו רשאי לנאום, אך סיעתו יכולה להעביר את מסגרת הזמן שלו לחבר אחר מהסיעה. בדיון אישי, הזמן הוא לרוב שלוש דקות, ואם חבר הכנסת נעדר ללא הודעה, אינו רשאי לנאום וזכותו אובדת.[cite: 1]",
+    "expected_pages": [22, 23],
+    "question_type": "multi-hop"
+  },
+  {
+    "question_id": "q_020",
+    "document_id": "RulesOfProcedure.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "באילו תנאים תיערך הצבעה שמית במליאה, ומה ההליך לגבי חבר כנסת המבקש לשנות את בחירתו לאחר שהצביע?",
+    "expected_answer": "הצבעה שמית תיערך אם ישנה דרישה בכתב של לפחות 20 חברי כנסת או לפי דרישת הממשלה. חבר כנסת שאמר את הצבעתו או אמר שאינו משתתף, אינו רשאי לשנות את אמירתו לאחר שחבר הכנסת הבא אחריו ברשימה נקרא להצביע.[cite: 1]",
+    "expected_pages": [26, 27],
+    "question_type": "multi-hop"
+  },
+  {
+    "question_id": "q_021",
+    "document_id": "RulesOfProcedure.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "אם מספר חברי כנסת יזמו יחד הצעת חוק פרטית, מי מוסמך למסור הודעות בקשר להצעה, ומה קורה אם היוזם הראשון חוזר בו?",
+    "expected_answer": "כל בקשה או פעולה תימסר או תיעשה בידי היוזם הראשון (מי ששמו מופיע ראשון ברשימת היוזמים) או בידי יוזם אחר בהסכמתו. אם היוזם הראשון חזר בו, יבוא במקומו כיוזם ראשון חבר הכנסת הבא אחריו ברשימה, אלא אם כן הודיע היוזם המקורי כי יוזם אחר מאותה רשימה יהיה במקומו.[cite: 1]",
+    "expected_pages": [83, 84],
+    "question_type": "multi-hop"
+  },
+  {
+    "question_id": "q_022",
+    "document_id": "RulesOfProcedure.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "באילו נסיבות רשאי יו\"ר הכנסת לקבוע שהצעה לסדר היום תידון בוועדה ללא דיון במליאה, ומה סדר ההצבעה במליאה אם הוצע שהנושא יידון בוועדה אך המציע התנגד?",
+    "expected_answer": "יו\"ר הכנסת רשאי להעביר הצעה לוועדה (לאחר התייעצות עם יו\"ר ועדת חוץ וביטחון) אם העלאתה במליאה עלולה לפגוע בביטחון המדינה, ביחסי החוץ שלה או בעניין כלכלי חיוני. אם במליאה הוצע קיום דיון בוועדה והמציע התנגד, תתקיים תחילה הצבעה על הכללת הנושא בסדר היום במליאה, ורק אם הצעה זו תידחה - תתקיים הצבעה בעד או נגד קיום דיון בוועדה.[cite: 1]",
+    "expected_pages": [53, 55, 56],
+    "question_type": "multi-hop"
+  },
+  {
+    "question_id": "q_023",
+    "document_id": "RulesOfProcedure.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "בתוך כמה זמן מתחילת כהונת הכנסת יש לבחור את נציגיה לוועדה לבחירת שופטים, ומה ההליך אם לא נבחרה אישה כנציגה לוועדה זו?",
+    "expected_answer": "יש לבחור את הנציגים בתוך ארבעה חודשים מתחילת כהונתה של הכנסת (הוארך ל-7 חודשים בכנסת ה-25 כהוראת שעה). אם לא נבחרה חברת כנסת, תתקיים מיד הצבעה שנייה שבה יועמדו לבחירה רק חברות הכנסת שהיו מועמדות בסיבוב הראשון, והזוכה מביניהן תחליף את חבר הכנסת שקיבל את מספר הקולות השני בגודלו בסיבוב הראשון.[cite: 1]",
+    "expected_pages": [68, 71],
+    "question_type": "multi-hop"
+  },
+  {
+    "question_id": "q_024",
+    "document_id": "RulesOfProcedure.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "האם חבר כנסת רשאי לכהן בתפקיד ניהולי בגוף ציבורי המקבל תמיכה מהמדינה, והאם מותר לו לקבל תרומות כדי לממן צורך רפואי לקרוב משפחתו?",
+    "expected_answer": "חבר כנסת רשאי לכהן בתפקיד ניהולי בגוף ציבורי בהתנדבות וללא תמורה גם אם הגוף מקבל תמיכה, ובלבד שלא יפנה בעצמו לרשות בבקשה לקבלת התמיכה. במקביל, מותר לו לקבל תרומות למימון צורך רפואי משמעותי לקרובו, וזאת רק בכפוף לאישור מראש של ועדת האתיקה ופתיחת חשבון ייעודי שינוהל ע\"י נאמן (עו\"ד או רו\"ח).[cite: 1]",
+    "expected_pages": [196, 266],
+    "question_type": "multi-hop"
+  },
+  {
+    "question_id": "q_025",
+    "document_id": "RulesOfProcedure.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "מהי המגבלה על כמות ההצעות להבעת אי-אמון בממשלה שסיעה המונה 8 חברים יכולה להגיש במושב, וכיצד נקבע סדר ההנמקה אם הוגשו מספר הצעות אי-אמון שונות באותו דיון?",
+    "expected_answer": "סיעה המונה בין שבעה לתשעה חברים רשאית להגיש עד ארבע הצעות אי-אמון בכל מושב של הכנסת. כאשר מוגשות מספר הצעות אי-אמון, הסיעות ינמקו אותן לפי סדר גודלן החל מהסיעה הגדולה ביותר (או לפי סדר הגשתן בדיון שאינו בסיום דיון קיים), במסגרת זמן של עד עשר דקות לכל סיעה.[cite: 1]",
+    "expected_pages": [33, 36],
+    "question_type": "multi-hop"
+  },
+  {
+    "question_id": "q_026",
+    "document_id": "RulesOfProcedure.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "לפי סעיף 19(א) לתקנון הכנסת, באילו ימים ובאילו שעות נפתחות בדרך כלל ישיבות מליאת הכנסת?",
+    "expected_answer": "הכנסת מקיימת ישיבות בימים ב' ו-ג' החל בשעה 16:00, וביום ד' החל בשעה 11:00.[cite: 1]",
+    "expected_pages": [16],
+    "question_type": "constraint"
+  },
+  {
+    "question_id": "q_027",
+    "document_id": "RulesOfProcedure.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "לפי סעיף 43, בגין אילו עונשים שהטילה ועדת האתיקה רשאי חבר כנסת לערער בפני מליאת הכנסת?",
+    "expected_answer": "חבר כנסת רשאי לערער אם הוועדה החליטה לשלול ממנו רשות דיבור במליאה ל-4 ימי ישיבות או יותר, להטיל עליו הגבלות פעילות בכנסת ליותר משבועיים, או להרחיקו מ-4 ימי ישיבות או יותר.[cite: 1]",
+    "expected_pages": [31],
+    "question_type": "constraint"
+  },
+  {
+    "question_id": "q_028",
+    "document_id": "RulesOfProcedure.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "לפי סעיף 50א(ג) (הוראת שעה לעניין שעת שאלות), מהי מסגרת הזמן המרבית המוקצבת לשאלה ולתשובה במהלך שעת שאלות לשרים?",
+    "expected_answer": "מסגרת הזמן לכל שאלה לא תעלה על שתי דקות, ומסגרת הזמן לכל תשובה לא תעלה על שלוש דקות.[cite: 1]",
+    "expected_pages": [50],
+    "question_type": "constraint"
+  },
+  {
+    "question_id": "q_029",
+    "document_id": "RulesOfProcedure.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "לפי סעיף 62(ב)(2), עד איזה מועד יש להגיש הצעה של חבר כנסת כמועמד לתפקיד נציג הכנסת בוועדות מינויים שיפוטיות?",
+    "expected_answer": "ההצעה תוגש בכתב עד נעילת ישיבת הכנסת ביום האחרון בשבוע שלפני יום הבחירה, ואם אותו שבוע חל בפגרה – לא יאוחר משבוע לפני מועד הבחירה.[cite: 1]",
+    "expected_pages": [68],
+    "question_type": "constraint"
+  },
+  {
+    "question_id": "q_030",
+    "document_id": "RulesOfProcedure.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "לפי סעיף 67(ג), בתוך כמה זמן חייבת ועדת החוקה, חוק ומשפט לדון ולהחליט בהצעה לשנות את מספר שופטי בית המשפט העליון?",
+    "expected_answer": "בתוך 120 ימים מיום שהוגשה ההצעה לוועדה (וימי הפגרה אינם באים במניין).[cite: 1]",
+    "expected_pages": [77],
+    "question_type": "constraint"
+  },
+  {
+    "question_id": "q_031",
+    "document_id": "RulesOfProcedure.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "לפי סעיף 120(ב), מהו החריג המאפשר להעמיד לעיון הציבור פרוטוקול של מליאת ועדת החוץ והביטחון העוסקת בחקיקה ראשית?",
+    "expected_answer": "הפרוטוקול לא יהיה חסוי, אלא אם כן יושב ראש הוועדה הודיע מראש שהפרוטוקול יהיה חסוי.[cite: 1]",
+    "expected_pages": [152],
+    "question_type": "constraint"
+  },
+  {
+    "question_id": "q_032",
+    "document_id": "RulesOfProcedure.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "לפי סעיף 15 לכללי האתיקה, מהו המועד האחרון שבו נדרש חבר כנסת להגיש הצהרת הון לאחר סיום כהונתו?",
+    "expected_answer": "עליו להגיש את הצהרת ההון בתוך שישים ימים לאחר סיום כהונתו כחבר הכנסת.[cite: 1]",
+    "expected_pages": [202],
+    "question_type": "constraint"
+  },
+  {
+    "question_id": "q_033",
+    "document_id": "RulesOfProcedure.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "לפי החלטת ועדת האתיקה 93 בעניין שימוש בנייר מכתבים של הכנסת, איזו הגבלה חלה על מכתבים בעניינים הקשורים בעסקו או במקצועו של חבר הכנסת?",
+    "expected_answer": "אסור לחבר כנסת להשתמש בנייר מכתבים הנושא את הכותרת \"חבר הכנסת\" עבור מכתבים הקשורים לעסקו או למקצועו הפרטי.[cite: 1]",
+    "expected_pages": [233],
+    "question_type": "constraint"
+  },
+  {
+    "question_id": "q_034",
+    "document_id": "RulesOfProcedure.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "לפי סעיף 14א(ו) לכללי האתיקה, האם חבר כנסת הנוסע לחו\"ל באישור ועדת האתיקה רשאי להפיק טובת הנאה אישית בדמות צבירת נקודות של חברת התעופה?",
+    "expected_answer": "לא, חל איסור מוחלט על קבלת טובת הנאה מחברת התעופה, ובכלל זה הטבה הניתנת בדרך של חברות במועדון או צבירת נקודות.[cite: 1]",
+    "expected_pages": [198],
+    "question_type": "constraint"
+  },
+  {
+    "question_id": "q_035",
+    "document_id": "RulesOfProcedure.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "לפי סעיף 114(א) לתקנון, אם התבקשה התייעצות סיעתית לפני הצבעה בוועדה, מהו משך הזמן המינימלי שבו על יושב ראש הוועדה לדחות את ההצבעה?",
+    "expected_answer": "דחיית ההצבעה לא תפחת מחמש דקות, אלא אם כן הבקשה המפורשת הייתה לדחייה קצרה יותר.[cite: 1]",
+    "expected_pages": [146],
+    "question_type": "constraint"
+  },
+  {
+    "question_id": "q_036",
+    "document_id": "RulesOfProcedure.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "מהו הרוב המדויק מקרב חברי הכנסת הדרוש כדי לשנות או לבטל סעיפים ב\"חוק יסוד: הכנסת\" המוזכרים בתקנון?",
+    "expected_answer": "המידע המבוקש לא נמצא במסמכים שסופקו.",
+    "expected_pages": [],
+    "question_type": "negative"
+  },
+  {
+    "question_id": "q_037",
+    "document_id": "RulesOfProcedure.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "כמה פעמים בהיסטוריה של מדינת ישראל הודח בפועל יושב ראש כנסת מכהונתו לפני תום הקדנציה?",
+    "expected_answer": "המידע המבוקש לא נמצא במסמכים שסופקו.",
+    "expected_pages": [],
+    "question_type": "negative"
+  },
+  {
+    "question_id": "q_038",
+    "document_id": "RulesOfProcedure.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "איזה פריט לבוש ספציפי (למשל סנדלים או מכנסיים קצרים) מוגדר כ\"הופעה שאינה הולמת\" במליאה על פי החלטות פנימיות שאינן מפורטות בתקנון?",
+    "expected_answer": "המידע המבוקש לא נמצא במסמכים שסופקו.",
+    "expected_pages": [],
+    "question_type": "negative"
+  },
+  {
+    "question_id": "q_039",
+    "document_id": "RulesOfProcedure.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "מהי ההלכה המדויקת שנקבעה בבג\"ץ בעניין פסיקת \"חוק טל\", אשר מוזכר בתקנון בהערת שוליים כשם של ועדה היסטורית בלבד?",
+    "expected_answer": "המידע המבוקש לא נמצא במסמכים שסופקו.",
+    "expected_pages": [],
+    "question_type": "negative"
+  },
+  {
+    "question_id": "q_040",
+    "document_id": "RulesOfProcedure.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "האם מותר לחבר כנסת להכניס חיית מחמד לאולם המליאה בזמן שמתקיימת בה הצבעה שמית?",
+    "expected_answer": "המידע המבוקש לא נמצא במסמכים שסופקו.",
+    "expected_pages": [],
+    "question_type": "negative"
+  }
+]

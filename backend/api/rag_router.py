@@ -15,7 +15,7 @@ from app import pipeline
 import app.registry as rag_registry
 from app.ingest import manager as ingest_manager
 from app.worker.tasks import process_document
-from .schemas import DocumentOut, IngestResponse, ReindexResponse, QueryRequest, QueryResponse
+from .schemas import DocumentOut, IngestResponse, QueryRequest, QueryResponse
 
 
 # ---------------------------------------------------------------------------
@@ -77,53 +77,6 @@ async def upload_document(
     background_tasks.add_task(process_document, doc_id, workspace_id)
     record = rag_registry.get(doc_id)
     return IngestResponse(document_id=doc_id, file_name=record.file_name, status=record.status.value)
-
-
-# ---------------------------------------------------------------------------
-# DELETE /documents/{doc_id}
-# ---------------------------------------------------------------------------
-
-@documents_router.delete("/{doc_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_document(doc_id: str):
-    # Look up storage object_name before pipeline wipes the registry
-    from services import file_service
-    from services.storage_service import delete_object
-
-    file_rec = file_service.get_file(doc_id)
-    object_name = file_rec.get("object_name") if file_rec else None
-
-    try:
-        pipeline.delete_pipeline(doc_id)
-    except KeyError:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Document {doc_id!r} not found")
-    except Exception as exc:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(exc))
-
-    # Clean up SQL DB and object storage (best-effort — RAG registry already gone)
-    try:
-        file_service.delete_file(doc_id)
-    except Exception as exc:
-        print(f"[rag_router] SQL delete failed for {doc_id}: {exc}")
-
-    if object_name:
-        delete_object(object_name)
-
-
-# ---------------------------------------------------------------------------
-# POST /documents/{doc_id}/reindex
-# ---------------------------------------------------------------------------
-
-@documents_router.post("/{doc_id}/reindex", response_model=ReindexResponse)
-def reindex_document(doc_id: str):
-    try:
-        count = pipeline.reindex_pipeline(doc_id)
-    except KeyError:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Document {doc_id!r} not found")
-    except FileNotFoundError as exc:
-        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc))
-    except Exception as exc:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(exc))
-    return ReindexResponse(document_id=doc_id, chunks_indexed=count)
 
 
 # ---------------------------------------------------------------------------

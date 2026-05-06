@@ -102,15 +102,23 @@ class RAGResponse(BaseModel):
 # ---------------------------------------------------------------------------
 
 class GoldenQuestion(BaseModel):
+    question_id: str
+    document_id: str
+    workspace_id: str
     query: str
-    query_type: str = "in_context"  # "in_context" | "out_of_context"
-    expected_doc_id: Optional[str] = None
-    expected_page: Optional[int] = None
+    expected_answer: str
+    expected_pages: List[int]
+    question_type: str  # "explicit" | "constraint" | "multi-hop" | "negative"
 
 
 class EvalResult(BaseModel):
+    question_id: str
     query: str
-    query_type: str
-    recall_hit: Optional[bool] = None       # None when not applicable
-    faithfulness_pass: Optional[bool] = None  # None when not applicable
-    answer: str = ""
+    question_type: str
+    document_id: str
+    workspace_id: str
+    recall: float           # 0.0 or 1.0
+    accuracy: float         # 0.0 or 1.0
+    accuracy_reason: str = ""
+    generated_answer: str = ""
+    returned_pages: List[int] = Field(default_factory=list)

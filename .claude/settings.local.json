@@ -10,7 +10,11 @@
       "Bash(echo '{}')",
       "Bash(python3 -m json.tool)",
       "mcp__playwright__browser_navigate",
-      "Bash(curl -s \"http://localhost:8000/files/c2063c37-c8be-435d-9648-4695ee7685b3/status\")"
+      "Bash(curl -s \"http://localhost:8000/files/c2063c37-c8be-435d-9648-4695ee7685b3/status\")",
+      "Bash(pkill -f \"uvicorn backend.main:app\")",
+      "Bash(curl -s http://localhost:8000/workspaces)",
+      "Bash(curl -s -m 5 http://localhost:8000/workspaces)",
+      "Bash(python3 -c 'import json; d=json.load\\(open\\('\\\\''__TRACKED_VAR__'\\\\''\\)\\); qtypes=set\\(x.get\\('\\\\''question_type'\\\\''\\) for x in d\\); keys=set\\(\\).union\\(*[x.keys\\(\\) for x in d]\\); print\\(f'\\\\''Count: {len\\(d\\)}, Types: {qtypes}, Keys: {keys}'\\\\''\\)')"
     ]
   }
 }

@@ -1,0 +1,2 @@
+{"type": "run_start", "timestamp": "20260506_115038_512302", "workspace_id_override": "0fff6cb7-8721-4399-a8fd-95d2d9b1c73e", "top_k": 5, "recall_page_tolerance": 2}
+{"type": "result", "question_id": "q_001", "query": "t", "question_type": "explicit", "document_id": "d", "workspace_id_used": "w", "expected_answer": "a", "generated_answer": "g", "expected_pages": [1], "returned_pages": [1], "recall_score": 1.0, "accuracy_score": 1.0, "judge_reason": "ok"}

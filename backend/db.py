@@ -60,6 +60,10 @@ class _DBCursor:
     def fetchall(self) -> list[dict]:
         return [dict(r) for r in self._raw.fetchall()]
 
+    @property
+    def rowcount(self) -> int:
+        return self._raw.rowcount
+
     def close(self):
         self._raw.close()
 

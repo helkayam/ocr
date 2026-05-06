@@ -1,0 +1,6 @@
+{"type": "run_start", "timestamp": "20260506_114309", "workspace_id_override": "0fff6cb7-8721-4399-a8fd-95d2d9b1c73e", "top_k": 5, "recall_page_tolerance": 2}
+{"type": "result", "question_id": "q_001", "query": "test", "question_type": "explicit", "document_id": "doc.pdf", "workspace_id_used": "ws", "expected_answer": "ans", "generated_answer": "gen", "expected_pages": [1], "returned_pages": [1], "recall_score": 1.0, "accuracy_score": 1.0, "judge_reason": "ok"}
+{"type": "result", "question_id": "q_002", "query": "test", "question_type": "explicit", "document_id": "doc.pdf", "workspace_id_used": "ws", "expected_answer": "ans", "generated_answer": "gen", "expected_pages": [1], "returned_pages": [1], "recall_score": 1.0, "accuracy_score": 1.0, "judge_reason": "ok"}
+{"type": "run_summary", "total_questions": 2, "overall_recall_pct": 100.0, "overall_accuracy_pct": 100.0}
+{"type": "run_start", "timestamp": "20260506_114309", "workspace_id_override": "0fff6cb7-8721-4399-a8fd-95d2d9b1c73e", "top_k": 5, "recall_page_tolerance": 2}
+{"type": "result", "question_id": "q_001", "query": "test", "question_type": "explicit", "document_id": "doc.pdf", "workspace_id_used": "ws", "expected_answer": "ans", "generated_answer": "gen", "expected_pages": [1], "returned_pages": [1], "recall_score": 1.0, "accuracy_score": 1.0, "judge_reason": "ok"}

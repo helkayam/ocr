@@ -139,3 +139,20 @@ def delete_object(object_name: str) -> None:
             _client().remove_object(MINIO_BUCKET, object_name)
         except Exception as e:
             print(f"Storage: MinIO delete failed for {object_name}: {e}")
+
+
+def delete_workspace_storage(workspace_id: str) -> None:
+    """Remove the entire workspace directory from local storage (best-effort).
+
+    In MinIO mode this is a no-op — prefix-based cleanup would require
+    listing all objects, which is deferred to a background housekeeping job.
+    """
+    if not _use_local:
+        return
+    import shutil
+    ws_dir = LOCAL_STORAGE / workspace_id
+    try:
+        if ws_dir.exists():
+            shutil.rmtree(ws_dir)
+    except Exception as e:
+        print(f"Storage: workspace dir cleanup failed for {workspace_id}: {e}")

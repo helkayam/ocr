@@ -1,18 +1,34 @@
 {
-  "dfae4d0d-81fc-4214-94d5-c2493b883b4d": {
-    "document_id": "dfae4d0d-81fc-4214-94d5-c2493b883b4d",
-    "file_name": "tmp5c6ybb8s.pdf",
-    "status": "indexed",
-    "created_at": "2026-05-05T14:12:00.276219Z",
-    "file_hash": "cfb9175f41d70cd42d65c96f5d2a6ff93c031f23d7cba4095279394eecc39d4c",
-    "workspace_id": "0fff6cb7-8721-4399-a8fd-95d2d9b1c73e"
-  },
   "0a6eb6ce-fa4c-4483-ac9d-470bc49e9b57": {
     "document_id": "0a6eb6ce-fa4c-4483-ac9d-470bc49e9b57",
     "file_name": "RulesOfProcedure.pdf",
     "status": "indexed",
     "created_at": "2026-05-05T14:28:36.814828Z",
     "file_hash": "98f45f94b6c21b355d296d8f16bdb1af6e0d71a08906783afe6b19cdb24d7e59",
+    "workspace_id": "0fff6cb7-8721-4399-a8fd-95d2d9b1c73e"
+  },
+  "cbf2f900-6679-40a8-93eb-4509fbd08a22": {
+    "document_id": "cbf2f900-6679-40a8-93eb-4509fbd08a22",
+    "file_name": "חוק הביטוח הלאומי.pdf",
+    "status": "indexed",
+    "created_at": "2026-05-06T10:35:36.141685Z",
+    "file_hash": "c8923f118cdad1bf902a057244ad4d68cc678f3ee5026394a8fada3bbab09f93",
+    "workspace_id": "0fff6cb7-8721-4399-a8fd-95d2d9b1c73e"
+  },
+  "635eb6b0-6566-4271-b5e0-b1926b0a6c3d": {
+    "document_id": "635eb6b0-6566-4271-b5e0-b1926b0a6c3d",
+    "file_name": "חוק התכנון והבניה.pdf",
+    "status": "indexed",
+    "created_at": "2026-05-06T10:35:36.475092Z",
+    "file_hash": "44453a6e737a41c1d2952522c2fbdd3db4fde4507983e83e783e8347aaf24543",
+    "workspace_id": "0fff6cb7-8721-4399-a8fd-95d2d9b1c73e"
+  },
+  "0baea31e-d5db-466c-a981-760f8b3d983e": {
+    "document_id": "0baea31e-d5db-466c-a981-760f8b3d983e",
+    "file_name": "חוק החברות.pdf",
+    "status": "indexed",
+    "created_at": "2026-05-06T10:35:41.499780Z",
+    "file_hash": "811afa4e530321ee3fcf357fe250dd892cae163bf031cd6399e2a4767939f51c",
     "workspace_id": "0fff6cb7-8721-4399-a8fd-95d2d9b1c73e"
   }
 }

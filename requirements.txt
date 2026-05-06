@@ -28,3 +28,5 @@ python-docx
 pyshp
 numpy
 psycopg2-binary
+tabulate
+openai

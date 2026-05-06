@@ -15,6 +15,7 @@ from .schemas import (
     UploadUrlResponse,
     ConfirmUploadRequest,
     ConfirmUploadResponse,
+    ReindexResponse,
 )
 from services.storage_service import (
     generate_presigned_upload_url,
@@ -220,3 +221,60 @@ def get_file_status(file_id: str):
         "processing_status": processing_status,
         "storage": storage_mode(),
     }
+
+
+# ─── Deletion ─────────────────────────────────────────────────────────────────
+
+@router.delete("/{file_id}", status_code=204)
+def delete_file_endpoint(file_id: str):
+    """Full teardown: RAG pipeline (vectors + registry + disk) + SQL DB + object storage."""
+    from app import pipeline
+    from services.storage_service import delete_object
+
+    file_rec = file_service.get_file(file_id)
+    if not file_rec:
+        raise HTTPException(status_code=404, detail="File not found")
+
+    object_name = file_rec.get("object_name")
+
+    # For PDFs, run the RAG pipeline delete if the document is registered
+    if str(file_rec.get("file_type", "")).lower() == "pdf":
+        try:
+            import app.registry as rag_registry
+            if rag_registry.get(file_id):
+                pipeline.delete_pipeline(file_id)
+                logger.info("[files] RAG pipeline delete complete for {}", file_id)
+            else:
+                logger.info("[files] {} not in RAG registry — skipping pipeline delete", file_id)
+        except KeyError:
+            pass  # already gone from registry; continue cleanup
+        except Exception as exc:
+            raise HTTPException(status_code=500, detail=str(exc))
+
+    # Remove from SQL DB (also clears document_chunks rows)
+    try:
+        file_service.delete_file(file_id)
+    except Exception as exc:
+        logger.error("[files] SQL delete failed for {}: {}", file_id, exc)
+
+    # Remove from object storage (best-effort — never block on this)
+    if object_name:
+        delete_object(object_name)
+
+
+# ─── Reindex ──────────────────────────────────────────────────────────────────
+
+@router.post("/{file_id}/reindex", response_model=ReindexResponse)
+def reindex_file(file_id: str):
+    """Re-run Phase 5 (embed + index) for an already-chunked document."""
+    from app import pipeline
+
+    try:
+        count = pipeline.reindex_pipeline(file_id)
+    except KeyError:
+        raise HTTPException(status_code=404, detail=f"Document {file_id!r} not found")
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+    return ReindexResponse(document_id=file_id, chunks_indexed=count)

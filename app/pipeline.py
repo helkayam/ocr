@@ -97,12 +97,22 @@ def delete_pipeline(doc_id: str) -> None:
     logger.info("Pipeline: delete complete — document_id={}", doc_id)
 
 
-def evaluate_pipeline(dataset_path: str | Path, top_k: int = 5) -> None:
-    """Phase 10.  Load the golden dataset and run the evaluation suite."""
+def evaluate_pipeline(
+    file_path: str | Path | None = None,
+    top_k: int = 5,
+) -> None:
+    """Phase 10.  Run the evaluation suite.
+
+    If *file_path* is given, evaluate only that goldset file; otherwise
+    evaluate all *.json files in eval_data/.
+    """
+    import asyncio
+    from pathlib import Path as _Path
     from app.rag.evaluate import RAGEvaluator
 
-    logger.info("Pipeline: evaluate start — {}", dataset_path)
-    RAGEvaluator(top_k=top_k).run_suite(dataset_path)
+    target = _Path(file_path) if file_path else None
+    logger.info("Pipeline: evaluate start — {}", target or "eval_data/")
+    asyncio.run(RAGEvaluator(top_k=top_k).run(file_path=target))
     logger.info("Pipeline: evaluate complete")
 
 

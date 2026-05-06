@@ -1,0 +1,362 @@
+[
+  {
+    "question_id": "q_081",
+    "document_id": "חוק החברות.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "מה חייבת חברה שאחריות בעלי המניות בה מוגבלת לכלול בסוף שמה?",
+    "expected_answer": "את הציון \"בעירבון מוגבל\" או \"בע\"מ\".[cite: 1]",
+    "expected_pages": [23],
+    "question_type": "explicit"
+  },
+  {
+    "question_id": "q_082",
+    "document_id": "חוק החברות.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "ממתי נכנס לתוקף שינוי בתקנון החברה לפי החוק?",
+    "expected_answer": "מיום קבלת ההחלטה על כך בחברה, או במועד מאוחר יותר שקבעה החברה בהחלטתה.[cite: 1]",
+    "expected_pages": [23],
+    "question_type": "explicit"
+  },
+  {
+    "question_id": "q_083",
+    "document_id": "חוק החברות.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "כיצד על חברה לציין בתקנונה מניות ללא ערך נקוב?",
+    "expected_answer": "על החברה לציין בתקנון את מספרן של המניות בלבד.[cite: 1]",
+    "expected_pages": [24],
+    "question_type": "explicit"
+  },
+  {
+    "question_id": "q_084",
+    "document_id": "חוק החברות.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "בידי מי נתונה הסמכות השיורית בחברה במקרה שסמכות לא הוקנתה לאורגן אחר?",
+    "expected_answer": "בידי הדירקטוריון.[cite: 1]",
+    "expected_pages": [26],
+    "question_type": "explicit"
+  },
+  {
+    "question_id": "q_085",
+    "document_id": "חוק החברות.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "באילו נסיבות רשאית האסיפה הכללית להפעיל את סמכויות הדירקטוריון במקומו?",
+    "expected_answer": "כאשר נבצר מהדירקטוריון להפעיל סמכויותיו והדבר חיוני לניהולה התקין של החברה.[cite: 1]",
+    "expected_pages": [27],
+    "question_type": "explicit"
+  },
+  {
+    "question_id": "q_086",
+    "document_id": "חוק החברות.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "האם חברה פרטית חייבת לקיים אסיפה כללית שנתית בכל מקרה?",
+    "expected_answer": "לא, חברה פרטית רשאית לקבוע בתקנונה כי אינה חייבת לקיים אסיפה שנתית, אלא אם הדבר נחוץ למינוי רואה חשבון מבקר.[cite: 1]",
+    "expected_pages": [28],
+    "question_type": "explicit"
+  },
+  {
+    "question_id": "q_087",
+    "document_id": "חוק החברות.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "האם ניתן לקיים אסיפה כללית בחברה פרטית באמצעות שיחת וידאו או טלפון?",
+    "expected_answer": "כן, מותר לקיים אסיפה בכל אמצעי תקשורת המאפשר לכל המשתתפים לשמוע זה את זה בו בזמן, אלא אם התקנון שולל זאת.[cite: 1]",
+    "expected_pages": [30],
+    "question_type": "explicit"
+  },
+  {
+    "question_id": "q_088",
+    "document_id": "חוק החברות.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "מי מוסמך למנות את המנהל הכללי של החברה?",
+    "expected_answer": "הדירקטוריון, אלא אם נקבע אחרת בתקנון.[cite: 1]",
+    "expected_pages": [38],
+    "question_type": "explicit"
+  },
+  {
+    "question_id": "q_089",
+    "document_id": "חוק החברות.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "האם המנהל הכללי רשאי להאציל מסמכויותיו לאחרים בחברה?",
+    "expected_answer": "כן, הוא רשאי להאציל סמכויות למי שכפוף לו, באישור הדירקטוריון.[cite: 1]",
+    "expected_pages": [39],
+    "question_type": "explicit"
+  },
+  {
+    "question_id": "q_090",
+    "document_id": "חוק החברות.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "למי חייב המנהל הכללי להודיע באופן מיידי על כל עניין חריג ומהותי בחברה?",
+    "expected_answer": "ליושב ראש הדירקטוריון (או לכל חברי הדירקטוריון אם נבצר מהיו\"ר למלא את תפקידו או שאין יו\"ר).[cite: 1]",
+    "expected_pages": [39],
+    "question_type": "explicit"
+  },
+  {
+    "question_id": "q_091",
+    "document_id": "חוק החברות.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "האם קרוב משפחה של המנהל הכללי יכול להתמנות כמבקר הפנימי של החברה?",
+    "expected_answer": "לא, קרוב משפחה של נושא משרה אינו יכול לכהן כמבקר פנימי.[cite: 1]",
+    "expected_pages": [42],
+    "question_type": "explicit"
+  },
+  {
+    "question_id": "q_092",
+    "document_id": "חוק החברות.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "האם רואה החשבון המבקר רשאי להשתתף באסיפה הכללית של החברה?",
+    "expected_answer": "כן, הוא רשאי להשתתף בכל אסיפה כללית שבה מוגשים דוחות כספיים שביקר.[cite: 1]",
+    "expected_pages": [45],
+    "question_type": "explicit"
+  },
+  {
+    "question_id": "q_093",
+    "document_id": "חוק החברות.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "מי מאשר וחותם על הדוחות הכספיים של החברה לפני הצגתם לאסיפה השנתית?",
+    "expected_answer": "הדירקטוריון מאשר את הדוחות, והם נחתמים בשמו.[cite: 1]",
+    "expected_pages": [46],
+    "question_type": "explicit"
+  },
+  {
+    "question_id": "q_094",
+    "document_id": "חוק החברות.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "באילו נסיבות רשאית החברה לחלט מניה של בעל מניה?",
+    "expected_answer": "כאשר בעל המניה לא שילם במועד את התמורה שהתחייב לה עבור המניה, אם נקבעה לכך הוראה בתקנון או בהסכם ההקצאה.[cite: 1]",
+    "expected_pages": [47],
+    "question_type": "explicit"
+  },
+  {
+    "question_id": "q_095",
+    "document_id": "חוק החברות.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "למי חב נושא משרה את חובת הזהירות על פי החוק?",
+    "expected_answer": "לחברה.[cite: 1]",
+    "expected_pages": [59],
+    "question_type": "explicit"
+  },
+  {
+    "question_id": "q_096",
+    "document_id": "חוק החברות.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "האם נושא משרה בחברה חב בחובת אמונים כלפיה, והאם החברה רשאית לפטור אותו מראש מאחריות בגין הפרת חובה זו?",
+    "expected_answer": "נושא משרה אכן חב בחובת אמונים כלפי החברה וחייב להימנע מניגוד עניינים ומתחרות עמה. עם זאת, לחברה אסור בתכלית האיסור לפטור נושא משרה מאחריותו בגין הפרת חובת אמונים כלפיה.[cite: 1]",
+    "expected_pages": [59, 60],
+    "question_type": "multi-hop"
+  },
+  {
+    "question_id": "q_097",
+    "document_id": "חוק החברות.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "מי מוסמך להגיש תביעה נגזרת בשם החברה, והאם במקרה של זכייה בית המשפט יכול לפסוק לזכותו תגמול והחזר הוצאות?",
+    "expected_answer": "כל בעל מניה וכל דירקטור רשאי להגיש תביעה נגזרת. אם ניתן פסק דין לטובת החברה, בית המשפט רשאי להורות על תשלום גמול מיוחד לתובע על טרחתו, וכן לחייב את החברה בתשלום הוצאותיו ושכר טרחת עורך דינו.[cite: 1]",
+    "expected_pages": [49, 50],
+    "question_type": "multi-hop"
+  },
+  {
+    "question_id": "q_098",
+    "document_id": "חוק החברות.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "מה קורה לזכויות ההצבעה של מניה שהחברה חילטה עקב אי-תשלום התמורה עבורה?",
+    "expected_answer": "המניה שחולטה הופכת ל\"מניה רדומה\" (כל עוד היא בבעלות החברה וטרם נמכרה), וככזו היא אינה מקנה זכויות כלשהן, כולל שלילת זכויות ההצבעה שלה.[cite: 1]",
+    "expected_pages": [47, 70],
+    "question_type": "multi-hop"
+  },
+  {
+    "question_id": "q_099",
+    "document_id": "חוק החברות.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "לאחר שבית משפט מאשר מיזוג והוא יוצא לפועל, מה עולה בגורל הנכסים של חברת היעד ומה קורה לסטטוס הרישום שלה?",
+    "expected_answer": "כל הנכסים והחיובים של חברת היעד מועברים ומוקנים לחברה הקולטת. מיד לאחר מכן, חברת היעד מחוסלת והרשם מוחק אותה ממרשם החברות.[cite: 1]",
+    "expected_pages": [72, 73],
+    "question_type": "multi-hop"
+  },
+  {
+    "question_id": "q_100",
+    "document_id": "חוק החברות.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "בחברה ציבורית, מי מציע את מינויו של המבקר הפנימי ואיזה גוף מאשר את תכנית העבודה שלו?",
+    "expected_answer": "המבקר הפנימי ממונה על ידי הדירקטוריון לפי הצעתה של ועדת הביקורת. תכנית העבודה שלו מוגשת לאישור הדירקטוריון או לאישור ועדת הביקורת, כפי שנקבע בתקנון (או בהיעדר קביעה – בידי הדירקטוריון).[cite: 1]",
+    "expected_pages": [42, 43],
+    "question_type": "multi-hop"
+  },
+  {
+    "question_id": "q_101",
+    "document_id": "חוק החברות.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "כאשר דירקטור מחליט להתפטר, מתי ההתפטרות נכנסת לתוקף, ואם התפטרותו מותירה את החברה ללא דירקטוריון פעיל, האם בעלי המניות יכולים לכנס אסיפה מיוחדת?",
+    "expected_answer": "ההתפטרות נכנסת לתוקף מיד עם מסירת ההודעה לדירקטוריון או לחברה (אלא אם נקבע מועד מאוחר יותר). אם אין דירקטוריון היכול לכנס אסיפה מיוחדת שנדרשה, בעלי מניות שמחזיקים ביותר ממחצית זכויות ההצבעה של הדורשים רשאים לכנסה בעצמם.[cite: 1]",
+    "expected_pages": [54, 29],
+    "question_type": "multi-hop"
+  },
+  {
+    "question_id": "q_102",
+    "document_id": "חוק החברות.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "האם \"חברה לתועלת הציבור\" רשאית לחלק רווחים לבעלי מניותיה, ואיזה כיתוב עליה להוסיף לשמה?",
+    "expected_answer": "חברה לתועלת הציבור אינה רשאית בשום אופן לחלק רווחים או לבצע חלוקה אחרת לבעלי מניותיה. כמו כן, עליה לציין בצד שמה בכל מסמך או שילוט את הסיומת \"חברה לתועלת הציבור\" או \"חל\"צ\".[cite: 1]",
+    "expected_pages": [77, 78],
+    "question_type": "multi-hop"
+  },
+  {
+    "question_id": "q_103",
+    "document_id": "חוק החברות.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "מה חובתה של חברת חוץ המעוניינת לקיים מקום עסקים בישראל מבחינת רישום, ומהי אחת הסנקציות מצד הרשם אם היא תתעלם מחובת התשלומים הנלווית?",
+    "expected_answer": "עליה להגיש בקשה להירשם כחברת חוץ בישראל ולשלם אגרות. אם היא מפרה חובה זו ולא משלמת אגרות כנדרש, הרשם רשאי, לאחר התראה, לרשום אותה במרשם כ\"חברה מפרה\".[cite: 1]",
+    "expected_pages": [94, 108],
+    "question_type": "multi-hop"
+  },
+  {
+    "question_id": "q_104",
+    "document_id": "חוק החברות.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "מתי אדם המחזיק במניות חברה ציבורית מחויב לבצע \"הצעת רכש מיוחדת\", ומהו תפקידו של הדירקטוריון של חברת המטרה ביחס להצעה זו?",
+    "expected_answer": "חובה להציע הצעת רכש מיוחדת כדי לעבור החזקה של 25% מזכויות ההצבעה (אם אין בחברה בעל דבוקת שליטה אחר), או כדי לעבור החזקה של 45% (אם אין אדם אחר שמחזיק מעל לכך). על הדירקטוריון להעביר לניצעים חוות דעת מנומקת לגבי כדאיות ההצעה.[cite: 1]",
+    "expected_pages": [73, 74],
+    "question_type": "multi-hop"
+  },
+  {
+    "question_id": "q_105",
+    "document_id": "חוק החברות.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "מהם שני המבחנים המצטברים שנדרשים כדי שחברה תוכל לבצע חלוקת דיבידנד כדין (חלוקה מותרת), ומה קורה לדירקטור שהיה שותף חלוקה שאינה עומדת בהם (חלוקה אסורה)?",
+    "expected_answer": "החברה צריכה לעמוד ב\"מבחן הרווח\" וב\"מבחן יכולת הפירעון\". במידה ובוצעה חלוקה אסורה, כל מי שכיהן כדירקטור באותה עת אחראי אישית ורואים אותו כמי שהפר את חובותיו לחברה, אלא אם יוכיח שהתנגד לחלוקה וניסה למנעה או שהסתמך בתום לב על מידע רלוונטי.[cite: 1]",
+    "expected_pages": [69, 70],
+    "question_type": "multi-hop"
+  },
+  {
+    "question_id": "q_106",
+    "document_id": "חוק החברות.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "לפי סעיף 221, מאיזה מועד מתחילה תקופת כהונתו של דירקטור?",
+    "expected_answer": "ממועד מינויו, או ממועד מאוחר יותר אם נקבעה בתקנון הוראה המתירה מינוי שתחילתו בעתיד.[cite: 1]",
+    "expected_pages": [52],
+    "question_type": "constraint"
+  },
+  {
+    "question_id": "q_107",
+    "document_id": "חוק החברות.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "לפי סעיף 196, בתוך כמה ימים לכל היותר חייבת החברה להשיב לדרישתו של תובע פוטנציאלי המעוניין להגיש תביעה נגזרת בשמה?",
+    "expected_answer": "בתוך 45 ימים מיום קבלת הדרישה.[cite: 1]",
+    "expected_pages": [49],
+    "question_type": "constraint"
+  },
+  {
+    "question_id": "q_108",
+    "document_id": "חוק החברות.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "לפי סעיף 345ג(ד)(2), מה קורה אם חברה אינה מגיבה בתוך 45 ימים להודעת רשם ההקדשות על כוונתו לרשום אותה בפנקס החברות לתועלת הציבור?",
+    "expected_answer": "רשם ההקדשות ירשום אותה בפנקס וימסור על כך הודעה מפורשת לחברה ולרשם החברות.[cite: 1]",
+    "expected_pages": [78],
+    "question_type": "constraint"
+  },
+  {
+    "question_id": "q_109",
+    "document_id": "חוק החברות.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "לפי סעיף 94(ב), מהו החריג לפיו חברה אינה מחויבת למנות יושב ראש לדירקטוריון, ומה ההסדר אם אינה ממנה?",
+    "expected_answer": "חברה פרטית שאינה חברת איגרות חוב פטורה מהחובה למנות יושב ראש. במצב זה, כל דירקטור זכאי לכנס את הדירקטוריון ולקבוע את סדר יומו, אלא אם נקבע אחרת בתקנון.[cite: 1]",
+    "expected_pages": [33],
+    "question_type": "constraint"
+  },
+  {
+    "question_id": "q_110",
+    "document_id": "חוק החברות.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "לפי סעיף 242(א), מהו פרק הזמן המרבי למינוי דירקטורים חיצוניים ראשונים בחברה שהפכה להיות חברה ציבורית?",
+    "expected_answer": "יש למנותם לא יאוחר משלושה חודשים מהמועד שבו הפכה לחברה ציבורית.[cite: 1]",
+    "expected_pages": [56],
+    "question_type": "constraint"
+  },
+  {
+    "question_id": "q_111",
+    "document_id": "חוק החברות.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "לפי סעיף 128, איזה מרשם נוסף חייבת חברה ציבורית לנהל, מעבר למרשם בעלי המניות הרגיל?",
+    "expected_answer": "מרשם בעלי מניות מהותיים.[cite: 1]",
+    "expected_pages": [40],
+    "question_type": "constraint"
+  },
+  {
+    "question_id": "q_112",
+    "document_id": "חוק החברות.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "לפי סעיף 317(א), מהו המועד האחרון שבו חברה מתמזגת חייבת להמציא את הצעת המיזוג המשותפת לרשם החברות?",
+    "expected_answer": "בתוך שלושה ימים ממועד זימון האסיפה הכללית.[cite: 1]",
+    "expected_pages": [71],
+    "question_type": "constraint"
+  },
+  {
+    "question_id": "q_113",
+    "document_id": "חוק החברות.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "לפי סעיף 153(א), תחת אילו תנאים מיוחדים ניתן להפסיק את כהונתו של מבקר פנימי בניגוד להסכמתו?",
+    "expected_answer": "רק בהחלטת דירקטוריון שנתקבלה לאחר קבלת עמדת ועדת הביקורת, ולאחר שניתנה למבקר הזדמנות סבירה להשמיע את עמדתו.[cite: 1]",
+    "expected_pages": [43],
+    "question_type": "constraint"
+  },
+  {
+    "question_id": "q_114",
+    "document_id": "חוק החברות.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "לפי סעיף 346(ב), בתוך כמה זמן ממועד הקמת מקום עסקים בישראל חייבת חברת חוץ להגיש בקשה לרישום אצל רשם החברות?",
+    "expected_answer": "בתוך חודש ימים ממועד הקמת מקום העסקים.[cite: 1]",
+    "expected_pages": [94],
+    "question_type": "constraint"
+  },
+  {
+    "question_id": "q_115",
+    "document_id": "חוק החברות.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "לפי סעיף 362א(ב), כמה ימים צריכים לחלוף ממועד רישום ההתראה כדי שהרשם יוכל להכריז רשמית ולרשום את החברה כ\"חברה מפרה\" (אם לא תיקנה את ההפרה)?",
+    "expected_answer": "30 ימים מיום רישום ההתראה.[cite: 1]",
+    "expected_pages": [108],
+    "question_type": "constraint"
+  },
+  {
+    "question_id": "q_116",
+    "document_id": "חוק החברות.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "מהי העלות הכספית המדויקת בשקלים של אגרת רישום חברה בע\"מ (אגרת פתיחת תיק) התקפה לשנת 2026?",
+    "expected_answer": "המידע המבוקש לא נמצא במסמכים שסופקו.",
+    "expected_pages": [],
+    "question_type": "negative"
+  },
+  {
+    "question_id": "q_117",
+    "document_id": "חוק החברות.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "באיזה פסק דין של בית המשפט העליון נקבע התקדים המפורסם ביותר ל\"הרמת מסך\" בחברה משפחתית?",
+    "expected_answer": "המידע המבוקש לא נמצא במסמכים שסופקו.",
+    "expected_pages": [],
+    "question_type": "negative"
+  },
+  {
+    "question_id": "q_118",
+    "document_id": "חוק החברות.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "אילו חברות ציבוריות בישראל מחזיקות כיום במרשם בעלי המניות הרחב ביותר במדינה?",
+    "expected_answer": "המידע המבוקש לא נמצא במסמכים שסופקו.",
+    "expected_pages": [],
+    "question_type": "negative"
+  },
+  {
+    "question_id": "q_119",
+    "document_id": "חוק החברות.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "מהם ימי ושעות קבלת הקהל הפיזית במשרדי רשם החברות בירושלים המאפשרים הגשת מסמכי פירוק מרצון?",
+    "expected_answer": "המידע המבוקש לא נמצא במסמכים שסופקו.",
+    "expected_pages": [],
+    "question_type": "negative"
+  },
+  {
+    "question_id": "q_120",
+    "document_id": "חוק החברות.pdf",
+    "workspace_id": "eval_workspace_01",
+    "query": "מה קורה מבחינה טכנית במערכת רשם החברות אם שני יזמים מגישים בדיוק באותה שנייה בקשה מקוונת לרישום חברה תחת שם זהה?",
+    "expected_answer": "המידע המבוקש לא נמצא במסמכים שסופקו.",
+    "expected_pages": [],
+    "question_type": "negative"
+  }
+]

@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, status
 from typing import List
 from .schemas import Workspace, WorkspaceCreateRequest
 from services import workspace_service
+from services.storage_service import delete_workspace_storage
 
 
 router = APIRouter(prefix="/workspaces", tags=["workspaces"])
@@ -30,3 +31,4 @@ def delete_workspace(id: str):
     deleted = workspace_service.delete_workspace(id)
     if not deleted:
         raise HTTPException(status_code=404, detail="Workspace not found")
+    delete_workspace_storage(id)

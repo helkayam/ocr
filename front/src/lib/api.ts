@@ -82,7 +82,7 @@ export const api = {
     }): Promise<{ file: FileItem }> => post('/files/confirm-upload', body),
     getStatus: (fileId: string): Promise<{ file_id: string; processing_status: string }> =>
       request(`/files/${fileId}/status`),
-    delete: (fileId: string): Promise<void> => del(`/documents/${fileId}`),
+    delete: (fileId: string): Promise<void> => del(`/files/${fileId}`),
   },
 
   search: {
