@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { X, FileText, Calendar, HardDrive, CheckCircle2, AlertTriangle, AlertCircle, MapPin } from 'lucide-react';
+import { Download, FileText, Calendar, HardDrive, CheckCircle2, AlertTriangle, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface MetadataModalProps {
@@ -129,68 +129,6 @@ export function MetadataModal({ file, isOpen, onClose }: MetadataModalProps) {
             </div>
           )}
 
-          {/* Preview Section */}
-          <div className="space-y-3">
-            <h4 className="text-sm font-medium text-muted-foreground">Preview</h4>
-            <div className="rounded-lg border border-border bg-muted/20 overflow-hidden">
-              {file.type === 'pdf' && (
-                <div className="aspect-[4/3] bg-muted/50">
-                  {file.download_url ? (
-                    <iframe
-                      src={file.download_url}
-                      className="w-full h-full rounded-lg"
-                      title={file.name}
-                    />
-                  ) : (
-                    <div className="flex items-center justify-center h-full">
-                      <div className="text-center p-8">
-                        <FileText className="h-16 w-16 mx-auto text-red-500/50 mb-4" />
-                        <p className="text-sm text-muted-foreground">PDF Preview unavailable</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-              {file.type === 'geojson' && (
-                <div className="aspect-[4/3] flex items-center justify-center bg-gradient-to-br from-green-900/20 to-blue-900/20 relative">
-                  <div className="absolute inset-0 opacity-20">
-                    {/* Simple grid pattern for map placeholder */}
-                    <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-                      <defs>
-                        <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                          <path d="M 40 0 L 0 0 0 40" fill="none" stroke="currentColor" strokeWidth="0.5" className="text-green-500/30" />
-                        </pattern>
-                      </defs>
-                      <rect width="100%" height="100%" fill="url(#grid)" />
-                    </svg>
-                  </div>
-                  <div className="text-center p-8 relative z-10">
-                    <MapPin className="h-16 w-16 mx-auto text-green-500/50 mb-4" />
-                    <p className="text-sm text-muted-foreground">GeoJSON Mini-Map</p>
-                    <p className="text-xs text-muted-foreground/70 mt-1">Geographic data visualization</p>
-                    {file.metadata?.geoData && (
-                      <p className="text-xs text-green-400 mt-2">
-                        {file.metadata.geoData.features} features
-                      </p>
-                    )}
-                  </div>
-                </div>
-              )}
-              {(file.type === 'docx' || file.type === 'shapefile') && (
-                <div className="aspect-[4/3] flex items-center justify-center">
-                  <div className="text-center p-8">
-                    <FileTypeIcon type={file.type} size="lg" className="mx-auto mb-4 scale-[2]" />
-                    <p className="text-sm text-muted-foreground mt-4">
-                      {file.type === 'docx' ? 'Document Preview' : 'Shapefile Layers'}
-                    </p>
-                    <p className="text-xs text-muted-foreground/70 mt-1">
-                      Preview not available for this file type
-                    </p>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
         </div>
 
         <div className="p-4 border-t border-border bg-muted/20 flex justify-end gap-2">
@@ -210,6 +148,7 @@ export function MetadataModal({ file, isOpen, onClose }: MetadataModalProps) {
               document.body.removeChild(a);
             }}
           >
+            <Download className="h-4 w-4 mr-2" />
             Download File
           </Button>
         </div>

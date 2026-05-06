@@ -3,7 +3,7 @@ import { FileItem, FileType } from '@/types/files';
 import { FileTypeIcon } from './FileTypeIcon';
 import { FileStatusBadge } from './FileStatusBadge';
 import { Button } from '@/components/ui/button';
-import { ArrowUpDown, ArrowUp, ArrowDown, Eye, MoreHorizontal, Trash2, Download, ScanSearch } from 'lucide-react';
+import { ArrowUpDown, ArrowUp, ArrowDown, MoreHorizontal, Trash2, Download, ScanSearch } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   DropdownMenu,
@@ -174,7 +174,7 @@ export function FileListTable({ files, onViewDetails, onPreview, onDelete }: Fil
                       onClick={() => onViewDetails(file)}
                       className="h-8 px-2"
                     >
-                      <Eye className="h-4 w-4 mr-1" />
+                      <Download className="h-4 w-4 mr-1" />
                       <span className="hidden sm:inline">Details</span>
                     </Button>
                     

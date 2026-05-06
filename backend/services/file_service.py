@@ -31,6 +31,9 @@ def create_file(request: ConfirmUploadRequest, object_name: str = "") -> FileIte
     if not object_name:
         object_name = f"{request.workspace_id}/{file_id}/{request.filename}"
 
+    # Only PDFs go through the RAG pipeline; non-PDFs have no processing status.
+    initial_ps = "pending" if ftype == FileType.PDF else None
+
     if db_available():
         with get_db() as cur:
             cur.execute(
@@ -38,14 +41,15 @@ def create_file(request: ConfirmUploadRequest, object_name: str = "") -> FileIte
                 INSERT INTO files
                     (file_id, workspace_id, filename, file_type, content_type,
                      file_size, object_name, status, processing_status)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, 'completed', 'pending')
+                VALUES (%s, %s, %s, %s, %s, %s, %s, 'completed', %s)
                 ON CONFLICT (file_id) DO UPDATE
-                    SET status = 'completed', processing_status = 'pending'
+                    SET status = 'completed', processing_status = %s
                 """,
                 (
                     file_id, request.workspace_id, request.filename,
                     ftype.value, request.content_type,
                     request.file_size, object_name,
+                    initial_ps, initial_ps,
                 ),
             )
             cur.execute(
@@ -68,7 +72,7 @@ def create_file(request: ConfirmUploadRequest, object_name: str = "") -> FileIte
             file_size=request.file_size,
             object_name=object_name,
             status="completed",
-            processing_status="pending",
+            processing_status=initial_ps,
             created_at=now,
         )
 

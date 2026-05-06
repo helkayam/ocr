@@ -1,3 +1,4 @@
+import os
 from typing import Optional
 
 from loguru import logger
@@ -14,6 +15,9 @@ def get_model() -> SentenceTransformer:
     """Lazy-load and cache the embedding model (loaded once per process)."""
     global _model
     if _model is None:
+        # Force local cache — skip all Hugging Face Hub network checks
+        os.environ.setdefault("TRANSFORMERS_OFFLINE", "1")
+        os.environ.setdefault("HF_HUB_OFFLINE", "1")
         logger.info("Loading embedding model: {}", MODEL_NAME)
         _model = SentenceTransformer(MODEL_NAME)
         logger.info("Embedding model loaded")

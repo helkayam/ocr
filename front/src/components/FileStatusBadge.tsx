@@ -23,7 +23,7 @@ const uploadStatusConfig: Record<FileStatus, BadgeConfig> = {
 };
 
 const ragStatusConfig: Record<string, BadgeConfig> = {
-  pending:       { label: 'RAG Queued',    className: 'status-pending',   icon: Clock },
+  pending:       { label: 'RAG Queued',    className: 'status-uploading', icon: Loader2, spin: true },
   ocr_completed: { label: 'OCR Done',      className: 'status-uploading', icon: Loader2, spin: true },
   chunked:       { label: 'Chunking Done', className: 'status-uploading', icon: Loader2, spin: true },
   indexed:       { label: 'Indexed',       className: 'status-completed', icon: Check },

@@ -244,6 +244,15 @@ When adding new retrieval or indexing code, always pass and filter on `workspace
 
 ---
 
+## Engineering Principles & Code Hygiene
+
+1. **Architectural Integrity.** Maintain strict separation between `backend/` (API/DB/Storage) and `app/` (RAG logic).
+2. **Modular & Concise.** Keep files focused (SRP). Avoid large, multi-purpose modules. If a file exceeds 400 lines, split it.
+3. **DRY (Don't Repeat Yourself).** Reuse logic from `app/pipeline.py` or shared schemas in `backend/api/schemas.py`. Never duplicate RAG logic.
+4. **Proactive Refactoring.** If you spot inefficient code (e.g., O(N) registry lookups), fix it immediately. Optimize as you go.
+5. **Zero Warning Tolerance.** Fix bugs and warnings before adding new features. Never build on top of unstable code.
+6. **Elegant Simplicity.** Write smart, readable, and well-partitioned code. Logic should be easy to follow at a glance.
+
 ## Code Style
 
 ### Backend (Python)

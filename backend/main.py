@@ -32,6 +32,11 @@ app.include_router(documents_router)
 app.include_router(query_router)
 
 
+@app.get("/")
+def root():
+    return {"status": "ok", "service": "Protocol Genesis API"}
+
+
 @app.get("/health")
 def health():
     from db import get_mode

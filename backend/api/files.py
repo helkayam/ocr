@@ -38,6 +38,12 @@ def _run_rag_pipeline(file_id: str, workspace_id: str = "__legacy__") -> None:
         process_document(file_id, workspace_id=workspace_id)
     except Exception:
         logger.exception("[rag_bridge] RAG processing failed for {}", file_id)
+        try:
+            import app.registry as rag_registry
+            from app.models import DocumentStatus
+            rag_registry.update_status(file_id, DocumentStatus.error)
+        except Exception:
+            logger.warning("[rag_bridge] Could not mark {} as error in registry", file_id)
 
 
 # ─── Upload flow ─────────────────────────────────────────────────────────────

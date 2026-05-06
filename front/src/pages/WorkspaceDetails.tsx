@@ -33,8 +33,9 @@ export default function WorkspaceDetails() {
     refetchInterval: (query) => {
       const data = query.state.data;
       if (!data) return false;
+      const ACTIVE_STATUSES = new Set(['pending', 'ocr_completed', 'chunked']);
       const hasActive = data.some(
-        f => f.processing_status && !['indexed', 'error'].includes(f.processing_status)
+        f => f.processing_status != null && ACTIVE_STATUSES.has(f.processing_status)
       );
       return hasActive ? 3_000 : false;
     },
