@@ -209,7 +209,7 @@ def reindex(ctx: click.Context, doc_id: str) -> None:
     "file_path",
     default=None,
     type=click.Path(exists=True, dir_okay=False),
-    help="Path to a specific goldset JSON file. Omit to run all files in eval_data/.",
+    help="Path to a specific goldset JSON file. Omit to run all files in tests/fixtures/.",
 )
 @click.option(
     "--top-k",
@@ -220,10 +220,10 @@ def reindex(ctx: click.Context, doc_id: str) -> None:
 )
 @click.pass_context
 def evaluate_cmd(ctx: click.Context, file_path: str | None, top_k: int) -> None:
-    """Evaluate RAG quality across all goldset files in eval_data/ (Phase 10).
+    """Evaluate RAG quality across all goldset files in tests/fixtures/ (Phase 10).
 
     Run all goldset files:   python main.py evaluate
-    Run a single file:       python main.py evaluate --file eval_data/goldset_companies.json
+    Run a single file:       python main.py evaluate --file tests/fixtures/goldset_companies.json
     """
     import asyncio
     from pathlib import Path

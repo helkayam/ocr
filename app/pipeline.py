@@ -104,14 +104,14 @@ def evaluate_pipeline(
     """Phase 10.  Run the evaluation suite.
 
     If *file_path* is given, evaluate only that goldset file; otherwise
-    evaluate all *.json files in eval_data/.
+    evaluate all *.json files in tests/fixtures/.
     """
     import asyncio
     from pathlib import Path as _Path
     from app.rag.evaluate import RAGEvaluator
 
     target = _Path(file_path) if file_path else None
-    logger.info("Pipeline: evaluate start — {}", target or "eval_data/")
+    logger.info("Pipeline: evaluate start — {}", target or "tests/fixtures/")
     asyncio.run(RAGEvaluator(top_k=top_k).run(file_path=target))
     logger.info("Pipeline: evaluate complete")
 

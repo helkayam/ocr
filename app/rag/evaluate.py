@@ -33,7 +33,7 @@ load_dotenv()
 # and may not match the live index.
 EVAL_WORKSPACE_ID = "0fff6cb7-8721-4399-a8fd-95d2d9b1c73e"
 
-EVAL_DATA_DIR = Path("eval_data")
+EVAL_DATA_DIR = Path("tests/fixtures")
 REPORT_DIR = Path("data/eval_reports")
 FALLBACK_PHRASE = "המידע המבוקש לא נמצא במסמכים שסופקו."
 
@@ -105,7 +105,7 @@ class RAGEvaluator:
 
     Usage:
         asyncio.run(RAGEvaluator(top_k=5).run())
-        asyncio.run(RAGEvaluator().run(file_path=Path("eval_data/goldset_companies.json")))
+        asyncio.run(RAGEvaluator().run(file_path=Path("tests/fixtures/goldset_companies.json")))
     """
 
     def __init__(self, top_k: int = 5) -> None:
@@ -260,7 +260,7 @@ class RAGEvaluator:
     # ------------------------------------------------------------------
 
     async def run(self, file_path: Optional[Path] = None) -> List[EvalResult]:
-        """Run evaluation over all files in eval_data/ or a specific file.
+        """Run evaluation over all files in tests/fixtures/ or a specific file.
 
         A JSONL report file is opened once at the start of the run and each
         question result is flushed to disk immediately after it is scored.
