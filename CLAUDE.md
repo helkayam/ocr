@@ -20,6 +20,8 @@ Never run `pip install` without first activating the venv. If the venv is not ac
 ### Required Environment Variables (`.env` in project root)
 ```
 GROQ_API_KEY=...
+OPENAI_API_KEY=...     # required only when LLM_PROVIDER=openai
+LLM_PROVIDER=groq      # optional; "groq" (default) or "openai"
 JINA_API_KEY=...
 DATABASE_URL=...       # optional; falls back to SQLite if not set
 MINIO_ENDPOINT=...     # optional; falls back to local storage if not set
@@ -81,7 +83,7 @@ ocr/
 │   │   ├── search.py           # Hybrid retrieval: dense (top-20) + BM25 via RRF
 │   │   └── reranker.py         # Jina API reranker → top-5
 │   ├── rag/
-│   │   ├── generator.py        # Groq LLM with constraint-aware Hebrew system prompt
+│   │   ├── generator.py        # Groq/OpenAI LLM switcher with constraint-aware Hebrew system prompt
 │   │   └── evaluate.py         # Recall@K + grounding accuracy evaluation
 │   └── worker/
 │       ├── main.py             # RQ worker listener
@@ -171,7 +173,7 @@ Stage 1 — Dense retrieval: embed query with "query: " prefix → ChromaDB top-
     ↓
 Stage 2 — Jina reranker API → top-5 chunks (parent_text sent to LLM)
     ↓
-Groq LLM (llama-3.3-70b-versatile) with constraint-aware Hebrew system prompt
+LLM (Groq `llama-3.3-70b-versatile` or OpenAI `gpt-4o-mini`, selected via `LLM_PROVIDER`) with constraint-aware Hebrew system prompt
     ↓
 Answer: concise summary + detailed Hebrew prose with (עמוד X) citations + footer
 ```
@@ -202,7 +204,7 @@ When adding new retrieval or indexing code, always pass and filter on `workspace
 | Reranker | Jina API `jina-reranker-v2-base-multilingual` (HTTP, no local load) |
 | Vector DB | ChromaDB (local `data/index/`) |
 | Sparse index | `rank-bm25` (BM25Okapi, persisted as `bm25_corpus.json`) |
-| LLM | Groq API `llama-3.3-70b-versatile` |
+| LLM | Groq API `llama-3.3-70b-versatile` (default) or OpenAI `gpt-4o-mini`; switched via `LLM_PROVIDER` env var |
 | Backend API | FastAPI + Uvicorn |
 | DB | PostgreSQL (preferred) or SQLite (auto-fallback) |
 | Storage | MinIO (preferred) or `backend/local_storage/` (auto-fallback) |
@@ -228,19 +230,21 @@ When adding new retrieval or indexing code, always pass and filter on `workspace
 
 5. **Workspace isolation everywhere.** Every read/write to ChromaDB, BM25, or the registry must include `workspace_id` scoping.
 
-6. **Secrets via dotenv.** `GROQ_API_KEY`, `JINA_API_KEY`, `DATABASE_URL`, `MINIO_ENDPOINT` — all from `.env`, never hardcoded.
+6. **Secrets via dotenv.** `GROQ_API_KEY`, `OPENAI_API_KEY`, `LLM_PROVIDER`, `JINA_API_KEY`, `DATABASE_URL`, `MINIO_ENDPOINT` — all from `.env`, never hardcoded.
 
-7. **Retry logic.** All external API calls (Groq, Jina) use exponential backoff for HTTP 429. Use `tenacity` for Groq. BM25 failures are non-fatal (dense index is primary).
+7. **LLM provider switcher.** `app/rag/generator.py` reads `LLM_PROVIDER` at call time via `_get_client()`. Defaults to `"groq"` (`llama-3.3-70b-versatile`); set to `"openai"` to use `gpt-4o-mini` instead. Both providers use the OpenAI-compatible client (`openai.OpenAI`); Groq is accessed via its OpenAI-compatible base URL. Never hardcode the provider — always read from the env var.
 
-8. **Loguru everywhere.** Log pipeline step start/end, status transitions, API errors, deletion events. Use `logger.debug()` for reranker scores.
+8. **Retry logic.** All external API calls (Groq, OpenAI, Jina) use exponential backoff for HTTP 429. Use `tenacity` (`retry_if_exception_type(openai.RateLimitError)`) for LLM calls. BM25 failures are non-fatal (dense index is primary).
 
-9. **Two-level chunking.** Child chunks (400 chars) are embedded and retrieved from ChromaDB. Parent chunks (1500 chars) are stored in child metadata as `parent_text` and sent to the LLM for richer context.
+9. **Loguru everywhere.** Log pipeline step start/end, status transitions, API errors, deletion events. Use `logger.debug()` for reranker scores.
 
-10. **Backend vs. app separation.** `backend/` is the ONLY HTTP entry point — `app/api/` has been removed. `backend/` owns the HTTP API, DB, and file storage. `app/` owns the RAG pipeline logic. The bridge is `backend/api/files.py` calling `app/ingest/manager.py` and `app/worker/tasks.py`.
+10. **Two-level chunking.** Child chunks (400 chars) are embedded and retrieved from ChromaDB. Parent chunks (1500 chars) are stored in child metadata as `parent_text` and sent to the LLM for richer context.
 
-11. **Unified schemas.** All API-layer Pydantic schemas live in `backend/api/schemas.py` — this includes file/workspace schemas AND RAG schemas (DocumentOut, QueryRequest, QueryResponse, etc.). `backend/api/rag_router.py` imports from there; it does not define its own inline schemas.
+11. **Backend vs. app separation.** `backend/` is the ONLY HTTP entry point — `app/api/` has been removed. `backend/` owns the HTTP API, DB, and file storage. `app/` owns the RAG pipeline logic. The bridge is `backend/api/files.py` calling `app/ingest/manager.py` and `app/worker/tasks.py`.
 
-12. **Workspace lifecycle.** `DELETE /workspaces/{id}` is implemented in `backend/api/workspaces.py` + `backend/services/workspace_service.py`. Always clean up workspace documents via the RAG pipeline delete before deleting the workspace record.
+12. **Unified schemas.** All API-layer Pydantic schemas live in `backend/api/schemas.py` — this includes file/workspace schemas AND RAG schemas (DocumentOut, QueryRequest, QueryResponse, etc.). `backend/api/rag_router.py` imports from there; it does not define its own inline schemas.
+
+13. **Workspace lifecycle.** `DELETE /workspaces/{id}` is implemented in `backend/api/workspaces.py` + `backend/services/workspace_service.py`. Always clean up workspace documents via the RAG pipeline delete before deleting the workspace record.
 
 ---
 

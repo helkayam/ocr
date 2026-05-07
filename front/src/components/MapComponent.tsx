@@ -4,6 +4,7 @@
  * Clicking the map in "tag mode" fires onMapClick with lat/lng.
  */
 import { useEffect, useMemo } from 'react';
+import type { Feature, GeoJsonProperties, Geometry } from 'geojson';
 import {
   MapContainer,
   TileLayer,
@@ -18,6 +19,7 @@ import 'leaflet/dist/leaflet.css';
 import { MapLayer, MapTag } from '@/types/files';
 
 // Fix Leaflet default icon paths broken by bundlers
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
@@ -50,13 +52,13 @@ function tagIcon(color: string) {
 }
 
 /** Build HTML for a GeoJSON feature popup — shows all properties. */
-function featurePopupHtml(feature: any, filename: string): string {
-  const props = feature.properties ?? {};
+function featurePopupHtml(feature: Feature<Geometry, GeoJsonProperties>, filename: string): string {
+  const props = (feature.properties ?? {}) as Record<string, unknown>;
   const name =
-    props.name  ?? props.NAME  ??
-    props.label ?? props.LABEL ??
-    props.title ?? props.TITLE ??
-    props.id    ?? props.ID    ?? filename;
+    props['name']  ?? props['NAME']  ??
+    props['label'] ?? props['LABEL'] ??
+    props['title'] ?? props['TITLE'] ??
+    props['id']    ?? props['ID']    ?? filename;
 
   const entries = Object.entries(props).filter(
     ([k, v]) => !['geometry', 'fid'].includes(k.toLowerCase()) && v != null && v !== ''
@@ -115,7 +117,7 @@ function FlyToEffect({ bounds }: { bounds: L.LatLngBounds | null }) {
     if (bounds && bounds.isValid()) {
       map.flyToBounds(bounds, { padding: [40, 40], maxZoom: 16 });
     }
-  }, [bounds]);
+  }, [bounds, map]);
   return null;
 }
 
@@ -131,6 +133,8 @@ interface MapComponentProps {
   selectedLayerIndex?: number | null;
   /** A single GeoJSON Feature object to fly to when changed. */
   selectedFeature?: object | null;
+  /** Called with the raw GeoJSON feature when a feature is clicked. */
+  onFeatureClick?: (feature: Feature<Geometry, GeoJsonProperties>) => void;
   className?: string;
 }
 
@@ -142,6 +146,7 @@ export function MapComponent({
   onTagDelete,
   selectedLayerIndex = null,
   selectedFeature = null,
+  onFeatureClick,
   className = '',
 }: MapComponentProps) {
   const center: [number, number] = [32.08, 34.78];
@@ -151,11 +156,11 @@ export function MapComponent({
   const targetBounds = useMemo<L.LatLngBounds | null>(() => {
     try {
       if (selectedFeature) {
-        const b = L.geoJSON(selectedFeature as any).getBounds();
+        const b = L.geoJSON(selectedFeature as L.GeoJSONOptions['data']).getBounds();
         return b.isValid() ? b : null;
       }
       if (selectedLayerIndex != null && layers[selectedLayerIndex]) {
-        const b = L.geoJSON(layers[selectedLayerIndex].geojson as any).getBounds();
+        const b = L.geoJSON(layers[selectedLayerIndex].geojson as L.GeoJSONOptions['data']).getBounds();
         return b.isValid() ? b : null;
       }
     } catch {
@@ -188,19 +193,20 @@ export function MapComponent({
         {layers.map((layer, i) => (
           <GeoJSON
             key={layer.layer_id}
-            data={layer.geojson as any}
+            data={layer.geojson as L.GeoJSONOptions['data']}
             style={getLayerStyle(i)}
             onEachFeature={(feature, leafletLayer) => {
-              const props = feature.properties ?? {};
+              const props = (feature.properties ?? {}) as Record<string, unknown>;
               const name =
-                props.name  ?? props.NAME  ??
-                props.label ?? props.LABEL ??
-                props.title ?? props.TITLE ??
-                props.id    ?? props.ID    ?? layer.filename;
-              // Hover tooltip for quick identification
+                props['name']  ?? props['NAME']  ??
+                props['label'] ?? props['LABEL'] ??
+                props['title'] ?? props['TITLE'] ??
+                props['id']    ?? props['ID']    ?? layer.filename;
               leafletLayer.bindTooltip(String(name), { direction: 'top', sticky: true });
-              // Click popup with full property table
               leafletLayer.bindPopup(featurePopupHtml(feature, layer.filename), { maxWidth: 280 });
+              if (onFeatureClick) {
+                leafletLayer.on('click', () => onFeatureClick(feature));
+              }
             }}
           />
         ))}

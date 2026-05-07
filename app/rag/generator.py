@@ -4,7 +4,7 @@ import os
 import time
 from typing import List, Optional
 
-import groq as groq_sdk
+import openai
 from dotenv import load_dotenv
 from loguru import logger
 from tenacity import (
@@ -19,7 +19,9 @@ from app.retrieval import search as retrieval_search
 
 load_dotenv()
 
-GROQ_MODEL = "llama-3.3-70b-versatile"
+_GROQ_MODEL = "llama-3.3-70b-versatile"
+_OPENAI_MODEL = "gpt-4o-mini"
+_GROQ_BASE_URL = "https://api.groq.com/openai/v1"
 _MAX_RETRY_ATTEMPTS = 5
 
 # ---------------------------------------------------------------------------
@@ -49,6 +51,7 @@ Mandatory Output Rules:
 """
 
 
+
 def _build_user_message(query: str, context: List[SearchResult]) -> str:
     if not context:
         context_block = "(אין הקשר זמין)"
@@ -64,29 +67,44 @@ def _build_user_message(query: str, context: List[SearchResult]) -> str:
         f"שאלה: {query}\n\n"
         f"קטעי הקשר ({len(context)} קטעים):\n\n"
         f"{context_block}\n\n"
-        "הוראה: בצע את ניתוח הקטעים פנימית, לאחר מכן כתוב תשובה עברית שוטפת בפורמט הנדרש."
+        "הוראה: בצע את ניתוח הקטעים פנימית, לאחר מכן כתוב תשובה עברית בפורמט הנדרש (תשובה ישירה + הרחבה)."
     )
 
 
 # ---------------------------------------------------------------------------
-# Groq API call with retry logic
+# LLM client factory
+# ---------------------------------------------------------------------------
+
+def _get_client() -> tuple[openai.OpenAI, str]:
+    """Return (openai_client, model_name) based on LLM_PROVIDER env var."""
+    provider = os.getenv("LLM_PROVIDER", "groq").lower()
+
+    if provider == "openai":
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            raise EnvironmentError("OPENAI_API_KEY is not set. Add it to your .env file.")
+        return openai.OpenAI(api_key=api_key), _OPENAI_MODEL
+
+    # Default: groq
+    api_key = os.getenv("GROQ_API_KEY")
+    if not api_key:
+        raise EnvironmentError("GROQ_API_KEY is not set. Add it to your .env file.")
+    return openai.OpenAI(api_key=api_key, base_url=_GROQ_BASE_URL), _GROQ_MODEL
+
+
+# ---------------------------------------------------------------------------
+# API call with retry on rate-limit
 # ---------------------------------------------------------------------------
 
 @retry(
-    retry=retry_if_exception_type(groq_sdk.RateLimitError),
+    retry=retry_if_exception_type(openai.RateLimitError),
     wait=wait_exponential(multiplier=1, min=2, max=60),
     stop=stop_after_attempt(_MAX_RETRY_ATTEMPTS),
     reraise=True,
 )
-def _call_groq_api(client: groq_sdk.Groq, messages: list) -> str:
-    """Single attempt to call the Groq chat completion API.
-
-    The ``@retry`` decorator retries up to ``_MAX_RETRY_ATTEMPTS`` times with
-    exponential back-off when a ``RateLimitError`` (HTTP 429) is raised.
-    Any other exception propagates immediately.
-    """
+def _call_llm(client: openai.OpenAI, model: str, messages: list) -> str:
     response = client.chat.completions.create(
-        model=GROQ_MODEL,
+        model=model,
         messages=messages,
         temperature=0.1,
     )
@@ -98,28 +116,32 @@ def _call_groq_api(client: groq_sdk.Groq, messages: list) -> str:
 # ---------------------------------------------------------------------------
 
 def generate(query: str, context: List[SearchResult]) -> RAGResponse:
-    """Generate a grounded Hebrew answer from *context* for *query*.
+    """Generate a grounded Hebrew answer from *context* for *query*."""
+    client, model = _get_client()
+    provider = os.getenv("LLM_PROVIDER", "groq").lower()
 
-    Uses the Groq LLM.  Retries automatically on HTTP 429 responses.
-    """
-    api_key = os.getenv("GROQ_API_KEY")
-    if not api_key:
-        raise EnvironmentError("GROQ_API_KEY is not set. Add it to your .env file.")
-
-    client = groq_sdk.Groq(api_key=api_key)
     user_message = _build_user_message(query, context)
     messages = [
         {"role": "system", "content": _SYSTEM_PROMPT},
         {"role": "user", "content": user_message},
     ]
 
-    logger.info("RAG generate: query={!r} context_chunks={}", query, len(context))
-    logger.info("\n====== SYSTEM PROMPT ======\n{}\n===========================", _SYSTEM_PROMPT)
-    logger.info("\n====== FULL USER MESSAGE (Context + Query) ======\n{}\n=================================================", user_message)
+    logger.info(
+        "RAG generate: provider={} model={} query={!r} context_chunks={}",
+        provider, model, query, len(context),
+    )
+    logger.debug("\n====== SYSTEM PROMPT ======\n{}\n===========================", _SYSTEM_PROMPT)
+    logger.debug(
+        "\n====== USER MESSAGE ======\n{}\n==========================", user_message
+    )
 
     _t1 = time.perf_counter()
-    answer = _call_groq_api(client, messages)
-    logger.info("Latency - Generation (Stage 3): {:.2f}s ({} chars)", time.perf_counter() - _t1, len(answer))
+    answer = _call_llm(client, model, messages)
+    logger.info(
+        "Latency - Generation (Stage 3): {:.2f}s ({} chars)",
+        time.perf_counter() - _t1,
+        len(answer),
+    )
 
     sources = [
         CitedSource(document_id=r.document_id, page_num=r.page_num)
@@ -133,10 +155,9 @@ def answer(
     top_k: int = 5,
     workspace_id: Optional[str] = None,
 ) -> RAGResponse:
-    """End-to-end RAG: retrieve context from ChromaDB, then generate an answer.
+    """End-to-end RAG: retrieve context then generate an answer.
 
-    Pass *workspace_id* to restrict retrieval to a single workspace.
-    This is the primary entry point for the CLI and API layers.
+    Primary entry point for the CLI and API layers.
     """
     context = retrieval_search.search(query, top_k=top_k, workspace_id=workspace_id)
     return generate(query, context)

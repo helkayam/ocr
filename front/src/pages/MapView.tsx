@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import type { Feature, Geometry, GeoJsonProperties } from 'geojson';
 import { Header } from '@/components/Header';
-import { MapComponent } from '@/components/MapComponent';
+import { MapComponent, LAYER_COLORS } from '@/components/MapComponent';
+import { QueryBox } from '@/components/QueryBox';
 import { api } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,7 +12,6 @@ import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { ArrowLeft, MapPin, Layers, Tag, Trash2, Plus, ChevronDown } from 'lucide-react';
-import { LAYER_COLORS } from '@/components/MapComponent';
 
 const TAG_COLORS = [
   { label: 'Red',    value: '#ef4444' },
@@ -21,6 +22,19 @@ const TAG_COLORS = [
 ];
 
 const TAG_TYPES = ['point', 'assembly', 'hazard', 'exit', 'hydrant', 'camera'];
+
+/** Extract a human-readable name from a GeoJSON feature's properties. */
+function featureName(
+  props: Record<string, unknown>,
+  fallback: string,
+): string {
+  const v =
+    props['name']  ?? props['NAME']  ??
+    props['label'] ?? props['LABEL'] ??
+    props['title'] ?? props['TITLE'] ??
+    props['id']    ?? props['ID'];
+  return v != null && String(v).trim() ? String(v).trim() : fallback;
+}
 
 export default function MapView() {
   const { id } = useParams<{ id: string }>();
@@ -45,17 +59,35 @@ export default function MapView() {
     enabled: !!id,
   });
 
+  // ── Tag placement state ────────────────────────────────────────────────────
   const [tagMode, setTagMode] = useState(false);
   const [pendingCoord, setPendingCoord] = useState<{ lat: number; lng: number } | null>(null);
   const [tagLabel, setTagLabel] = useState('');
   const [tagType, setTagType] = useState('point');
   const [tagColor, setTagColor] = useState('#ef4444');
 
-  // Sidebar ↔ map sync
+  // ── Map navigation state ───────────────────────────────────────────────────
   const [selectedLayerIdx, setSelectedLayerIdx] = useState<number | null>(null);
   const [expandedLayerId, setExpandedLayerId] = useState<string | null>(null);
   const [selectedFeature, setSelectedFeature] = useState<object | null>(null);
 
+  // ── RAG context state ──────────────────────────────────────────────────────
+  const [activeMapContext, setActiveMapContext] = useState<string | null>(null);
+  const clearContext = useCallback(() => setActiveMapContext(null), []);
+
+  /** Called when the user clicks a GeoJSON feature directly on the map. */
+  const handleFeatureClick = useCallback(
+    (feature: Feature<Geometry, GeoJsonProperties>) => {
+      const name = featureName(
+        (feature.properties ?? {}) as Record<string, unknown>,
+        '',
+      );
+      if (name) setActiveMapContext(name);
+    },
+    [],
+  );
+
+  // ── Tag mutations ──────────────────────────────────────────────────────────
   const addTagMutation = useMutation({
     mutationFn: api.map.addTag,
     onSuccess: () => {
@@ -73,6 +105,8 @@ export default function MapView() {
       toast.success('Tag deleted');
     },
   });
+
+  void qc; // kept for future cache invalidation
 
   const handleMapClick = (lat: number, lng: number) => {
     setPendingCoord({ lat, lng });
@@ -101,7 +135,7 @@ export default function MapView() {
         </Button>
 
         <div className="flex flex-col lg:flex-row gap-6 flex-1">
-          {/* Map */}
+          {/* ── Map ─────────────────────────────────────────────────────────── */}
           <div className="flex-1 min-h-[500px] animate-fade-in">
             <MapComponent
               layers={layers}
@@ -109,15 +143,24 @@ export default function MapView() {
               tagMode={tagMode}
               onMapClick={handleMapClick}
               onTagDelete={tid => deleteTagMutation.mutate(tid)}
+              onFeatureClick={handleFeatureClick}
               selectedLayerIndex={selectedLayerIdx}
               selectedFeature={selectedFeature}
               className="h-full min-h-[500px]"
             />
           </div>
 
-          {/* Sidebar */}
-          <div className="w-full lg:w-80 space-y-4 animate-fade-in">
-            {/* Tag mode toggle */}
+          {/* ── Sidebar ──────────────────────────────────────────────────────── */}
+          <div className="w-full lg:w-80 space-y-4 animate-fade-in lg:overflow-y-auto lg:max-h-[calc(100vh-10rem)]">
+
+            {/* SOP Search — wired to activeMapContext set by map clicks */}
+            <QueryBox
+              workspaceId={id!}
+              activeMapContext={activeMapContext}
+              onClearContext={clearContext}
+            />
+
+            {/* Tag placement */}
             <div className="p-4 rounded-xl bg-card border border-border">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-sm font-semibold flex items-center gap-2">
@@ -196,7 +239,7 @@ export default function MapView() {
               )}
             </div>
 
-            {/* Layers */}
+            {/* GIS Layers */}
             <div className="p-4 rounded-xl bg-card border border-border">
               <h3 className="text-sm font-semibold flex items-center gap-2 mb-3">
                 <Layers className="h-4 w-4 text-primary" />
@@ -212,10 +255,13 @@ export default function MapView() {
                   {layers.map((layer, i) => {
                     const isExpanded = expandedLayerId === layer.layer_id;
                     const isSelected = selectedLayerIdx === i;
-                    const features = (layer.geojson as any)?.features ?? [];
+                    const features = (
+                      (layer.geojson as { features?: Feature<Geometry, GeoJsonProperties>[] })
+                        ?.features ?? []
+                    );
                     return (
                       <li key={layer.layer_id}>
-                        {/* Layer header row — click to zoom + expand */}
+                        {/* Layer row — click to zoom */}
                         <button
                           onClick={() => {
                             setSelectedLayerIdx(i);
@@ -247,23 +293,22 @@ export default function MapView() {
                           )}
                         </button>
 
-                        {/* Feature sub-list */}
+                        {/* Feature sub-list — click to zoom + set context */}
                         {isExpanded && features.length > 0 && (
                           <ul className="ml-5 mt-0.5 mb-1 border-l border-border pl-2 space-y-0.5">
-                            {features.slice(0, 12).map((feat: any, fi: number) => {
-                              const p = feat.properties ?? {};
-                              const fname =
-                                p.name  ?? p.NAME  ??
-                                p.label ?? p.LABEL ??
-                                p.title ?? p.TITLE ??
-                                p.id    ?? p.ID    ?? `Feature ${fi + 1}`;
+                            {features.slice(0, 12).map((feat, fi) => {
+                              const props = (feat.properties ?? {}) as Record<string, unknown>;
+                              const fname = featureName(props, `Feature ${fi + 1}`);
                               return (
                                 <li key={fi}>
                                   <button
-                                    onClick={() => setSelectedFeature(feat)}
+                                    onClick={() => {
+                                      setSelectedFeature(feat);
+                                      setActiveMapContext(fname);
+                                    }}
                                     className="w-full text-left text-xs py-0.5 px-1 rounded hover:bg-muted/50 text-muted-foreground hover:text-foreground transition-colors truncate"
                                   >
-                                    {String(fname)}
+                                    {fname}
                                   </button>
                                 </li>
                               );

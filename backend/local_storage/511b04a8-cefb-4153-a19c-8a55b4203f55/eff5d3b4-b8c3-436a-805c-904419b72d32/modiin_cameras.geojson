@@ -1,0 +1,2960 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.001954,
+          31.9036627
+        ]
+      },
+      "properties": {
+        "id": 1,
+        "name": "עמק זבולון 4",
+        "original_url": "https://www.google.com/maps/place/%D7%A2%D7%9E%D7%A7+%D7%96%D7%91%D7%95%D7%9C%D7%95%D7%9F+4,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.9036672,35.0045289,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdb6412eedf1:0xfa9d7fee4821980e!8m2!3d31.9036627!4d35.001954!16s%2Fg%2F11hdcgsq7v?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.9968601,
+          31.9115846
+        ]
+      },
+      "properties": {
+        "id": 2,
+        "name": "רא\"ל מרדכי גור 12",
+        "original_url": "https://www.google.com/maps/place/%D7%A8%D7%90%22%D7%9C+%D7%9E%D7%95%D7%A8%D7%93%D7%9B%D7%99+%D7%92%D7%95%D7%A8+12,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.9115891,35.001731,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdb2e3336f23:0x8eb7c5c40b3d7bf4!8m2!3d31.9115846!4d34.9968601!16s%2Fg%2F12hq51443?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.9977139,
+          31.9105947
+        ]
+      },
+      "properties": {
+        "id": 3,
+        "name": "מרדכי גור 23",
+        "original_url": "https://www.google.com/maps/place/%D7%A8%D7%90%22%D7%9C+%D7%9E%D7%95%D7%A8%D7%93%D7%9B%D7%99+%D7%92%D7%95%D7%A8+23,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.9105992,35.0002888,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdb3a90363f5:0xb7589f49b99b0f2c!8m2!3d31.9105947!4d34.9977139!16s%2Fg%2F11c1_76sxm?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0018883,
+          31.9020855
+        ]
+      },
+      "properties": {
+        "id": 4,
+        "name": "עמק זבולון 5",
+        "original_url": "https://www.google.com/maps/place/%D7%91%D7%A8%D7%99%D7%9B%D7%94+%D7%A2%D7%99%D7%A8%D7%95%D7%A0%D7%99%D7%AA-+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F%E2%80%AD/@31.90209,35.0044632,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdc9d95df595:0xc2a51fa9375e2d10!8m2!3d31.9020855!4d35.0018883!16s%2Fg%2F11cjkpvwv_?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.9981859,
+          31.9143784
+        ]
+      },
+      "properties": {
+        "id": 5,
+        "name": "עמק בית שאן 57",
+        "original_url": "https://www.google.com/maps/place/%D7%A2%D7%9E%D7%A7+%D7%91%D7%99%D7%AA+%D7%A9%D7%90%D7%9F+57,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.9143829,35.0007608,17z/data=!3m1!4b1!4m5!3m4!1s0x1502cdad959a25b9:0x4f2781499948c1ae!8m2!3d31.9143784!4d34.9981859?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0018883,
+          31.9020855
+        ]
+      },
+      "properties": {
+        "id": 6,
+        "name": "עמק זבולון 5",
+        "original_url": "https://www.google.com/maps/place/%D7%A2%D7%9E%D7%A7+%D7%96%D7%91%D7%95%D7%9C%D7%95%D7%9F+5,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.90209,35.0044632,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdc9dee0ef37:0x1634b19c2195013f!8m2!3d31.9020855!4d35.0018883!16s%2Fg%2F11g2yybncv?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.9909723,
+          31.9062741
+        ]
+      },
+      "properties": {
+        "id": 7,
+        "name": "אבני החושן 57",
+        "original_url": "https://www.google.com/maps/place/%D7%90%D7%91%D7%A0%D7%99+%D7%97%D7%95%D7%A9%D7%9F+57,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.9062786,34.9935472,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdff222719af:0xad8644b8243f6bf6!8m2!3d31.9062741!4d34.9909723!16s%2Fg%2F11qh32955w?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.9909723,
+          31.9062741
+        ]
+      },
+      "properties": {
+        "id": 8,
+        "name": "אבני החושן 57",
+        "original_url": "https://www.google.com/maps/place/%D7%90%D7%91%D7%A0%D7%99+%D7%97%D7%95%D7%A9%D7%9F+57,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.9062786,34.9935472,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdff222719af:0xad8644b8243f6bf6!8m2!3d31.9062741!4d34.9909723!16s%2Fg%2F11qh32955w?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.999371,
+          31.904584
+        ]
+      },
+      "properties": {
+        "id": 9,
+        "name": "עמק זבולון",
+        "original_url": "https://www.google.co.il/maps/search/31.904584,+34.999371?entry=tts&g_ep=EgoyMDI1MDEyMi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0057275,
+          31.9106017
+        ]
+      },
+      "properties": {
+        "id": 10,
+        "name": "אליהו הנביא 2",
+        "original_url": "https://www.google.com/maps/place/%D7%90%D7%9C%D7%99%D7%94%D7%95+%D7%94%D7%A0%D7%91%D7%99%D7%90+2,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.9106062,35.0083024,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdb00765866b:0x2fd03122f185112d!8m2!3d31.9106017!4d35.0057275!16s%2Fg%2F11h_fsgckm?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.9978104,
+          31.9144287
+        ]
+      },
+      "properties": {
+        "id": 11,
+        "name": "עמק בית שאן 60",
+        "original_url": "https://www.google.com/maps/place/%D7%A2%D7%9E%D7%A7+%D7%91%D7%99%D7%AA+%D7%A9%D7%90%D7%9F+60,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.9144332,35.0003853,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdad9c0324df:0xddf4e8da6882230d!8m2!3d31.9144287!4d34.9978104!16s%2Fg%2F11h0m41lkm?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0096195,
+          31.9105117
+        ]
+      },
+      "properties": {
+        "id": 12,
+        "name": "הנביאים 4",
+        "original_url": "https://www.google.co.il/maps/place/%D7%94%D7%A0%D7%91%D7%99%D7%90%D7%99%D7%9D+4,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.9105162,35.0121944,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cda4c66c0c25:0xe429ed30112bb601!8m2!3d31.9105117!4d35.0096195!16s%2Fg%2F11h59qvtjc?entry=tts&g_ep=EgoyMDI1MDEyNy4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0055751,
+          31.9139815
+        ]
+      },
+      "properties": {
+        "id": 13,
+        "name": "גינת האלה 40",
+        "original_url": "https://www.google.com/maps/place/%D7%92%D7%99%D7%A0%D7%95%D7%AA+%D7%94%D7%90%D7%9C%D7%94+40,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.913986,35.00815,17z/data=!3m1!4b1!4m5!3m4!1s0x1502cdaf7c46e8f7:0xf0e1d09b7cf6cb8d!8m2!3d31.9139815!4d35.0055751?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0054682,
+          31.9193165
+        ]
+      },
+      "properties": {
+        "id": 14,
+        "name": "עמק חרוד 29",
+        "original_url": "https://www.google.com/maps/place/%D7%A2%D7%9E%D7%A7+%D7%97%D7%A8%D7%95%D7%93+29,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.919321,35.0080431,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cda8771f5f97:0xecee82cd465a6008!8m2!3d31.9193165!4d35.0054682!16s%2Fg%2F11gt70dz0r?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0031011,
+          31.9190869
+        ]
+      },
+      "properties": {
+        "id": 15,
+        "name": "עמק חרוד 19",
+        "original_url": "https://www.google.com/maps/place/%D7%A2%D7%9E%D7%A7+%D7%97%D7%A8%D7%95%D7%93+19,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.9190914,35.005676,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cda8fe418adf:0x3921cab6f7c22fb2!8m2!3d31.9190869!4d35.0031011!16s%2Fg%2F11b8vg3714?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0031482,
+          31.9180854
+        ]
+      },
+      "properties": {
+        "id": 16,
+        "name": "עמק חרוד 4",
+        "original_url": "https://www.google.com/maps/place/%D7%A2%D7%9E%D7%A7+%D7%97%D7%A8%D7%95%D7%93+4,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.9180899,35.0057231,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cd500a82b76f:0xc02cd4f3a1c82a81!8m2!3d31.9180854!4d35.0031482!16s%2Fg%2F11jnyd3d2c?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0013404,
+          31.9180689
+        ]
+      },
+      "properties": {
+        "id": 17,
+        "name": "גינת האלה 13",
+        "original_url": "https://www.google.com/maps/place/%D7%92%D7%99%D7%A0%D7%AA+%D7%94%D7%90%D7%9C%D7%94,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.9180734,35.0039153,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cda9375c5ab5:0x99adecfac55a5bdf!8m2!3d31.9180689!4d35.0013404!16s%2Fg%2F11h59s2pbq?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0013404,
+          31.9180689
+        ]
+      },
+      "properties": {
+        "id": 18,
+        "name": "גינת האלה 15",
+        "original_url": "https://www.google.com/maps/place/%D7%92%D7%99%D7%A0%D7%AA+%D7%94%D7%90%D7%9C%D7%94,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.9180734,35.0039153,17z/data=!4m6!3m5!1s0x1502cda9375c5ab5:0x99adecfac55a5bdf!8m2!3d31.9180689!4d35.0013404!16s%2Fg%2F11h59s2pbq?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.014756,
+          31.9133325
+        ]
+      },
+      "properties": {
+        "id": 19,
+        "name": "רח' אדר",
+        "original_url": "https://www.google.com/maps/place/%D7%90%D7%93%D7%A8,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.913337,35.0173309,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cda3d05436ed:0x9673e6d8e983e1c3!8m2!3d31.9133325!4d35.014756!16s%2Fg%2F1ymvkn249?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0136111,
+          31.9102778
+        ]
+      },
+      "properties": {
+        "id": 20,
+        "name": "מאחורי תחנת הדלק דור",
+        "original_url": "https://www.google.com/maps/place/%D7%AA%D7%97%D7%A0%D7%AA+%D7%93%D7%9C%D7%A7+%D7%93%D7%95%D7%A8+%D7%90%D7%9C%D7%95%D7%9F%E2%80%AD/@31.9102823,35.016186,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cda3119fcd4d:0x75db053782931567!8m2!3d31.9102778!4d35.0136111!16s%2Fg%2F1tftnfm6?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0058425,
+          31.9060134
+        ]
+      },
+      "properties": {
+        "id": 21,
+        "name": "דם המכבים 2",
+        "original_url": "https://www.google.com/maps/place/%D7%93%D7%9D+%D7%94%D7%9E%D7%9B%D7%91%D7%99%D7%9D+2,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.9060179,35.0084174,17z/data=!3m1!4b1!4m5!3m4!1s0x1502cdb9e9a2649f:0x581252664904ad12!8m2!3d31.9060134!4d35.0058425?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0123971,
+          31.9072864
+        ]
+      },
+      "properties": {
+        "id": 22,
+        "name": "דם המכבים 9",
+        "original_url": "https://www.google.com/maps/place/%D7%93%D7%9D+%D7%94%D7%9E%D7%9B%D7%91%D7%99%D7%9D+9,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.9068668,35.0095064,17z/data=!4m6!3m5!1s0x1502cdbc938922c1:0xc4a64e0c63a2047f!8m2!3d31.9072864!4d35.0123971!16s%2Fg%2F12hkrqrbg?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0123971,
+          31.9072864
+        ]
+      },
+      "properties": {
+        "id": 23,
+        "name": "דם המכבים 9",
+        "original_url": "https://www.google.com/maps/place/%D7%93%D7%9D+%D7%94%D7%9E%D7%9B%D7%91%D7%99%D7%9D+9,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.9068668,35.0095064,17z/data=!4m6!3m5!1s0x1502cdbc938922c1:0xc4a64e0c63a2047f!8m2!3d31.9072864!4d35.0123971!16s%2Fg%2F12hkrqrbg?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0138808,
+          31.9043894
+        ]
+      },
+      "properties": {
+        "id": 24,
+        "name": "גינת האלה 40",
+        "original_url": "https://www.google.com/maps/place/%D7%A2%D7%9E%D7%A7+%D7%90%D7%99%D7%99%D7%9C%D7%95%D7%9F+34,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.9043939,35.0187517,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdbc337ea6eb:0x6865315f0f54f7!8m2!3d31.9043894!4d35.0138808!16s%2Fg%2F11c896_c0f?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0069315,
+          31.9068623
+        ]
+      },
+      "properties": {
+        "id": 25,
+        "name": "תלתן 2",
+        "original_url": "https://www.google.com/maps/place/%D7%AA%D7%9C%D7%AA%D7%9F+2,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.9068668,35.0095064,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdba15121d0b:0x79c68c78af18b85c!8m2!3d31.9068623!4d35.0069315!16s%2Fg%2F12hkm3z3g?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0076201,
+          31.9076585
+        ]
+      },
+      "properties": {
+        "id": 26,
+        "name": "תלתן 1",
+        "original_url": "https://www.google.com/maps/place/%D7%AA%D7%9C%D7%AA%D7%9F+1,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA,+7176404%E2%80%AD/@31.907663,35.010195,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdba5976e967:0x11022079689ac0fa!8m2!3d31.9076585!4d35.0076201!16s%2Fg%2F12hkj7h41?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0076201,
+          31.9076585
+        ]
+      },
+      "properties": {
+        "id": 27,
+        "name": "תלתן 1",
+        "original_url": "https://www.google.com/maps/place/%D7%AA%D7%9C%D7%AA%D7%9F+1,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA,+7176404%E2%80%AD/@31.907663,35.010195,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdba5976e967:0x11022079689ac0fa!8m2!3d31.9076585!4d35.0076201!16s%2Fg%2F12hkj7h41?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0140037,
+          31.9084403
+        ]
+      },
+      "properties": {
+        "id": 28,
+        "name": "צאלון 1",
+        "original_url": "https://www.google.co.il/maps/place/%D7%A4%D7%90%D7%9C%D7%90%D7%A1+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F%E2%80%AD/@31.9084448,35.0165733,904m/data=!3m2!1e3!4b1!4m6!3m5!1s0x1502cdf32cc361a7:0xd581e1e4b0837fd!8m2!3d31.9084403!4d35.0140037!16s%2Fg%2F11ffk0hyv7?entry=tts&g_ep=EgoyMDI1MTIwOC4wIPu8ASoASAFQAw%3D%3D&skid=7f994a81-c407-408d-9757-63d56f80e92d"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0116509,
+          31.9061869
+        ]
+      },
+      "properties": {
+        "id": 29,
+        "name": "מרווה",
+        "original_url": "https://www.google.com/maps/place/%D7%9E%D7%A8%D7%95%D7%95%D7%94+3%E2%80%AD/@31.9066881,35.0123469,18.46z/data=!4m6!3m5!1s0x1502cdbc7d050ff9:0x613cec8886682295!4b1!8m2!3d31.9061869!4d35.0116509?hl=he&entry=tts"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0100608,
+          31.9024765
+        ]
+      },
+      "properties": {
+        "id": 30,
+        "name": "עמק איילון 58",
+        "original_url": "https://www.google.com/maps/place/%D7%A2%D7%9E%D7%A7+%D7%90%D7%99%D7%99%D7%9C%D7%95%D7%9F+58,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.902481,35.0126357,17z/data=!3m1!4b1!4m5!3m4!1s0x1502cdb930298c6f:0xb4a1094d275c3e7c!8m2!3d31.9024765!4d35.0100608?entry=tts&g_ep=EgoyMDI1MDEyMi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0173029,
+          31.8960084
+        ]
+      },
+      "properties": {
+        "id": 31,
+        "name": "עמק החולה \\ עמק יזרעאל",
+        "original_url": "https://www.google.co.il/maps/place/%D7%94%D7%90%D7%9E%D7%A4%D7%99,+%D7%A2%D7%9E%D7%A7+%D7%94%D7%97%D7%95%D7%9C%D7%94%E2%80%AD/@31.8960129,35.0198778,17z/data=!4m6!3m5!1s0x1502cdea99000009:0x585e9a165b7f6e1c!8m2!3d31.8960084!4d35.0173029!16s%2Fg%2F11g020dlp_?entry=tts&g_ep=EgoyMDI1MDEyMi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0018883,
+          31.9020855
+        ]
+      },
+      "properties": {
+        "id": 32,
+        "name": "נחל צלמון 21",
+        "original_url": "https://www.google.com/maps/place/%D7%A2%D7%9E%D7%A7+%D7%96%D7%91%D7%95%D7%9C%D7%95%D7%9F+5,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.90209,35.0044632,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdc9dee0ef37:0x1634b19c2195013f!8m2!3d31.9020855!4d35.0018883!16s%2Fg%2F11g2yybncv?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0027,
+          31.895871
+        ]
+      },
+      "properties": {
+        "id": 33,
+        "name": "גשר בין ציפורים למשואה  רח' נחל זהר",
+        "original_url": "https://www.google.co.il/maps/search/31.895871,+35.002700?entry=tts&g_ep=EgoyMDI1MDIwNS4xIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.992128,
+          31.901544
+        ]
+      },
+      "properties": {
+        "id": 34,
+        "name": "שדרות יצחק רבין 4",
+        "original_url": "https://www.google.com/maps/search/31.901544,+34.992128?shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0049493,
+          31.8925494
+        ]
+      },
+      "properties": {
+        "id": 35,
+        "name": "שדרות יצחק רבין 27",
+        "original_url": "https://www.google.com/maps/place/%D7%A9%D7%93%D7%A8%D7%95%D7%AA+%D7%99%D7%A6%D7%97%D7%A7+%D7%A8%D7%91%D7%99%D7%9F+27,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.8925539,35.0075242,17z/data=!3m1!4b1!4m5!3m4!1s0x1502cdcfed2b8b3b:0xae5dc1466b862834!8m2!3d31.8925494!4d35.0049493?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0018529,
+          31.8866468
+        ]
+      },
+      "properties": {
+        "id": 36,
+        "name": "ראובן 4",
+        "original_url": "https://www.google.com/maps/place/%D7%A8%D7%90%D7%95%D7%91%D7%9F+4,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA,+7172445%E2%80%AD/@31.8866513,35.0044278,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdd6c7b5bc6f:0xfe7dcb544ee495e1!8m2!3d31.8866468!4d35.0018529!16s%2Fg%2F12j21jfjy?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0090655,
+          31.890786
+        ]
+      },
+      "properties": {
+        "id": 37,
+        "name": "נחל צלמון 21",
+        "original_url": "https://www.google.com/maps/place/%D7%A0%D7%97%D7%9C+%D7%A6%D7%9C%D7%9E%D7%95%D7%9F+21,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.8907905,35.0116404,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdc4dafbf1df:0x75c7af5b3dbac5c9!8m2!3d31.890786!4d35.0090655!16s%2Fg%2F11fhzjstmn?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0032018,
+          31.8883242
+        ]
+      },
+      "properties": {
+        "id": 38,
+        "name": "בנימין 51",
+        "original_url": "https://www.google.com/maps/place/%D7%91%D7%A0%D7%99%D7%9E%D7%99%D7%9F+51,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.8883287,35.0057767,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdd0e10624af:0xd7bc8f4250cff636!8m2!3d31.8883242!4d35.0032018!16s%2Fg%2F11rxnh5jr7?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.9996804,
+          31.885047
+        ]
+      },
+      "properties": {
+        "id": 39,
+        "name": "ראובן פינת יששכר",
+        "original_url": "https://www.google.com/maps/place/%D7%A8%D7%90%D7%95%D7%91%D7%9F+%26+%D7%99%D7%A9%D7%A9%D7%9B%D7%A8,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.8850515,35.0022553,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdd5d1adf75b:0x4bbc01ae78bdfb83!8m2!3d31.885047!4d34.9996804!16s%2Fg%2F11hb2lxkp1?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0082353,
+          31.8909669
+        ]
+      },
+      "properties": {
+        "id": 40,
+        "name": "שדרות יצחק רבין 4",
+        "original_url": "https://www.google.co.il/maps/place/%D7%9E%D7%A8%D7%9B%D7%96+%D7%A4%D7%A1%D7%92%22%D7%94+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F%E2%80%AD/@31.8909714,35.0108102,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdcdc1151adf:0x81e2c130edf3f83!8m2!3d31.8909669!4d35.0082353!16s%2Fg%2F11j9gyxgby?entry=tts&g_ep=EgoyMDI1MDEyMi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0110779,
+          31.8791163
+        ]
+      },
+      "properties": {
+        "id": 41,
+        "name": "מנחם בגין 55",
+        "original_url": "https://www.google.co.il/maps/place/%D7%91%D7%99%D7%AA+%D7%A1%D7%A4%D7%A8+%D7%9E%D7%9E%D7%93+%D7%90%D7%A8%D7%99%D7%90%D7%9C%E2%80%AD/@31.8791208,35.0136528,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cddee05f6fbf:0x1ed1d62e6e577ffa!8m2!3d31.8791163!4d35.0110779!16s%2Fg%2F11g6nj0wzl?entry=tts&g_ep=EgoyMDI1MDEyNi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0110308,
+          31.8791383
+        ]
+      },
+      "properties": {
+        "id": 42,
+        "name": "מנחן בגין 55",
+        "original_url": "https://www.google.co.il/maps/place/%D7%93%D7%A8%D7%9A+%D7%9E%D7%A0%D7%97%D7%9D+%D7%91%D7%92%D7%99%D7%9F+55,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.8791428,35.0136057,17z/data=!3m1!4b1!4m6!3m5!1s0x1502ce7601348dfb:0x513d77bd92f29e4!8m2!3d31.8791383!4d35.0110308!16s%2Fg%2F11gt8dmgnh?entry=tts&g_ep=EgoyMDI1MDEyNy4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.9909723,
+          31.9062741
+        ]
+      },
+      "properties": {
+        "id": 43,
+        "name": "אבני החושן 57",
+        "original_url": "https://www.google.com/maps/place/%D7%90%D7%91%D7%A0%D7%99+%D7%97%D7%95%D7%A9%D7%9F+57,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.9062786,34.9935472,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdff222719af:0xad8644b8243f6bf6!8m2!3d31.9062741!4d34.9909723!16s%2Fg%2F11qh32955w?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0047016,
+          31.8938722
+        ]
+      },
+      "properties": {
+        "id": 44,
+        "name": "נחל זוהר 56",
+        "original_url": "https://www.google.com/maps/place/%D7%A0%D7%97%D7%9C+%D7%96%D7%95%D7%94%D7%A8+56,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.8938767,35.0072765,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdcf9e04834b:0x993c03dc4d752eb9!8m2!3d31.8938722!4d35.0047016!16s%2Fg%2F11gh4m45jn?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0193816,
+          31.8959402
+        ]
+      },
+      "properties": {
+        "id": 45,
+        "name": "גינת החולה 52",
+        "original_url": "https://www.google.com/maps/place/%D7%92%D7%99%D7%A0%D7%AA+%D7%94%D7%97%D7%95%D7%9C%D7%94,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.8959447,35.0219565,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdead915ab39:0xfed0e34fb8c4055b!8m2!3d31.8959402!4d35.0193816!16s%2Fg%2F11rsl61srn?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0135739,
+          31.8984672
+        ]
+      },
+      "properties": {
+        "id": 46,
+        "name": "נחל עיון 1",
+        "original_url": "https://www.google.com/maps/place/%D7%A0%D7%97%D7%9C+%D7%A2%D7%99%D7%95%D7%9F+1,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.8984717,35.0161488,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdc082458c1d:0x4637d94bb3185f52!8m2!3d31.8984672!4d35.0135739!16s%2Fg%2F11h6ddyfqh?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0154574,
+          31.8983567
+        ]
+      },
+      "properties": {
+        "id": 47,
+        "name": "עמק יזרעאל 2",
+        "original_url": "https://www.google.com/maps/place/%D7%A2%D7%9E%D7%A7+%D7%99%D7%96%D7%A8%D7%A2%D7%90%D7%9C+2,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.8983612,35.0180323,17z/data=!3m1!4b1!4m5!3m4!1s0x1502cdbff6e4d3b1:0x979027b403ff689f!8m2!3d31.8983567!4d35.0154574?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0196959,
+          31.8975453
+        ]
+      },
+      "properties": {
+        "id": 48,
+        "name": "נחל הירקון 15",
+        "original_url": "https://www.google.com/maps/place/%D7%A0%D7%97%D7%9C+%D7%94%D7%99%D7%A8%D7%A7%D7%95%D7%9F+15,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.8975498,35.0245668,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cd94d8d99edf:0xfee125e2721f3a0b!8m2!3d31.8975453!4d35.0196959!16s%2Fg%2F11f5k1w2yr?entry=tts&g_ep=EgoyMDI1MDMxNy4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0147152,
+          31.899243
+        ]
+      },
+      "properties": {
+        "id": 49,
+        "name": "עמק דותן 49",
+        "original_url": "https://www.google.com/maps/place/%D7%A2%D7%9E%D7%A7+%D7%93%D7%95%D7%AA%D7%9F+49,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.8992475,35.0195861,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdbf99df3f35:0x7a47231d26109972!8m2!3d31.899243!4d35.0147152!16s%2Fg%2F11f5k1x06c?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0152464,
+          31.8992698
+        ]
+      },
+      "properties": {
+        "id": 50,
+        "name": "עמק דותן 45",
+        "original_url": "https://www.google.com/maps/place/%D7%A2%D7%9E%D7%A7+%D7%93%D7%95%D7%AA%D7%9F+45,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.8992743,35.0178213,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdbf9578490b:0x472fd9580b38e054!8m2!3d31.8992698!4d35.0152464!16s%2Fg%2F11fmy0gfg4?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0147152,
+          31.899243
+        ]
+      },
+      "properties": {
+        "id": 51,
+        "name": "עמק דותן 49",
+        "original_url": "https://www.google.com/maps/place/%D7%A2%D7%9E%D7%A7+%D7%93%D7%95%D7%AA%D7%9F+49,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.8992475,35.0195861,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdbf99df3f35:0x7a47231d26109972!8m2!3d31.899243!4d35.0147152!16s%2Fg%2F11f5k1x06c?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0076632,
+          31.8996612
+        ]
+      },
+      "properties": {
+        "id": 52,
+        "name": "לב העיר 2",
+        "original_url": "https://www.google.com/maps/place/%D7%9C%D7%91+%D7%94%D7%A2%D7%99%D7%A8+2,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.8996657,35.0102381,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdc7927048a1:0xc9d808be1d968030!8m2!3d31.8996612!4d35.0076632!16s%2Fg%2F1hc76gdvv?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0185509,
+          31.8987708
+        ]
+      },
+      "properties": {
+        "id": 53,
+        "name": "עמק דותן מול בית 35",
+        "original_url": "https://www.google.com/maps/place/%D7%A2%D7%9E%D7%A7+%D7%93%D7%95%D7%AA%D7%9F+35,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.8987753,35.0211258,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cd951181ec33:0xdeb130a6160daeb9!8m2!3d31.8987708!4d35.0185509!16s%2Fg%2F12jdf8vp7?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0147152,
+          31.899243
+        ]
+      },
+      "properties": {
+        "id": 54,
+        "name": "עמק דותן 49",
+        "original_url": "https://www.google.com/maps/place/%D7%A2%D7%9E%D7%A7+%D7%93%D7%95%D7%AA%D7%9F+49,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.8992475,35.0195861,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdbf99df3f35:0x7a47231d26109972!8m2!3d31.899243!4d35.0147152!16s%2Fg%2F11f5k1x06c?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0240928,
+          31.8981994
+        ]
+      },
+      "properties": {
+        "id": 55,
+        "name": "עמק דותן 5",
+        "original_url": "https://www.google.com/maps/place/%D7%A2%D7%9E%D7%A7+%D7%93%D7%95%D7%AA%D7%9F+5,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.8982039,35.0266677,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cd93a467ce23:0xd63b8abd7a67a15f!8m2!3d31.8981994!4d35.0240928!16s%2Fg%2F11hdjsp8w6?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.9976842,
+          31.8954969
+        ]
+      },
+      "properties": {
+        "id": 56,
+        "name": "שלדג",
+        "original_url": "https://www.google.co.il/maps/place/%D7%A9%D7%9C%D7%93%D7%92,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.8955014,35.0002591,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdcc5f2832eb:0xe56e760eef7c19c6!8m2!3d31.8954969!4d34.9976842!16s%2Fg%2F11gbxc13b8?entry=tts&g_ep=EgoyMDI1MDIwNS4xIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.9823705,
+          31.8961886
+        ]
+      },
+      "properties": {
+        "id": 57,
+        "name": "יער הזורע 5",
+        "original_url": "https://www.google.com/maps/place/%D7%99%D7%A2%D7%A8+%D7%94%D7%96%D7%95%D7%A8%D7%A2+5,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.8961931,34.9849454,17z/data=!3m1!4b1!4m5!3m4!1s0x1502cc2ff5c65adb:0x9e300ec7d973892!8m2!3d31.8961886!4d34.9823705?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.98699,
+          31.8968625
+        ]
+      },
+      "properties": {
+        "id": 58,
+        "name": "יער יתיר 19",
+        "original_url": "https://www.google.com/maps/place/%D7%99%D7%A2%D7%A8+%D7%99%D7%AA%D7%99%D7%A8+19,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.896867,34.9895649,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cc2e29b384d5:0x9362f51cbf61a3bf!8m2!3d31.8968625!4d34.98699!16s%2Fg%2F11lly6xf1c?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.9909344,
+          31.897767
+        ]
+      },
+      "properties": {
+        "id": 59,
+        "name": "יהודה המכבי",
+        "original_url": "https://www.google.co.il/maps/place/%D7%99%D7%94%D7%95%D7%93%D7%94+%D7%94%D7%9E%D7%9B%D7%91%D7%99,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.8978076,34.9988924,15z/data=!4m6!3m5!1s0x1502cc34751dd471:0xe295c5358e53d66b!8m2!3d31.897767!4d34.9909344!16s%2Fg%2F1ymv2j_4b?entry=tts&g_ep=EgoyMDI1MDEyNy4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.988034,
+          31.9052426
+        ]
+      },
+      "properties": {
+        "id": 60,
+        "name": "אריאל שרון 15",
+        "original_url": "https://www.google.co.il/maps/place/%D7%90%D7%A8%D7%99%D7%90%D7%9C+%D7%A9%D7%A8%D7%95%D7%9F,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.9052471,34.9906089,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cc366ba10ee7:0xa98b14816d207ecd!8m2!3d31.9052426!4d34.988034!16s%2Fg%2F11tn9_b5mt?hl=iw&entry=tts"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.988034,
+          31.9052426
+        ]
+      },
+      "properties": {
+        "id": 61,
+        "name": "אריאל שרון 15",
+        "original_url": "https://www.google.co.il/maps/place/%D7%90%D7%A8%D7%99%D7%90%D7%9C+%D7%A9%D7%A8%D7%95%D7%9F,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.9052471,34.9906089,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cc366ba10ee7:0xa98b14816d207ecd!8m2!3d31.9052426!4d34.988034!16s%2Fg%2F11tn9_b5mt?hl=iw&entry=tts"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.9894129,
+          31.9033291
+        ]
+      },
+      "properties": {
+        "id": 62,
+        "name": "חניון תת קרקע בשדרות חיים ויצמן",
+        "original_url": "https://www.google.co.il/maps/place/%D7%97%D7%99%D7%99%D7%9D+%D7%95%D7%99%D7%A6%D7%9E%D7%9F,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.9033336,34.9919878,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cc342ee72287:0xa7cee09bda3cecdf!8m2!3d31.9033291!4d34.9894129!16s%2Fg%2F11vc074wwv?entry=tts&g_ep=EgoyMDI1MDEwOC4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.980067,
+          31.90282
+        ]
+      },
+      "properties": {
+        "id": 63,
+        "name": "יצחק שמיר \\ חיים הרצוג",
+        "original_url": "https://www.google.co.il/maps/search/31.902820,+34.980067?entry=tts&g_ep=EgoyMDI1MDEyMi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.988034,
+          31.9052426
+        ]
+      },
+      "properties": {
+        "id": 64,
+        "name": "אריאל שרון 15",
+        "original_url": "https://www.google.co.il/maps/place/%D7%90%D7%A8%D7%99%D7%90%D7%9C+%D7%A9%D7%A8%D7%95%D7%9F,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.9052471,34.9906089,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cc366ba10ee7:0xa98b14816d207ecd!8m2!3d31.9052426!4d34.988034!16s%2Fg%2F11tn9_b5mt?hl=iw&entry=tts"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.978153,
+          31.902284
+        ]
+      },
+      "properties": {
+        "id": 65,
+        "name": "חיים הרצוג 13",
+        "original_url": "https://www.google.co.il/maps/place/%D7%97%D7%99%D7%99%D7%9D+%D7%94%D7%A8%D7%A6%D7%95%D7%92+13,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.9022885,34.9807226,904m/data=!3m2!1e3!4b1!4m6!3m5!1s0x1502cc3c7fe9463d:0xa089ea0d4416f6b8!8m2!3d31.902284!4d34.978153!16s%2Fg%2F11vwhp66v4?entry=tts&g_ep=EgoyMDI1MTIwOC4wIPu8ASoASAFQAw%3D%3D&skid=8d9bf6da-08bc-414f-bc8c-bcfa86dd580b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0169388,
+          31.8866705
+        ]
+      },
+      "properties": {
+        "id": 66,
+        "name": "הדרים 2",
+        "original_url": "https://www.google.com/maps/place/%D7%94%D7%93%D7%A8%D7%99%D7%9D+2,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.886675,35.0195137,17z/data=!3m1!4b1!4m5!3m4!1s0x1502cde7f42dae57:0xc425b7275d57de86!8m2!3d31.8866705!4d35.0169388?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0169388,
+          31.8866705
+        ]
+      },
+      "properties": {
+        "id": 67,
+        "name": "הדרים 2",
+        "original_url": "https://www.google.com/maps/place/%D7%94%D7%93%D7%A8%D7%99%D7%9D+2,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.886675,35.0195137,17z/data=!3m1!4b1!4m5!3m4!1s0x1502cde7f42dae57:0xc425b7275d57de86!8m2!3d31.8866705!4d35.0169388?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0160061,
+          31.8858051
+        ]
+      },
+      "properties": {
+        "id": 68,
+        "name": "כיכר שד' העומרים - שד' האורנים ברעות",
+        "original_url": "https://www.google.com/maps/place/%D7%A9%D7%93%D7%A8%D7%95%D7%AA+%D7%A2%D7%95%D7%9E%D7%A8%D7%99%D7%9D,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.8858096,35.018581,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cddd6d480f3b:0xfd17a4161bc66261!8m2!3d31.8858051!4d35.0160061!16s%2Fg%2F1ymx0hdnr?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.02167,
+          31.8858387
+        ]
+      },
+      "properties": {
+        "id": 69,
+        "name": "כניסה לרעות",
+        "original_url": "https://www.google.com/maps/place/%D7%9E%D7%91%D7%95%D7%90+%D7%A8%D7%A2%D7%95%D7%AA,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.8858432,35.0242449,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cde601f404bd:0xba79b00f859fc724!8m2!3d31.8858387!4d35.02167!16s%2Fg%2F1ymt9nsn6?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0197241,
+          31.8855243
+        ]
+      },
+      "properties": {
+        "id": 70,
+        "name": "חצב",
+        "original_url": "https://www.google.com/maps/place/%D7%9E%D7%A7%D7%9C%D7%98%E2%80%AD/@31.885093,35.0190996,18.75z/data=!4m6!3m5!1s0x1502cde635a11dcb:0xbf3e02710e3593eb!8m2!3d31.8855243!4d35.0197241!16s%2Fg%2F11vkhbgcjs?hl=he&entry=tts"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.012442,
+          31.892039
+        ]
+      },
+      "properties": {
+        "id": 71,
+        "name": "הדס 1",
+        "original_url": "https://www.google.com/maps/place/%D7%94%D7%93%D7%A1,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.8920435,35.0173129,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdc399a85187:0xda470e3f7276a0d9!8m2!3d31.892039!4d35.012442!16s%2Fg%2F1ymy45q53?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0113193,
+          31.8904
+        ]
+      },
+      "properties": {
+        "id": 72,
+        "name": "משעול אמיר בן אריה",
+        "original_url": "https://www.google.com/maps/place/%D7%A9%D7%91%D7%98+%D7%90%D7%95%D7%A4%D7%A7%E2%80%AD/@31.8906709,35.011302,19.33z/data=!4m6!3m5!1s0x1502cdc4a09fae79:0x13f07ad0aeeeadd0!8m2!3d31.8904!4d35.0113193!16s%2Fg%2F11bz093fkt?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0169388,
+          31.8866705
+        ]
+      },
+      "properties": {
+        "id": 73,
+        "name": "הדרים 2",
+        "original_url": "https://www.google.com/maps/place/%D7%94%D7%93%D7%A8%D7%99%D7%9D+2,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.886675,35.0195137,17z/data=!3m1!4b1!4m5!3m4!1s0x1502cde7f42dae57:0xc425b7275d57de86!8m2!3d31.8866705!4d35.0169388?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.040428,
+          31.890093
+        ]
+      },
+      "properties": {
+        "id": 74,
+        "name": "גדרות מכבים בית סירא",
+        "original_url": "https://www.google.co.il/maps/search/31.890093,+35.040428?entry=tts&g_ep=EgoyMDI1MDEyNi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0349159,
+          31.8869984
+        ]
+      },
+      "properties": {
+        "id": 75,
+        "name": "רכסים",
+        "original_url": "https://www.google.co.il/maps/place/%D7%A8%D7%97%D7%95%D7%91+%D7%A8%D7%9B%D7%A1%D7%99%D7%9D,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.887967,35.0367123,16.13z/data=!4m6!3m5!1s0x1502cdf69e1247a9:0xeadfc5bb9608263c!8m2!3d31.8869984!4d35.0349159!16s%2Fg%2F1ymv3g8nj?entry=tts&g_ep=EgoyMDI1MDEyNi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.035191,
+          31.889023
+        ]
+      },
+      "properties": {
+        "id": 76,
+        "name": "מכבים כיכר הבוסתן",
+        "original_url": "https://www.google.co.il/maps/search/31.889023,+35.035191?entry=tts&g_ep=EgoyMDI1MDEyNi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0298515,
+          31.8950284
+        ]
+      },
+      "properties": {
+        "id": 77,
+        "name": "צומת הראשונים - המייסדים במכבים",
+        "original_url": "https://www.google.com/maps/place/%D7%93%D7%A8%D7%9A+%D7%94%D7%A8%D7%90%D7%A9%D7%95%D7%A0%D7%99%D7%9D,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.8858096,35.018581,17z/data=!4m6!3m5!1s0x1502cd8d46b44511:0xbbd09784b34da727!8m2!3d31.8950284!4d35.0298515!16s%2Fg%2F1ymvhv2p1?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0298492,
+          31.8884913
+        ]
+      },
+      "properties": {
+        "id": 78,
+        "name": "שדרות המכבים",
+        "original_url": "https://www.google.com/maps/place/%D7%A9%D7%93%D7%A8%D7%AA+%D7%94%D7%9E%D7%9B%D7%91%D7%99%D7%9D,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.8884958,35.0347201,17z/data=!3m1!4b1!4m7!3m6!1s0x1502cdf187f0e4c3:0xc6adadf19b8fb249!8m2!3d31.8884913!4d35.0298492!15sChPXk9eo15og15TXnteb15HXmdedkgEFcm91dGXgAQA!16s%2Fg%2F1ymylmv4g?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0298515,
+          31.8950284
+        ]
+      },
+      "properties": {
+        "id": 79,
+        "name": "דרך הראשונים",
+        "original_url": "https://www.google.com/maps/place/%D7%93%D7%A8%D7%9A+%D7%94%D7%A8%D7%90%D7%A9%D7%95%D7%A0%D7%99%D7%9D,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.8950329,35.0324264,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cd8d46b44511:0xbbd09784b34da727!8m2!3d31.8950284!4d35.0298515!16s%2Fg%2F1ymvhv2p1?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.005877,
+          31.9057331
+        ]
+      },
+      "properties": {
+        "id": 80,
+        "name": "דם המכבים 22",
+        "original_url": "https://www.google.com/maps/place/%D7%93%D7%9D+%D7%94%D7%9E%D7%9B%D7%91%D7%99%D7%9D+22,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.9057376,35.0084519,17z/data=!3m1!4b1!4m5!3m4!1s0x1502cdb9e9a2649f:0x6bd3eb5012debecf!8m2!3d31.9057331!4d35.005877?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0056991,
+          31.9068889
+        ]
+      },
+      "properties": {
+        "id": 81,
+        "name": "דם המכבים 24",
+        "original_url": "https://www.google.com/maps/place/%D7%93%D7%9D+%D7%94%D7%9E%D7%9B%D7%91%D7%99%D7%9D+24,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.9068934,35.008274,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdb0a76bb50f:0x64debd0bceb7fca2!8m2!3d31.9068889!4d35.0056991!16s%2Fg%2F11kbm627fq?entry=tts&g_ep=EgoyMDI1MDEyMi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0053888,
+          31.9062203
+        ]
+      },
+      "properties": {
+        "id": 82,
+        "name": "דם המכבים 26",
+        "original_url": "https://www.google.com/maps/place/%D7%AA%D7%97%D7%A0%D7%AA+%D7%9E%D7%A9%D7%98%D7%A8%D7%AA+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F,+%D7%93%D7%9D+%D7%94%D7%9E%D7%9B%D7%91%D7%99%D7%9D+26,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.9068934,35.008274,17z/data=!4m6!3m5!1s0x1502cdf79f9335a9:0xcaba4ecfcba01dd8!8m2!3d31.9062203!4d35.0053888!16s%2Fg%2F11j4plxzjb?entry=tts&g_ep=EgoyMDI1MDEyMi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.005832,
+          31.9061025
+        ]
+      },
+      "properties": {
+        "id": 83,
+        "name": "דם המכבים 28",
+        "original_url": "https://www.google.com/maps/place/%D7%93%D7%9D+%D7%94%D7%9E%D7%9B%D7%91%D7%99%D7%9D+28,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.906107,35.0084069,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdba006eb7cb:0x4d1d988210a3e273!8m2!3d31.9061025!4d35.005832!16s%2Fg%2F11rd28vxks?entry=tts&g_ep=EgoyMDI1MDEyMi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0062847,
+          31.9046688
+        ]
+      },
+      "properties": {
+        "id": 84,
+        "name": "דם המכבים 32",
+        "original_url": "https://www.google.com/maps/place/%D7%93%D7%9D+%D7%94%D7%9E%D7%9B%D7%91%D7%99%D7%9D+32,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.906107,35.0084069,17z/data=!4m6!3m5!1s0x1502cdc8b7112d4d:0x3447990fc28ff204!8m2!3d31.9046688!4d35.0062847!16s%2Fg%2F11p0wg5jwq?entry=tts&g_ep=EgoyMDI1MDEyMi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0067707,
+          31.9039428
+        ]
+      },
+      "properties": {
+        "id": 85,
+        "name": "דם המכבים 36",
+        "original_url": "https://www.google.com/maps/place/%D7%93%D7%9D+%D7%94%D7%9E%D7%9B%D7%91%D7%99%D7%9D+36,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.9039473,35.0093456,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdb9c5dbaafb:0x7ab43b492b749347!8m2!3d31.9039428!4d35.0067707!16s%2Fg%2F11kbm65xhx?entry=tts&g_ep=EgoyMDI1MDEyMi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0076201,
+          31.9076585
+        ]
+      },
+      "properties": {
+        "id": 86,
+        "name": "דם המכבים 35-37",
+        "original_url": "https://www.google.com/maps/place/%D7%AA%D7%9C%D7%AA%D7%9F+1,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA,+7176404%E2%80%AD/@31.907663,35.010195,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdba5976e967:0x11022079689ac0fa!8m2!3d31.9076585!4d35.0076201!16s%2Fg%2F12hkj7h41?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0067707,
+          31.9039428
+        ]
+      },
+      "properties": {
+        "id": 87,
+        "name": "דם המכבים 39",
+        "original_url": "https://www.google.com/maps/place/%D7%93%D7%9D+%D7%94%D7%9E%D7%9B%D7%91%D7%99%D7%9D+36,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.9039473,35.0093456,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdb9c5dbaafb:0x7ab43b492b749347!8m2!3d31.9039428!4d35.0067707!16s%2Fg%2F11kbm65xhx?entry=tts&g_ep=EgoyMDI1MDEyMi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0067707,
+          31.9039428
+        ]
+      },
+      "properties": {
+        "id": 88,
+        "name": "דם המכבים 42",
+        "original_url": "https://www.google.com/maps/place/%D7%93%D7%9D+%D7%94%D7%9E%D7%9B%D7%91%D7%99%D7%9D+42,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.9026406,35.0116368,17z/data=!4m6!3m5!1s0x1502cdb9c5dbaafb:0x83243ea234477184!8m2!3d31.9039428!4d35.0067707!16s%2Fg%2F11qh22jh_z?entry=tts&g_ep=EgoyMDI1MDEyMi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0065811,
+          31.9046324
+        ]
+      },
+      "properties": {
+        "id": 89,
+        "name": "דם המכבים 43",
+        "original_url": "https://www.google.com/maps/place/%D7%93%D7%9D+%D7%94%D7%9E%D7%9B%D7%91%D7%99%D7%9D+43,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.9039473,35.0093456,17z/data=!4m6!3m5!1s0x1502cda296e817f1:0xfb2e73ef12b9ee43!8m2!3d31.9046324!4d35.0065811!16s%2Fg%2F11jvn5y54q?entry=tts&g_ep=EgoyMDI1MDEyMi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0094929,
+          31.9041225
+        ]
+      },
+      "properties": {
+        "id": 90,
+        "name": "דם המכבים 44",
+        "original_url": "https://www.google.com/maps/place//@31.9041225,35.0094929,17z?entry=tts&g_ep=EgoyMDI1MDEyMi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0063672,
+          31.9049629
+        ]
+      },
+      "properties": {
+        "id": 91,
+        "name": "דם המכבים 46",
+        "original_url": "https://www.google.com/maps/place/%D7%93%D7%9D+%D7%94%D7%9E%D7%9B%D7%91%D7%99%D7%9D+46,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.9049674,35.0089421,17z/data=!3m1!4b1!4m5!3m4!1s0x1502cdb9eb8e55ef:0x1c8992d533aedb8e!8m2!3d31.9049629!4d35.0063672?entry=tts&g_ep=EgoyMDI1MDEyMi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0065516,
+          31.9048741
+        ]
+      },
+      "properties": {
+        "id": 92,
+        "name": "דם המכבים 47",
+        "original_url": "https://www.google.com/maps/place/%D7%93%D7%9D+%D7%94%D7%9E%D7%9B%D7%91%D7%99%D7%9D+47,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA,+7178536%E2%80%AD/@31.9048786,35.0091265,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdb9ef3797cb:0xd2225c07ae036ec7!8m2!3d31.9048741!4d35.0065516!16s%2Fg%2F11ts_vq09z?entry=tts&g_ep=EgoyMDI1MDEyMi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0092016,
+          31.9023329
+        ]
+      },
+      "properties": {
+        "id": 93,
+        "name": "דם המכבים 48",
+        "original_url": "https://www.google.com/maps/place/%D7%93%D7%9D+%D7%94%D7%9E%D7%9B%D7%91%D7%99%D7%9D+48,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA,+7170743%E2%80%AD/@31.9023374,35.0117765,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdb8fd327fd3:0x755d42b633c6228e!8m2!3d31.9023329!4d35.0092016!16s%2Fg%2F11pysbycjv?entry=tts&g_ep=EgoyMDI1MDEyMi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0069921,
+          31.9041801
+        ]
+      },
+      "properties": {
+        "id": 94,
+        "name": "דם המכבים 51",
+        "original_url": "https://www.google.com/maps/place/%D7%93%D7%9D+%D7%94%D7%9E%D7%9B%D7%91%D7%99%D7%9D+51,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.9041846,35.011863,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cd7e3deeba57:0xb3798227610716da!8m2!3d31.9041801!4d35.0069921!16s%2Fg%2F11r9t6rn3f?entry=tts&g_ep=EgoyMDI1MDEyMi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.006918,
+          31.904118
+        ]
+      },
+      "properties": {
+        "id": 95,
+        "name": "דם המכבים 53",
+        "original_url": "https://www.google.com/maps/place/%D7%93%D7%9D+%D7%94%D7%9E%D7%9B%D7%91%D7%99%D7%9D+53,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.9041225,35.0094929,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdeb937dd389:0x87229ac57277f6ea!8m2!3d31.904118!4d35.006918!16s%2Fg%2F11lkgx7j0t?entry=tts&g_ep=EgoyMDI1MDEyMi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0072506,
+          31.9036444
+        ]
+      },
+      "properties": {
+        "id": 96,
+        "name": "דם המכבים 55",
+        "original_url": "https://www.google.com/maps/place/%D7%93%D7%9D+%D7%94%D7%9E%D7%9B%D7%91%D7%99%D7%9D+55,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.9036489,35.0098255,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdb7387a312d:0xc2bb78ff0db0909a!8m2!3d31.9036444!4d35.0072506!16s%2Fg%2F11r2jdj243?entry=tts&g_ep=EgoyMDI1MDEyMi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0062521,
+          31.9066786
+        ]
+      },
+      "properties": {
+        "id": 97,
+        "name": "דם המכבים 57",
+        "original_url": "https://www.google.com/maps/place/%D7%93%D7%9D+%D7%94%D7%9E%D7%9B%D7%91%D7%99%D7%9D+57,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.9066831,35.008827,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdba0efafa31:0x2b696f19c7aa22d0!8m2!3d31.9066786!4d35.0062521!16s%2Fg%2F11jbcb9brz?entry=tts&g_ep=EgoyMDI1MDEyMi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.006546,
+          31.904375
+        ]
+      },
+      "properties": {
+        "id": 98,
+        "name": "דם המכבים 61",
+        "original_url": "https://www.google.com/maps/place/%D7%93%D7%9D+%D7%94%D7%9E%D7%9B%D7%91%D7%99%D7%9D+61,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.9043795,35.0091209,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdb9c2e003bb:0x8e1e7be76bf91ce1!8m2!3d31.904375!4d35.006546!16s%2Fg%2F11sjsg0n09?entry=tts&g_ep=EgoyMDI1MDEyMi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0090619,
+          31.9026361
+        ]
+      },
+      "properties": {
+        "id": 99,
+        "name": "דם המכבים 65 דרום",
+        "original_url": "https://www.google.com/maps/place/%D7%93%D7%9D+%D7%94%D7%9E%D7%9B%D7%91%D7%99%D7%9D+65,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.9049674,35.0089421,17z/data=!4m5!3m4!1s0x1502cdb9aa9b82eb:0x15851a906f07ea8e!8m2!3d31.9026361!4d35.0090619?entry=tts&g_ep=EgoyMDI1MDEyMi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0090619,
+          31.9026361
+        ]
+      },
+      "properties": {
+        "id": 100,
+        "name": "דם המכבים 65 צפון",
+        "original_url": "https://www.google.com/maps/place/%D7%93%D7%9D+%D7%94%D7%9E%D7%9B%D7%91%D7%99%D7%9D+65,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.9049674,35.0089421,17z/data=!4m5!3m4!1s0x1502cdb9aa9b82eb:0x15851a906f07ea8e!8m2!3d31.9026361!4d35.0090619?entry=tts&g_ep=EgoyMDI1MDEyMi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0094929,
+          31.9041225
+        ]
+      },
+      "properties": {
+        "id": 101,
+        "name": "דם המכבים 67",
+        "original_url": "https://www.google.com/maps/place//@31.9041225,35.0094929,17z/data=!3m1!4b1?entry=tts&g_ep=EgoyMDI1MDEyMi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0092124,
+          31.9029407
+        ]
+      },
+      "properties": {
+        "id": 102,
+        "name": "דם המכבים 69",
+        "original_url": "https://www.google.com/maps/place/%D7%9E%D7%95%D7%A2%D7%93%D7%95%D7%9F+%D7%94%D7%92%D7%A8%D7%99%D7%99+GRAY+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F%E2%80%AD/@31.9029452,35.0117873,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cd6b7155cce7:0x43f387b51038decd!8m2!3d31.9029407!4d35.0092124!16s%2Fg%2F11r_qn90pq?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.007705,
+          31.903218
+        ]
+      },
+      "properties": {
+        "id": 103,
+        "name": "דם המכבים / הרכבת",
+        "original_url": "https://www.google.com/maps/search/31.903218,+35.007705?entry=tts&g_ep=EgoyMDI1MDEyMi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.009454,
+          31.902253
+        ]
+      },
+      "properties": {
+        "id": 104,
+        "name": "דם המכבים / פיקוס",
+        "original_url": "https://www.google.com/maps/search/31.902253,+35.009454?entry=tts&g_ep=EgoyMDI1MDEyMi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.006978,
+          31.907653
+        ]
+      },
+      "properties": {
+        "id": 105,
+        "name": "כיכר העירייה (דרום)",
+        "original_url": "https://www.google.com/maps/search/31.907653,+35.006978?entry=tts&g_ep=EgoyMDI1MDEyMi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0073,
+          31.908491
+        ]
+      },
+      "properties": {
+        "id": 106,
+        "name": "כיכר העירייה (חניה)",
+        "original_url": "https://www.google.com/maps/search/31.908491,+35.007300?entry=tts&g_ep=EgoyMDI1MDEyMi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.00574,
+          31.899805
+        ]
+      },
+      "properties": {
+        "id": 107,
+        "name": "כיכר התחבורה לב העיר",
+        "original_url": "https://www.google.com/maps/place/%D7%9B%D7%99%D7%9B%D7%A8+%D7%94%D7%AA%D7%97%D7%91%D7%95%D7%A8%D7%94,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.8998223,35.0160397,15z/data=!3m1!4b1!4m6!3m5!1s0x1502cdc80aacef8f:0x359bdb055fdba8a8!8m2!3d31.899805!4d35.00574!16s%2Fg%2F11bzv2f_gc?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0076632,
+          31.8996612
+        ]
+      },
+      "properties": {
+        "id": 108,
+        "name": "כיכר התחבורה, לב העיר 2",
+        "original_url": "https://www.google.com/maps/place/%D7%9C%D7%91+%D7%94%D7%A2%D7%99%D7%A8+2,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.8996657,35.0102381,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdc7927048a1:0xc9d808be1d968030!8m2!3d31.8996612!4d35.0076632!16s%2Fg%2F1hc76gdvv?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0076632,
+          31.8996612
+        ]
+      },
+      "properties": {
+        "id": 109,
+        "name": "לב העיר 2",
+        "original_url": "https://www.google.com/maps/place/%D7%9C%D7%91+%D7%94%D7%A2%D7%99%D7%A8+2,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.8996657,35.0102381,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdc7927048a1:0xc9d808be1d968030!8m2!3d31.8996612!4d35.0076632!16s%2Fg%2F1hc76gdvv?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.005626,
+          31.906059
+        ]
+      },
+      "properties": {
+        "id": 110,
+        "name": "מדרחוב מזרקות/משה סנה",
+        "original_url": "https://www.google.com/maps/search/31.906059,+35.005626?entry=tts&g_ep=EgoyMDI1MDEyMi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.005626,
+          31.906059
+        ]
+      },
+      "properties": {
+        "id": 111,
+        "name": "מזרקות (צמוד לקסבה)",
+        "original_url": "https://www.google.com/maps/search/31.906059,+35.005626?entry=tts&g_ep=EgoyMDI1MDEyMi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0069796,
+          31.9006574
+        ]
+      },
+      "properties": {
+        "id": 112,
+        "name": "ערער 17 קומת כניסה (הבניין החדש של עזריאלי)",
+        "original_url": "https://www.google.co.il/maps/place/%D7%A2%D7%A8%D7%A2%D7%A8+17,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.9006619,35.0095545,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cd7e232f8fff:0x91d6df62b2b8f597!8m2!3d31.9006574!4d35.0069796!16s%2Fg%2F11w8qrv3q1?entry=tts&g_ep=EgoyMDI1MDEyNi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.007519,
+          31.906757
+        ]
+      },
+      "properties": {
+        "id": 113,
+        "name": "תלתן",
+        "original_url": "https://www.google.com/maps/search/31.906757,+35.007519?shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0076447,
+          31.9076669
+        ]
+      },
+      "properties": {
+        "id": 114,
+        "name": "תלתן 1",
+        "original_url": "https://www.google.co.il/maps/place/%D7%AA%D7%9C%D7%AA%D7%9F+1,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA,+7176404%E2%80%AD/@31.9076714,35.0102196,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdba5976e967:0x11022079689ac0fa!8m2!3d31.9076669!4d35.0076447!16s%2Fg%2F12hkj7h41?entry=tts&g_ep=EgoyMDI1MDEyNi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0048561,
+          31.8967542
+        ]
+      },
+      "properties": {
+        "id": 115,
+        "name": "פארק ענבה",
+        "original_url": "https://www.google.com/maps/place/%D7%A4%D7%90%D7%A8%D7%A7+%D7%A2%D7%A0%D7%91%D7%94+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F%E2%80%AD/@31.8963963,35.0235701,13z/data=!4m7!3m6!1s0x1502cdc8e58ee635:0x470ade31605c6769!8m2!3d31.8967542!4d35.0048561!15sChHXpNeQ16jXpyDXoteg15HXlFoTIhHXpNeQ16jXpyDXoteg15HXlJIBBHBhcmuaASNDaFpEU1VoTk1HOW5TMFZKUTBGblNVTTBkRm96TlZaUkVBReABAA!16s%2Fg%2F120lwhkf?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0048561,
+          31.8967542
+        ]
+      },
+      "properties": {
+        "id": 116,
+        "name": "פארק ענבה",
+        "original_url": "https://www.google.com/maps/place/%D7%A4%D7%90%D7%A8%D7%A7+%D7%A2%D7%A0%D7%91%D7%94+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F%E2%80%AD/@31.8963963,35.0235701,13z/data=!4m7!3m6!1s0x1502cdc8e58ee635:0x470ade31605c6769!8m2!3d31.8967542!4d35.0048561!15sChHXpNeQ16jXpyDXoteg15HXlFoTIhHXpNeQ16jXpyDXoteg15HXlJIBBHBhcmuaASNDaFpEU1VoTk1HOW5TMFZKUTBGblNVTTBkRm96TlZaUkVBReABAA!16s%2Fg%2F120lwhkf?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.992128,
+          31.901544
+        ]
+      },
+      "properties": {
+        "id": 117,
+        "name": "כניסה ויציאה רח' גולדה מאיר",
+        "original_url": "https://www.google.com/maps/search/31.901544,+34.992128?shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0052408,
+          31.9007212
+        ]
+      },
+      "properties": {
+        "id": 118,
+        "name": "החשמונאים (מול הקניון)",
+        "original_url": "https://www.google.com/maps/place/%D7%A9%D7%93%D7%A8%D7%95%D7%AA+%D7%94%D7%97%D7%A9%D7%9E%D7%95%D7%A0%D7%90%D7%99%D7%9D,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.9007257,35.0078157,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdc802e2cfc5:0xcc0acff732e93fa8!8m2!3d31.9007212!4d35.0052408!16s%2Fg%2F11gxtmdkk3?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0009706,
+          31.907572
+        ]
+      },
+      "properties": {
+        "id": 119,
+        "name": "צומת בר לב \\ החשמונאים",
+        "original_url": "https://www.google.com/maps/place/%D7%97%D7%99%D7%99%D7%9D+%D7%91%D7%A8-%D7%9C%D7%91,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.9075765,35.0058415,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdb148deae8f:0xd31b618fcd681c54!8m2!3d31.907572!4d35.0009706!16s%2Fg%2F1ymy0bclb?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.009529,
+          31.902262
+        ]
+      },
+      "properties": {
+        "id": 120,
+        "name": "צומת דם המכבים \\ תלתן \\ עמק איילון מערב",
+        "original_url": "https://www.google.com/maps/search/31.902262,+35.009529?entry=tts&g_ep=EgoyMDI1MDEyMi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.9975054,
+          31.9228065
+        ]
+      },
+      "properties": {
+        "id": 121,
+        "name": "הכניסה מערבית \\ רחוב יהודה המכבי",
+        "original_url": "https://www.google.com/maps/place/%D7%99%D7%94%D7%95%D7%93%D7%94+%D7%94%D7%9E%D7%9B%D7%91%D7%99,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.9219944,35.0023846,16.17z/data=!4m7!3m6!1s0x1502cdaa609647f3:0xeff1d98670d09e47!8m2!3d31.9228065!4d34.9975054!15sCjnXmdeU15XXk9eUINeU157Xm9eR15ksINee15XXk9eZ16LXmdefINee15vXkdeZ150g16jXoteV16qSAQVyb3V0ZeABAA!16s%2Fg%2F1hc22wr43?hl=he&entry=tts"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.989761,
+          31.903592
+        ]
+      },
+      "properties": {
+        "id": 122,
+        "name": "צומת חיים ויצמן \\ אפרים קציר",
+        "original_url": "https://www.google.co.il/maps/search/31.903592,+34.989761?entry=tts&g_ep=EgoyMDI1MDEyMi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.989021,
+          31.906117
+        ]
+      },
+      "properties": {
+        "id": 123,
+        "name": "צומת יהודה המכבי \\  אריאל שרון",
+        "original_url": "https://www.google.co.il/maps/search/31.906117,+34.989021?entry=tts&g_ep=EgoyMDI1MDEyMi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.004863,
+          31.9104
+        ]
+      },
+      "properties": {
+        "id": 124,
+        "name": "צומת עמק בית שאן \\ אליהו הנביא",
+        "original_url": "https://www.google.co.il/maps/search/31.910400,+35.004863?entry=tts&g_ep=EgoyMDI1MDEyMi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.002355,
+          31.911856
+        ]
+      },
+      "properties": {
+        "id": 125,
+        "name": "צומת עמק בית שאן \\ יחזקאל הנביא",
+        "original_url": "https://www.google.co.il/maps/search/31.911856,+35.002355?entry=tts&g_ep=EgoyMDI1MDEyMi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.9995002,
+          31.9164776
+        ]
+      },
+      "properties": {
+        "id": 126,
+        "name": "צומת עמק בית שאן \\ דבורה הנביאה",
+        "original_url": "https://www.google.co.il/maps/place/%D7%93%D7%91%D7%95%D7%A8%D7%94+%D7%94%D7%A0%D7%91%D7%99%D7%90%D7%94,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.9164821,35.0020751,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdac2dc4f4dd:0xb766992926cf0759!8m2!3d31.9164776!4d34.9995002!16s%2Fg%2F1ymxqg5kv?entry=tts&g_ep=EgoyMDI1MDEyMi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.001791,
+          31.911483
+        ]
+      },
+      "properties": {
+        "id": 127,
+        "name": "צומת עמק בית שאן \\ יעקב דורי",
+        "original_url": "https://www.google.co.il/maps/search/31.911483,+35.001791?entry=tts&g_ep=EgoyMDI1MDEyMi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.00421,
+          31.909872
+        ]
+      },
+      "properties": {
+        "id": 128,
+        "name": "צומת עמק בית שאן \\ משה דיין",
+        "original_url": "https://www.google.co.il/maps/search/31.909872,+35.004210?entry=tts&g_ep=EgoyMDI1MDEyMi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.000391,
+          31.913699
+        ]
+      },
+      "properties": {
+        "id": 129,
+        "name": "צומת עמק בית שאן \\ מוטה גור",
+        "original_url": "https://www.google.co.il/maps/search/31.913699,+35.000391?entry=tts&g_ep=EgoyMDI1MDEyMi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0257,
+          31.89891
+        ]
+      },
+      "properties": {
+        "id": 130,
+        "name": "צומת עמק דותן \\ יאיר פרג",
+        "original_url": "https://www.google.co.il/maps/search/31.898910,+35.025700?entry=tts&g_ep=EgoyMDI1MDEyMi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.016582,
+          31.900291
+        ]
+      },
+      "properties": {
+        "id": 131,
+        "name": "צומת עמק דותן \\ כליל החורש",
+        "original_url": "https://www.google.com/maps/search/31.900291,+35.016582?entry=tts"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.013924,
+          31.900346
+        ]
+      },
+      "properties": {
+        "id": 132,
+        "name": "צומת עמק דותן \\ לבונה",
+        "original_url": "https://www.google.com/maps/search/31.900346,+35.013924?entry=tts"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.014001,
+          31.899478
+        ]
+      },
+      "properties": {
+        "id": 133,
+        "name": "צומת עמק דותן \\ נחל עיון",
+        "original_url": "https://www.google.co.il/maps/search/31.899478,+35.014001?entry=tts&g_ep=EgoyMDI1MDEyMi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.009837,
+          31.898925
+        ]
+      },
+      "properties": {
+        "id": 134,
+        "name": "צומת עמק דותן \\ עמק החולה \\ ערער",
+        "original_url": "https://www.google.com/maps/search/31.898925,+35.009837?entry=tts&g_ep=EgoyMDI1MDQwMi4xIPu8ASoASAFQAw%3D%3D&skid=a6670a55-29ef-4900-aaef-c7a17312286d"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.002372,
+          31.917135
+        ]
+      },
+      "properties": {
+        "id": 135,
+        "name": "צומת עמק האלה \\ דבורה הנביאה",
+        "original_url": "https://www.google.com/maps/search/31.917135,+35.002372?entry=tts"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.012636,
+          31.911308
+        ]
+      },
+      "properties": {
+        "id": 136,
+        "name": "צומת עמק האלה\\ זכריה הנביא",
+        "original_url": "https://www.google.com/maps/search/31.911308,+35.012636?entry=tts"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.010196,
+          31.913029
+        ]
+      },
+      "properties": {
+        "id": 137,
+        "name": "צומת עמק האלה\\ תשרי",
+        "original_url": "https://www.google.com/maps/search/31.913029,+35.010196?entry=tts"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.008913,
+          31.898443
+        ]
+      },
+      "properties": {
+        "id": 138,
+        "name": "צומת עמק החולה \\ עמק דותן  \\ לב העיר",
+        "original_url": "https://www.google.co.il/maps/search/31.898443,+35.008913?entry=tts&g_ep=EgoyMDI1MDEyMi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.003746,
+          31.90268
+        ]
+      },
+      "properties": {
+        "id": 139,
+        "name": "צומת עמק זבולון \\ יגאל ידין",
+        "original_url": "https://www.google.com/maps/search/31.902680,+35.003746?entry=tts"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.00156,
+          31.906809
+        ]
+      },
+      "properties": {
+        "id": 140,
+        "name": "צומת עמק זבולון \\ משה דיין",
+        "original_url": "https://www.google.com/maps/search/31.906809,+35.001560?entry=tts"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.99224,
+          31.90954
+        ]
+      },
+      "properties": {
+        "id": 141,
+        "name": "צומת עמק זבולון \\ פז",
+        "original_url": "https://www.google.com/maps/search/31.909540,+34.992240?entry=tts"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.9799175,
+          31.9049173
+        ]
+      },
+      "properties": {
+        "id": 142,
+        "name": "צומת עמק חפר \\ שד' ענבה",
+        "original_url": "https://www.google.com/maps/place/%D7%A2%D7%9E%D7%A7+%D7%97%D7%A4%D7%A8,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.9049218,34.9824924,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cc39695b31bd:0x83caf8361ee24e40!8m2!3d31.9049173!4d34.9799175!16s%2Fg%2F11pdw0h0xd?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.00663,
+          31.901359
+        ]
+      },
+      "properties": {
+        "id": 143,
+        "name": "צומת ערער \\ הרכבת",
+        "original_url": "https://www.google.co.il/maps/search/31.901359,+35.006630?entry=tts&g_ep=EgoyMDI1MDEyMi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.9907219,
+          31.9080809
+        ]
+      },
+      "properties": {
+        "id": 144,
+        "name": "צומת פז \\ יהודה המכבי",
+        "original_url": "https://www.google.com/maps/place/%D7%A4%D7%96,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.9080854,34.9932968,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cc4a4a4c035d:0xac427c0176eb06a9!8m2!3d31.9080809!4d34.9907219!16s%2Fg%2F1ymtn5pw_?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0109011,
+          31.8856447
+        ]
+      },
+      "properties": {
+        "id": 145,
+        "name": "צומת קרן \\ שד' העומרים ברעות",
+        "original_url": "https://www.google.com/maps/place/%D7%A7%D7%A8%D7%9F,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.8856492,35.013476,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cddb8ab6c265:0x8f9e65b70ee838cd!8m2!3d31.8856447!4d35.0109011!16s%2Fg%2F1ymwf8gxy?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0140643,
+          31.890533
+        ]
+      },
+      "properties": {
+        "id": 146,
+        "name": "צומת שדרות האורנים \\ אלה ברעות",
+        "original_url": "https://www.google.com/maps/place/%D7%90%D7%9C%D7%94,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.8905375,35.0166392,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdc27b479ed5:0xaaa297aeb75d6c0b!8m2!3d31.890533!4d35.0140643!16s%2Fg%2F1ymv19y4l?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0152357,
+          31.892875
+        ]
+      },
+      "properties": {
+        "id": 147,
+        "name": "צומת שדרות האורנים \\ דובדבן ברעות",
+        "original_url": "https://www.google.com/maps/place/%D7%93%D7%95%D7%91%D7%93%D7%91%D7%9F,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.8928795,35.0178106,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdc220582ac9:0xecc966791515a9d1!8m2!3d31.892875!4d35.0152357!16s%2Fg%2F1ymy25mrh?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.013485,
+          31.909552
+        ]
+      },
+      "properties": {
+        "id": 148,
+        "name": "צומת חשמונאים \\ דם המכבים \\ זכריה",
+        "original_url": "https://www.google.co.il/maps/search/31.909552,+35.013485?entry=tts&g_ep=EgoyMDI1MDEyMi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.004382,
+          31.905778
+        ]
+      },
+      "properties": {
+        "id": 149,
+        "name": "צומת שדרות החשמונאים \\ חיים ברלב",
+        "original_url": "https://www.google.co.il/maps/search/31.905778,+35.004382?entry=tts&g_ep=EgoyMDI1MDEyMi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0013944,
+          31.893993
+        ]
+      },
+      "properties": {
+        "id": 150,
+        "name": "צומת שדרות החשמונאים \\ יצחק רבין",
+        "original_url": "https://www.google.com/maps/place/%D7%A9%D7%93%D7%A8%D7%95%D7%AA+%D7%94%D7%97%D7%A9%D7%9E%D7%95%D7%A0%D7%90%D7%99%D7%9D+%26+%D7%A9%D7%93%D7%A8%D7%95%D7%AA+%D7%99%D7%A6%D7%97%D7%A7+%D7%A8%D7%91%D7%99%D7%9F,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.8939975,35.0039693,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cdce6966efff:0x9056dac6e05d371d!8m2!3d31.893993!4d35.0013944!16s%2Fg%2F11f3b2fgsc?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.006795,
+          31.89757
+        ]
+      },
+      "properties": {
+        "id": 151,
+        "name": "צומת שדרות החשמונאים \\ עמק דותן",
+        "original_url": "https://www.google.co.il/maps/search/31.897570,+35.006795?entry=tts&g_ep=EgoyMDI1MDEyMi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.005183,
+          31.901856
+        ]
+      },
+      "properties": {
+        "id": 152,
+        "name": "צומת  חשמונאים \\ ערער",
+        "original_url": "https://www.google.com/maps/search/31.901856,+35.005183?entry=tts"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.00595,
+          31.9088
+        ]
+      },
+      "properties": {
+        "id": 153,
+        "name": "צומת שדרות החשמונאים \\ תלתן \\ עמק בית שאן",
+        "original_url": "https://www.google.co.il/maps/search/31.908800,+35.005950?entry=tts&g_ep=EgoyMDI1MDEyMi4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.016818,
+          31.912656
+        ]
+      },
+      "properties": {
+        "id": 154,
+        "name": "שדרות חשמונאים מכיוון צומת שילת",
+        "original_url": "https://www.google.com/maps/search/31.912656,+35.016818?entry=tts"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.989468,
+          31.894239
+        ]
+      },
+      "properties": {
+        "id": 155,
+        "name": "שדרות ענבה",
+        "original_url": "https://www.google.com/maps/place/%D7%A9%D7%93%D7%A8%D7%95%D7%AA+%D7%99%D7%A6%D7%97%D7%A7+%D7%A8%D7%91%D7%99%D7%9F%2F%D7%A9%D7%93%D7%A8%D7%95%D7%AA+%D7%A2%D7%A0%D7%91%D7%94%E2%80%AD/@31.8942435,34.9920429,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cc2dd76cdc71:0x9ac0cc796a23ce10!8m2!3d31.894239!4d34.989468!16s%2Fg%2F11gfmlktd2?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.95853,
+          31.883586
+        ]
+      },
+      "properties": {
+        "id": 156,
+        "name": "הגנן \\ דרך לכיוון שעלבים",
+        "original_url": "https://www.google.co.il/maps/search/31.883586,+34.958530?coh=236672&entry=tts&g_ep=EgoyMDI1MDEyOS4xIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.960361,
+          31.887098
+        ]
+      },
+      "properties": {
+        "id": 157,
+        "name": "המכונאי  (כניסה לחניון ציבורי)",
+        "original_url": "https://www.google.co.il/maps/search/31.887098,+34.960361?coh=236672&entry=tts&g_ep=EgoyMDI1MDEyOS4xIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.960441,
+          31.888668
+        ]
+      },
+      "properties": {
+        "id": 158,
+        "name": "המכונאי \\ הקדר",
+        "original_url": "https://www.google.co.il/maps/search/31.888668,+34.960441?entry=tts&g_ep=EgoyMDI1MDEyOS4xIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.958575,
+          31.883593
+        ]
+      },
+      "properties": {
+        "id": 159,
+        "name": "המכונאי \\ שד' התעשיות",
+        "original_url": "https://www.google.co.il/maps/search/31.883593,+34.958575?coh=236672&entry=tts&g_ep=EgoyMDI1MDEyOS4xIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.965008,
+          31.888708
+        ]
+      },
+      "properties": {
+        "id": 160,
+        "name": "הקדר \\ האופה",
+        "original_url": "https://www.google.co.il/maps/search/31.888708,+34.965008?coh=236672&entry=tts&g_ep=EgoyMDI1MDEyOS4xIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.961851,
+          31.888685
+        ]
+      },
+      "properties": {
+        "id": 161,
+        "name": "הקדר \\ החרט",
+        "original_url": "https://www.google.co.il/maps/search/31.888685,+34.961851?coh=236672&entry=tts&g_ep=EgoyMDI1MDEyOS4xIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.96394,
+          31.884679
+        ]
+      },
+      "properties": {
+        "id": 162,
+        "name": "הגנן \\ הסתת",
+        "original_url": "https://www.google.co.il/maps/search/31.884679,+34.963940?coh=236672&entry=tts&g_ep=EgoyMDI1MDEyOS4xIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.970468,
+          31.889867
+        ]
+      },
+      "properties": {
+        "id": 163,
+        "name": "החמאם \\ המקצועות",
+        "original_url": "https://www.google.co.il/maps/search/31.889867,+34.970468?entry=tts&g_ep=EgoyMDI1MDEyOS4xIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.965,
+          31.889835
+        ]
+      },
+      "properties": {
+        "id": 164,
+        "name": "הסוחר \\ האופה",
+        "original_url": "https://www.google.co.il/maps/search/31.889835,+34.965000?entry=tts&g_ep=EgoyMDI1MDEyOS4xIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.961798,
+          31.890843
+        ]
+      },
+      "properties": {
+        "id": 165,
+        "name": "הסוחר \\ החרט",
+        "original_url": "https://www.google.co.il/maps/search/31.890843,+34.961798?entry=tts&g_ep=EgoyMDI1MDEyOS4xIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.967312,
+          31.890309
+        ]
+      },
+      "properties": {
+        "id": 166,
+        "name": "הסוחר \\ תחנת דלק מיקה",
+        "original_url": "https://www.google.co.il/maps/search/31.890309,+34.967312?entry=tts&g_ep=EgoyMDI1MDEyOS4xIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.960937,
+          31.893551
+        ]
+      },
+      "properties": {
+        "id": 167,
+        "name": "חניון דרומי \\ פאתי מודיעין",
+        "original_url": "https://www.google.co.il/maps/search/31.893551,+34.960937?entry=tts&g_ep=EgoyMDI1MDEyOS4xIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.965027,
+          31.889781
+        ]
+      },
+      "properties": {
+        "id": 168,
+        "name": "שד' המלאכות \\ האופה",
+        "original_url": "https://www.google.co.il/maps/search/31.889781,+34.965027?entry=tts&g_ep=EgoyMDI1MDEyOS4xIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.966903,
+          31.889836
+        ]
+      },
+      "properties": {
+        "id": 169,
+        "name": "שד' המלאכות \\ הנפח",
+        "original_url": "https://www.google.co.il/maps/search/31.889836,+34.966903?entry=tts&g_ep=EgoyMDI1MDEyOS4xIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.963829,
+          31.889662
+        ]
+      },
+      "properties": {
+        "id": 170,
+        "name": "שד' המלאכות \\ כניסה למרכז מסחרי ישפרו(ארומה)",
+        "original_url": "https://www.google.co.il/maps/search/31.889662,+34.963829?entry=tts&g_ep=EgoyMDI1MDEyOS4xIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.955337,
+          31.893508
+        ]
+      },
+      "properties": {
+        "id": 171,
+        "name": "שד' המלאכות \\ צומת 431",
+        "original_url": "https://www.google.co.il/maps/search/31.893508,+34.955337?entry=tts&g_ep=EgoyMDI1MDEyOS4xIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.964971,
+          31.887549
+        ]
+      },
+      "properties": {
+        "id": 172,
+        "name": "שד' המקצועות \\ האופה \\ הגנן",
+        "original_url": "https://www.google.co.il/maps/search/31.887549,+34.964971?coh=236672&entry=tts&g_ep=EgoyMDI1MDEyOS4xIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.96056,
+          31.885066
+        ]
+      },
+      "properties": {
+        "id": 173,
+        "name": "שד' התעשיות \\ האורג",
+        "original_url": "https://www.google.co.il/maps/search/31.885066,+34.960560?coh=236672&entry=tts&g_ep=EgoyMDI1MDEyOS4xIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.959622,
+          31.884167
+        ]
+      },
+      "properties": {
+        "id": 174,
+        "name": "שד' התעשיות \\ הבנאי",
+        "original_url": "https://www.google.co.il/maps/search/31.884167,+34.959622?coh=236672&entry=tts&g_ep=EgoyMDI1MDEyOS4xIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.961229,
+          31.886035
+        ]
+      },
+      "properties": {
+        "id": 175,
+        "name": "שד' התעשיות \\ הסתת",
+        "original_url": "https://www.google.co.il/maps/search/31.886035,+34.961229?coh=236672&entry=tts&g_ep=EgoyMDI1MDEyOS4xIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.9681013,
+          31.9217515
+        ]
+      },
+      "properties": {
+        "id": 176,
+        "name": "אזור התעסוקה",
+        "original_url": "https://www.google.com/maps/place/%D7%9C%D7%99%D7%92%D7%93,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.921756,34.9706762,17z/data=!3m1!4b1!4m6!3m5!1s0x1502cc68b902cc2f:0xdf5b357e1bae2d9e!8m2!3d31.9217515!4d34.9681013!16s%2Fg%2F11bvtg16b2?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.975519,
+          31.91712
+        ]
+      },
+      "properties": {
+        "id": 177,
+        "name": "כיכר שדרות הרכס \\ דרך בית העלמין",
+        "original_url": "https://www.google.co.il/maps/search/31.917120,+34.975519?entry=tts&g_ep=EgoyMDI1MDEyOS4xIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.9686295,
+          31.9227284
+        ]
+      },
+      "properties": {
+        "id": 178,
+        "name": "השדרה המרכזית",
+        "original_url": "https://www.google.com/maps/place/%D7%94%D7%A9%D7%93%D7%A8%D7%94+%D7%94%D7%9E%D7%A8%D7%9B%D7%96%D7%99%D7%AA+20,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.9227329,34.9712044,17z/data=!3m1!4b1!4m5!3m4!1s0x1502cc68a0030e97:0xcd58e30f3dd04e2d!8m2!3d31.9227284!4d34.9686295?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.994177,
+          31.920617
+        ]
+      },
+      "properties": {
+        "id": 179,
+        "name": "עמק האלה (דרום)  \\ יהודה המכבי",
+        "original_url": "https://www.google.co.il/maps/search/31.920617,+34.994177?entry=tts&g_ep=EgoyMDI1MDEyOS4xIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.98467,
+          31.919183
+        ]
+      },
+      "properties": {
+        "id": 180,
+        "name": "עמק האלה \\ היער",
+        "original_url": "https://www.google.co.il/maps/search/31.919183,+34.984670?entry=tts&g_ep=EgoyMDI1MDEyOS4xIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.97832,
+          31.919333
+        ]
+      },
+      "properties": {
+        "id": 181,
+        "name": "עמק האלה \\ החורש",
+        "original_url": "https://www.google.co.il/maps/search/31.919333,+34.978320?entry=tts&g_ep=EgoyMDI1MDEyOS4xIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.975519,
+          31.91712
+        ]
+      },
+      "properties": {
+        "id": 182,
+        "name": "כיכר עמק האלה השדרה המרכזית",
+        "original_url": "https://www.google.co.il/maps/search/31.917120,+34.975519?entry=tts&g_ep=EgoyMDI1MDEyOS4xIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.9627735,
+          31.9190956
+        ]
+      },
+      "properties": {
+        "id": 183,
+        "name": "צלע ההר 41",
+        "original_url": "https://www.google.co.il/maps/place/%D7%A6%D7%9C%D7%A2+%D7%94%D7%94%D7%A8+41,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.9191001,34.9653484,17z/data=!3m1!4b1!4m5!3m4!1s0x1502cc6da7fd36f1:0x889751088b4626d6!8m2!3d31.9190956!4d34.9627735?entry=tts&g_ep=EgoyMDI1MDEyOS4xIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.965889,
+          31.919842
+        ]
+      },
+      "properties": {
+        "id": 184,
+        "name": "צלע ההר \\ המעיין",
+        "original_url": "https://www.google.co.il/maps/place/%D7%A6%D7%9C%D7%A2+%D7%94%D7%94%D7%A8,+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.9198465,34.9684639,17z/data=!4m6!3m5!1s0x1502cc685f27c94f:0xcbf30175c4854c24!8m2!3d31.919842!4d34.965889!16s%2Fg%2F1hc3qmy5z?entry=tts&g_ep=EgoyMDI1MDEyOS4xIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.965356,
+          31.914641
+        ]
+      },
+      "properties": {
+        "id": 185,
+        "name": "שדרות המעלה  \\ המעיין",
+        "original_url": "https://www.google.co.il/maps/search/31.914641,+34.965356?entry=tts&g_ep=EgoyMDI1MDEyOS4xIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.96452,
+          31.913476
+        ]
+      },
+      "properties": {
+        "id": 186,
+        "name": "שדרות המעלה \\ עמק האלה",
+        "original_url": "https://www.google.co.il/maps/search/31.913476,+34.964520?entry=tts&g_ep=EgoyMDI1MDEyOS4xIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.96452,
+          31.913476
+        ]
+      },
+      "properties": {
+        "id": 187,
+        "name": "שדרות המעלה \\ צלע ההר",
+        "original_url": "https://www.google.co.il/maps/search/31.913476,+34.964520?entry=tts&g_ep=EgoyMDI1MDEyOS4xIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.970663,
+          31.921747
+        ]
+      },
+      "properties": {
+        "id": 188,
+        "name": "השדרה המרכזית \\ הזריחה",
+        "original_url": "https://www.google.co.il/maps/search/31.921747,+34.970663?entry=tts&g_ep=EgoyMDI1MDEyOS4xIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.969702,
+          31.922596
+        ]
+      },
+      "properties": {
+        "id": 189,
+        "name": "השדרה המרכזית \\ הזריעה",
+        "original_url": "https://www.google.co.il/maps/search/31.922596,+34.969702?entry=tts&g_ep=EgoyMDI1MDEyOS4xIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.966564,
+          31.923351
+        ]
+      },
+      "properties": {
+        "id": 190,
+        "name": "השדרה המרכזית \\ תחנת \"דלק\"",
+        "original_url": "https://www.google.co.il/maps/search/31.923351,+34.966564?entry=tts&g_ep=EgoyMDI1MDEyOS4xIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.98156,
+          31.925154
+        ]
+      },
+      "properties": {
+        "id": 191,
+        "name": "שדרות הרכס \\ החורש",
+        "original_url": "https://www.google.co.il/maps/search/31.925154,+34.981560?entry=tts&g_ep=EgoyMDI1MDEyOS4xIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.969652,
+          31.924838
+        ]
+      },
+      "properties": {
+        "id": 192,
+        "name": "שדרות הרכס \\ הנטיעה",
+        "original_url": "https://www.google.co.il/maps/search/31.924838,+34.969652?entry=tts&g_ep=EgoyMDI1MDEyOS4xIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.999246,
+          31.923761
+        ]
+      },
+      "properties": {
+        "id": 193,
+        "name": "שדרות הרכס \\ יהודה המכבי",
+        "original_url": "https://www.google.co.il/maps/search/31.923761,+34.999246?entry=tts&g_ep=EgoyMDI1MDEyOS4xIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.9776078,
+          31.929369
+        ]
+      },
+      "properties": {
+        "id": 194,
+        "name": "הגעה דרך שד' הנכס",
+        "original_url": "https://www.google.com/maps/place/%D7%91%D7%99%D7%AA+%D7%94%D7%A2%D7%9C%D7%9E%D7%99%D7%9F+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.8962639,35.0235701,13z/data=!4m7!3m6!1s0x1502cd1fd8215915:0x4ae39e2a92dc07c2!8m2!3d31.929369!4d34.9776078!15sChPXkdeZ16og15TXotec157XmdefkgEIY2VtZXRlcnngAQA!16s%2Fg%2F11fn5svyyy?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.9776078,
+          31.929369
+        ]
+      },
+      "properties": {
+        "id": 195,
+        "name": "הגעה דרך שד' הנכס",
+        "original_url": "https://www.google.com/maps/place/%D7%91%D7%99%D7%AA+%D7%94%D7%A2%D7%9C%D7%9E%D7%99%D7%9F+%D7%9E%D7%95%D7%93%D7%99%D7%A2%D7%99%D7%9F+%D7%9E%D7%9B%D7%91%D7%99%D7%9D+%D7%A8%D7%A2%D7%95%D7%AA%E2%80%AD/@31.8962639,35.0235701,13z/data=!4m7!3m6!1s0x1502cd1fd8215915:0x4ae39e2a92dc07c2!8m2!3d31.929369!4d34.9776078!15sChPXkdeZ16og15TXotec157XmdefkgEIY2VtZXRlcnngAQA!16s%2Fg%2F11fn5svyyy?hl=iw&shorturl=1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0177541,
+          31.8789493
+        ]
+      },
+      "properties": {
+        "id": 196,
+        "name": "הגבעות הדרומיות",
+        "original_url": "https://www.google.co.il/maps/place/%D7%A9%D7%91%D7%99%D7%9C+%D7%94%D7%92%D7%91%D7%A2%D7%95%D7%AA+%D7%94%D7%93%D7%A8%D7%95%D7%9E%D7%99%D7%95%D7%AA%E2%80%AD/@31.8798011,35.0181082,17z/data=!4m6!3m5!1s0x1502cde06ebeca63:0x7c5b8b9312057852!8m2!3d31.8789493!4d35.0177541!16s%2Fg%2F11g7z9px7z?entry=tts&g_ep=EgoyMDI1MDEyNy4wIPu8ASoASAFQAw%3D%3D"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.996319,
+          31.894412
+        ]
+      },
+      "properties": {
+        "id": 197,
+        "name": "שדרות יצחק רבין 431",
+        "original_url": "https://www.google.co.il/maps/search/31.894412,+34.996319?entry=tts&g_ep=EgoyMDI1MDEyNy4wIPu8ASoASAFQAw%3D%3D"
+      }
+    }
+  ]
+}

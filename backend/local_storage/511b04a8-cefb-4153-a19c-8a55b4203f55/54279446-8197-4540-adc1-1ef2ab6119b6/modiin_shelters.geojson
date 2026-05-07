@@ -1,0 +1,590 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0205926,
+          31.8890424
+        ]
+      },
+      "properties": {
+        "id": 1,
+        "name": "גבעת הלבונה",
+        "original_url": "https://goo.gl/maps/BwK5G2yeFL79K7Zh8"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0193656,
+          31.891018
+        ]
+      },
+      "properties": {
+        "id": 2,
+        "name": "גלבוע",
+        "original_url": "https://goo.gl/maps/3o64sikPXKcnefRy9"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0239608,
+          31.8949951
+        ]
+      },
+      "properties": {
+        "id": 3,
+        "name": "תבור-סוף",
+        "original_url": "https://goo.gl/maps/EbRKxok8LnAYeJNA9"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0166602,
+          31.8895692
+        ]
+      },
+      "properties": {
+        "id": 4,
+        "name": "שד' אורנים איגלו רח' ארז",
+        "original_url": "https://goo.gl/maps/g1SiFum7kQ4BvrNNA"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0149328,
+          31.8906915
+        ]
+      },
+      "properties": {
+        "id": 5,
+        "name": "ברוש",
+        "original_url": "https://goo.gl/maps/9Hrmagmdxrqmikc37"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0165994,
+          31.891939
+        ]
+      },
+      "properties": {
+        "id": 6,
+        "name": "חרמון",
+        "original_url": "https://goo.gl/maps/Dkhh4Svqr84EU4mG8"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.013131,
+          31.89284
+        ]
+      },
+      "properties": {
+        "id": 7,
+        "name": "שיקמה-פינת תומר",
+        "original_url": "https://goo.gl/maps/PAogcCx2shfvoaB27"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.012442,
+          31.892039
+        ]
+      },
+      "properties": {
+        "id": 8,
+        "name": "רותם-הדס",
+        "original_url": "https://goo.gl/maps/MmnRudzWRX1qNbKu9"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0132213,
+          31.891416
+        ]
+      },
+      "properties": {
+        "id": 9,
+        "name": "תאנה",
+        "original_url": "https://goo.gl/maps/efMFUm21u3jz97nu6"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.02005,
+          31.883793
+        ]
+      },
+      "properties": {
+        "id": 10,
+        "name": "שד' הפרחים",
+        "original_url": "https://goo.gl/maps/QmbiHgkZigJ41DEo7"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0186819,
+          31.8837191
+        ]
+      },
+      "properties": {
+        "id": 11,
+        "name": "אירוסים",
+        "original_url": "https://goo.gl/maps/Nrc1n7CVYUHr1rRk8"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0181554,
+          31.885005
+        ]
+      },
+      "properties": {
+        "id": 12,
+        "name": "חצב",
+        "original_url": "https://goo.gl/maps/S4KZ1FgKAzYD1vXFA"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.015506,
+          31.884308
+        ]
+      },
+      "properties": {
+        "id": 13,
+        "name": "יקינטון-חבצלת",
+        "original_url": "https://goo.gl/maps/rzs6GHc74uHtsD6u9"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0154914,
+          31.8834076
+        ]
+      },
+      "properties": {
+        "id": 14,
+        "name": "אירוסים-פינת נרקיס",
+        "original_url": "https://goo.gl/maps/w2AspMRFNvneoEib7"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0161988,
+          31.88648
+        ]
+      },
+      "properties": {
+        "id": 15,
+        "name": "אלמוג",
+        "original_url": "https://goo.gl/maps/mN2Ubg12zMLTyUiZ7"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0124806,
+          31.8877979
+        ]
+      },
+      "properties": {
+        "id": 16,
+        "name": "קשת",
+        "original_url": "https://goo.gl/maps/Say2ja8DJbpQ3v5g7"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0124806,
+          31.8877979
+        ]
+      },
+      "properties": {
+        "id": 17,
+        "name": "קשת",
+        "original_url": "https://goo.gl/maps/Say2ja8DJbpQ3v5g7"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0141301,
+          31.8851174
+        ]
+      },
+      "properties": {
+        "id": 18,
+        "name": "שוהם-פינת שד' עומרים",
+        "original_url": "https://goo.gl/maps/oom2V6tpMcy2P6if9"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0313154,
+          31.8947061
+        ]
+      },
+      "properties": {
+        "id": 19,
+        "name": "אנפה-מכבים ב'",
+        "original_url": "https://goo.gl/maps/aRGdk9HyPNPzZFi26"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0313154,
+          31.8947061
+        ]
+      },
+      "properties": {
+        "id": 20,
+        "name": "אנפה-מכבים ב'",
+        "original_url": "https://goo.gl/maps/aRGdk9HyPNPzZFi26"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0295522,
+          31.8945524
+        ]
+      },
+      "properties": {
+        "id": 21,
+        "name": "ברקנית-מכבים ב'",
+        "original_url": "https://goo.gl/maps/UnmKKeL2gwjbbN2t8"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0296212,
+          31.8932887
+        ]
+      },
+      "properties": {
+        "id": 22,
+        "name": "גדי-מכבים ב'",
+        "original_url": "https://goo.gl/maps/mPiomgBTZWvzY7tC6"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.030875,
+          31.89228
+        ]
+      },
+      "properties": {
+        "id": 23,
+        "name": "טבלן-מכבים ב'",
+        "original_url": "https://goo.gl/maps/J4mmrsFUwVFc6ePY6"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0322498,
+          31.8920078
+        ]
+      },
+      "properties": {
+        "id": 24,
+        "name": "לביא-מכבים ב'",
+        "original_url": "https://goo.gl/maps/CiZwhWTeECc7xaiS6"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0322005,
+          31.8908229
+        ]
+      },
+      "properties": {
+        "id": 25,
+        "name": "נקר-סנונית-מכבים ב'",
+        "original_url": "https://goo.gl/maps/XyE1jMxTyovDRu1z8"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0306469,
+          31.8908175
+        ]
+      },
+      "properties": {
+        "id": 26,
+        "name": "עגור-מכבים ב'",
+        "original_url": "https://goo.gl/maps/PjSz5yyAptig2EcJA"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0306469,
+          31.8908175
+        ]
+      },
+      "properties": {
+        "id": 27,
+        "name": "עגור-מכבים ב'",
+        "original_url": "https://goo.gl/maps/PjSz5yyAptig2EcJA"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0369907,
+          31.8880667
+        ]
+      },
+      "properties": {
+        "id": 28,
+        "name": "הר אמיר- מכבים ג1",
+        "original_url": "https://goo.gl/maps/MtYdtVv4CYPinrbV9"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0370684,
+          31.8869981
+        ]
+      },
+      "properties": {
+        "id": 29,
+        "name": "הר דלתון-מכבים ג1",
+        "original_url": "https://goo.gl/maps/2krdKcDJmuR4kw1AA"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0382181,
+          31.8860913
+        ]
+      },
+      "properties": {
+        "id": 30,
+        "name": "הר זיו-מכבים ג1",
+        "original_url": "https://goo.gl/maps/tX5c4vnZ2Zqbemjy9"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0350973,
+          31.8869285
+        ]
+      },
+      "properties": {
+        "id": 31,
+        "name": "רכסים-מכבים ג1",
+        "original_url": "https://goo.gl/maps/7M3yQS8Q4swUcoyw5"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0354894,
+          31.8861007
+        ]
+      },
+      "properties": {
+        "id": 32,
+        "name": "הר עמינדב-מכבים ג1",
+        "original_url": "https://goo.gl/maps/WNGHnMswgUyZ4pL19"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0356628,
+          31.8866625
+        ]
+      },
+      "properties": {
+        "id": 33,
+        "name": "הר פורת-מכבים ג1",
+        "original_url": "https://goo.gl/maps/oDRrKcw5Xk7jTKSC8"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.033729,
+          31.8879261
+        ]
+      },
+      "properties": {
+        "id": 34,
+        "name": "הר שחר-מכבים ג1",
+        "original_url": "https://goo.gl/maps/am8MBRZdxCLZW6m26"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0319427,
+          31.8857048
+        ]
+      },
+      "properties": {
+        "id": 35,
+        "name": "יובלים-מכבים ג1",
+        "original_url": "https://goo.gl/maps/735CMwNzk2iDJFpu7"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0319427,
+          31.8857048
+        ]
+      },
+      "properties": {
+        "id": 36,
+        "name": "יובלים-מכבים ג2",
+        "original_url": "https://goo.gl/maps/735CMwNzk2iDJFpu7"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.033095,
+          31.885237
+        ]
+      },
+      "properties": {
+        "id": 37,
+        "name": "נחל עוז-מכבים ג2",
+        "original_url": "https://goo.gl/maps/1qHrKeBa397KWxi16"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0327057,
+          31.8837088
+        ]
+      },
+      "properties": {
+        "id": 38,
+        "name": "נחל כיסופים-מכבים ג2",
+        "original_url": "https://goo.gl/maps/berHMtw4dLgqbXwZ8"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0312272,
+          31.8845329
+        ]
+      },
+      "properties": {
+        "id": 39,
+        "name": "נחל חרות-מכבים ג2",
+        "original_url": "https://goo.gl/maps/NguiAPNVsKgNujG16"
+      }
+    }
+  ]
+}
