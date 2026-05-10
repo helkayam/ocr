@@ -86,7 +86,26 @@ async def upload_document(
 @query_router.post("/query/", response_model=QueryResponse)
 def query_documents(req: QueryRequest):
     try:
+        # הקריאה לליבה של ה-RAG נשארת זהה
         rag = pipeline.ask_pipeline(req.query, top_k=req.top_k, workspace_id=req.workspace_id)
+        
+        # אנו מוסיפים יצירת מערך מקורות מובנה
+        # כל מקור יכיל את ה-id של המסמך ומספר העמוד (אם קיים)
+        sources_list = []
+        if hasattr(rag, 'sources') and rag.sources:
+            for source in rag.sources:
+                sources_list.append({
+                    "document_id": source.document_id,
+                    "page_num": source.page_num,
+                    "file_name": getattr(source, 'file_name', "Unknown File")
+                })
+
     except Exception as exc:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(exc))
-    return QueryResponse(query=rag.query, answer=rag.answer)
+    
+    # עכשיו ה-Response מחזיר גם את רשימת המקורות
+    return QueryResponse(
+        query=rag.query, 
+        answer=rag.answer,
+        sources=sources_list # <-- התוספת הקריטית!
+    )

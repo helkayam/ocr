@@ -2,6 +2,9 @@ import mimetypes
 import os
 import tempfile
 import uuid
+import fitz  # PyMuPDF - הספרייה שכבר מותקנת לכם לטיפול ב-PDF
+import io
+from fastapi.responses import StreamingResponse
 from pathlib import Path
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException, Query, Request
@@ -278,3 +281,44 @@ def reindex_file(file_id: str):
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc))
     return ReindexResponse(document_id=file_id, chunks_indexed=count)
+
+
+
+# בהנחה שהראוטר מוגדר למעלה כ- router = APIRouter(...)
+
+@router.get("/{file_id}/page/{page_num}/image")
+async def get_pdf_page_image(file_id: str, page_num: int):
+    """
+    מקבל מזהה קובץ ומספר עמוד (מתחיל ב-1),
+    ומחזיר תמונה (PNG) ברזולוציה גבוהה של אותו עמוד.
+    """
+    # הנתיב שבו ה-Pipeline שלכם שומר את קבצי המקור (raw)
+    pdf_path = f"data/raw/{file_id}.pdf"
+    
+    if not os.path.exists(pdf_path):
+        raise HTTPException(status_code=404, detail="PDF file not found in local storage")
+
+    try:
+        # פתיחת ה-PDF
+        doc = fitz.open(pdf_path)
+        
+        # מספרי העמודים ב-fitz מתחילים ב-0, אז נחסר 1 (ה-LLM מחזיר 1-indexed)
+        actual_page_index = page_num - 1
+        
+        if actual_page_index < 0 or actual_page_index >= len(doc):
+            raise HTTPException(status_code=400, detail="Page number out of bounds")
+
+        page = doc[actual_page_index]
+        
+        # שיפור הרזולוציה של התמונה (זום של פי 2) כדי שהטקסט ייראה חד למשתמש
+        matrix = fitz.Matrix(2.0, 2.0)
+        pix = page.get_pixmap(matrix=matrix)
+        
+        # המרה לבתים של תמונה מסוג PNG
+        img_bytes = pix.tobytes("png")
+        
+        # החזרת התמונה ישירות ללקוח (לדפדפן)
+        return StreamingResponse(io.BytesIO(img_bytes), media_type="image/png")
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error rendering PDF page: {str(e)}")

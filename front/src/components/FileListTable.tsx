@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { FileItem, FileType } from '@/types/files';
 import { FileTypeIcon } from './FileTypeIcon';
 import { FileStatusBadge } from './FileStatusBadge';
+// הייבוא החדש שלנו!
+import ProcessingTimeline from './ProcessingTimeline'; 
 import { Button } from '@/components/ui/button';
 import { ArrowUpDown, ArrowUp, ArrowDown, MoreHorizontal, Trash2, Download, ScanSearch } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -123,7 +125,7 @@ export function FileListTable({ files, onViewDetails, onPreview, onDelete }: Fil
                 <SortButton field="date">Date</SortButton>
               </th>
               <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                Status
+                Status / Pipeline
               </th>
               <th className="px-4 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider w-24">
                 Actions
@@ -163,9 +165,12 @@ export function FileListTable({ files, onViewDetails, onPreview, onDelete }: Fil
                     {formatDate(file.date)}
                   </span>
                 </td>
-                <td className="px-4 py-3">
-                  <FileStatusBadge status={file.status} processingStatus={file.processing_status} />
+                
+                {/* כאן בוצע השינוי - השתמשנו בקומפוננטה החדשה במקום בתגית הסטטוס הישנה */}
+                <td className="px-4 py-3 min-w-[300px]">
+                  <ProcessingTimeline status={file.status as any} />
                 </td>
+
                 <td className="px-4 py-3">
                   <div className="flex items-center justify-end gap-1">
                     <Button
