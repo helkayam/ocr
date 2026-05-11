@@ -129,5 +129,4 @@ class QueryRequest(BaseModel):
 class QueryResponse(BaseModel):
     query: str
     answer: str
-    sources: Optional[list] = [] # תוסיפי את השורה הזו
 
