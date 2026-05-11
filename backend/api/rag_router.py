@@ -15,7 +15,7 @@ from app import pipeline
 import app.registry as rag_registry
 from app.ingest import manager as ingest_manager
 from app.worker.tasks import process_document
-from .schemas import DocumentOut, IngestResponse, QueryRequest, QueryResponse
+from .schemas import BBoxOut, CitedSourceOut, DocumentOut, IngestResponse, QueryRequest, QueryResponse
 
 
 # ---------------------------------------------------------------------------
@@ -89,4 +89,27 @@ def query_documents(req: QueryRequest):
         rag = pipeline.ask_pipeline(req.query, top_k=req.top_k, workspace_id=req.workspace_id)
     except Exception as exc:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(exc))
-    return QueryResponse(query=rag.query, answer=rag.answer)
+
+    sources_out: list[CitedSourceOut] = []
+    for s in rag.sources:
+        rec = rag_registry.get(s.document_id)
+        file_name = rec.file_name if rec else s.document_id
+        bbox_out = (
+            BBoxOut(
+                y_top=s.bbox.y_top,
+                y_bottom=s.bbox.y_bottom,
+                page_width=s.bbox.page_width,
+                page_height=s.bbox.page_height,
+            )
+            if s.bbox else None
+        )
+        sources_out.append(CitedSourceOut(
+            document_id=s.document_id,
+            file_name=file_name,
+            page_num=s.page_num,
+            chunk_id=s.chunk_id,
+            text_snippet=s.text_snippet,
+            bbox=bbox_out,
+        ))
+
+    return QueryResponse(query=rag.query, answer=rag.answer, sources=sources_out)

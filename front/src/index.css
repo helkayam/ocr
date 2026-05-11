@@ -6,73 +6,64 @@
 
 @layer base {
   :root {
-    /* Digital Librarian - Clean Modern Light Theme */
-    --background: 0 0% 100%;
-    --foreground: 0 0% 5%;
+    /* Tactical Emergency Design System */
+    --background: 0 0% 98%;
+    --foreground: 0 0% 9%;
 
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 5%;
+    --card-foreground: 0 0% 9%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 5%;
+    --popover-foreground: 0 0% 9%;
 
-    --primary: 350 100% 35%;
+    /* Primary: Emergency Red */
+    --primary: 0 84% 60%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 0 0% 96%;
-    --secondary-foreground: 0 0% 5%;
+    /* Secondary: Tactical Black */
+    --secondary: 0 0% 9%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 0 0% 96%;
+    --muted: 0 0% 95%;
     --muted-foreground: 0 0% 45%;
 
-    --accent: 0 0% 96%;
-    --accent-foreground: 0 0% 5%;
+    --accent: 0 84% 60%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84% 50%;
+    --destructive: 0 84% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --success: 142 76% 36%;
+    --success: 158 64% 48%;
     --success-foreground: 0 0% 100%;
 
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 5%;
 
-    --border: 0 0% 90%;
+    --border: 0 0% 88%;
     --input: 0 0% 96%;
-    --ring: 350 100% 35%;
+    --ring: 0 84% 60%;
 
-    --radius: 0.5rem;
+    --radius: 1rem;
 
-    /* Custom tokens */
-    --burgundy: 350 100% 35%;
-    --deep-black: 0 0% 5%;
-    --graphite: 0 0% 96%;
-    --pure-white: 0 0% 100%;
-
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(350 100% 35%) 0%, hsl(350 100% 25%) 100%);
-    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(0 0% 98%) 100%);
-    --gradient-glow: radial-gradient(ellipse at center, hsl(350 100% 35% / 0.08) 0%, transparent 70%);
-
-    /* Shadows - softer for light theme */
-    --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.05);
-    --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.08), 0 2px 4px -2px hsl(0 0% 0% / 0.05);
-    --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.1), 0 4px 6px -4px hsl(0 0% 0% / 0.08);
-    --shadow-glow: 0 0 20px hsl(350 100% 35% / 0.15);
+    /* Tactical Clay Shadow System */
+    --clay-sm: 0 2px 8px rgba(239,68,68,0.10), 0 1px 3px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.8);
+    --clay-md: 0 8px 24px rgba(239,68,68,0.12), 0 3px 8px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9);
+    --clay-lg: 0 16px 48px rgba(239,68,68,0.16), 0 6px 16px rgba(0,0,0,0.10), inset 0 1px 0 rgba(255,255,255,0.95);
+    --clay-hover: 0 20px 60px rgba(239,68,68,0.20), 0 8px 20px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.95);
 
     --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 0 0% 5%;
-    --sidebar-primary: 350 100% 35%;
+    --sidebar-foreground: 0 0% 9%;
+    --sidebar-primary: 0 84% 60%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 0 0% 96%;
-    --sidebar-accent-foreground: 0 0% 5%;
-    --sidebar-border: 0 0% 90%;
-    --sidebar-ring: 350 100% 35%;
+    --sidebar-accent: 0 0% 95%;
+    --sidebar-accent-foreground: 0 0% 9%;
+    --sidebar-border: 0 0% 88%;
+    --sidebar-ring: 0 84% 60%;
   }
 
   .dark {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 5%;
+    --background: 0 0% 98%;
+    --foreground: 0 0% 9%;
   }
 }
 
@@ -84,6 +75,12 @@
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-family: 'Inter', system-ui, sans-serif;
+    background-image:
+      radial-gradient(ellipse at 0% 0%, hsla(0, 84%, 60%, 0.07) 0%, transparent 40%),
+      radial-gradient(ellipse at 100% 0%, hsla(0, 84%, 50%, 0.05) 0%, transparent 35%),
+      radial-gradient(ellipse at 50% 100%, hsla(0, 0%, 85%, 0.20) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 50%, hsla(0, 0%, 92%, 0.25) 0%, transparent 45%);
+    background-attachment: fixed;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -96,119 +93,125 @@
 }
 
 @layer components {
-  .glass-card {
-    @apply bg-card/80 backdrop-blur-xl border border-border/50 shadow-lg;
+  /* ─── Clay Card ──────────────────────────────────────── */
+  .clay-card {
+    @apply rounded-3xl bg-white border border-white/70;
+    box-shadow: var(--clay-md);
   }
 
-  .gradient-border {
-    @apply relative;
-    background: linear-gradient(var(--gradient-card));
+  .clay-card-hover {
+    @apply rounded-3xl bg-white border border-white/70 transition-all duration-300;
+    box-shadow: var(--clay-md);
   }
 
-  .gradient-border::before {
-    content: '';
-    @apply absolute inset-0 rounded-lg p-px;
-    background: linear-gradient(135deg, hsl(var(--burgundy) / 0.5), transparent 50%);
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
+  .clay-card-hover:hover {
+    box-shadow: var(--clay-hover);
+    transform: translateY(-3px);
   }
 
+  /* ─── Clay Button ────────────────────────────────────── */
+  .clay-btn {
+    @apply rounded-2xl font-semibold transition-all duration-150 active:scale-95;
+    box-shadow: var(--clay-sm);
+  }
+
+  /* ─── Gradient Text ──────────────────────────────────── */
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, hsl(0,84%,52%) 0%, hsl(0,84%,38%) 100%);
+  }
+
+  .text-gradient-sky {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, hsl(0,84%,58%) 0%, hsl(0,0%,12%) 100%);
+  }
+
+  /* ─── Glass / Frosted ────────────────────────────────── */
+  .glass {
+    @apply bg-white/90 backdrop-blur-xl border border-white/60;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9);
+  }
+
+  /* ─── Dropzone ───────────────────────────────────────── */
   .dropzone-active {
-    @apply border-primary bg-primary/5 transition-all duration-300;
-    box-shadow: inset 0 0 30px hsl(var(--primary) / 0.1);
+    background: linear-gradient(135deg, hsla(0,84%,99%,1) 0%, hsla(0,50%,97%,1) 100%);
+    border-color: hsl(0,84%,60%) !important;
+    box-shadow: 0 0 0 4px hsla(0,84%,60%,0.12), var(--clay-md);
   }
 
+  /* ─── Status Badges ──────────────────────────────────── */
+  .status-badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold;
+    box-shadow: var(--clay-sm);
+  }
+
+  .status-pending {
+    @apply bg-amber-50 text-amber-600 border border-amber-200;
+  }
+
+  .status-completed {
+    background: linear-gradient(135deg, hsl(158,64%,48%), hsl(158,64%,38%));
+    @apply text-white border-0;
+  }
+
+  .status-error {
+    background: linear-gradient(135deg, hsl(0,84%,55%), hsl(0,84%,45%));
+    @apply text-white border-0;
+  }
+
+  .status-uploading {
+    background: linear-gradient(135deg, hsl(0,84%,60%), hsl(0,84%,50%));
+    @apply text-white border-0;
+  }
+
+  /* ─── Table Row ──────────────────────────────────────── */
   .table-row-hover {
     @apply transition-colors duration-200;
   }
 
   .table-row-hover:hover {
-    @apply bg-primary/10;
+    background: linear-gradient(135deg, hsla(0,84%,60%,0.04) 0%, hsla(0,84%,50%,0.02) 100%);
   }
 
-  .focus-ring {
-    @apply focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:ring-offset-background;
+  /* ─── Scrollbar ──────────────────────────────────────── */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(0,84%,78%) transparent;
   }
 
-  .animate-glow {
-    animation: glow 2s ease-in-out infinite alternate;
+  .scrollbar-thin::-webkit-scrollbar { width: 6px; height: 6px; }
+  .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, hsl(0,84%,68%), hsl(0,84%,58%));
+    border-radius: 3px;
   }
 
-  @keyframes glow {
-    from {
-      box-shadow: 0 0 5px hsl(var(--primary) / 0.3);
-    }
-    to {
-      box-shadow: 0 0 20px hsl(var(--primary) / 0.5);
-    }
-  }
-
+  /* ─── Animated Gradient Upload Pulse ────────────────── */
   .animate-upload-pulse {
     animation: upload-pulse 1.5s ease-in-out infinite;
   }
 
   @keyframes upload-pulse {
-    0%, 100% {
-      opacity: 1;
-    }
-    50% {
-      opacity: 0.6;
-    }
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.65; }
   }
 
-  .status-badge {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  /* ─── Floating blobs ─────────────────────────────────── */
+  .blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    pointer-events: none;
+    animation: blob-drift 8s ease-in-out infinite alternate;
   }
 
-  .status-pending {
-    @apply bg-muted text-muted-foreground border border-border;
+  @keyframes blob-drift {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(20px, -20px) scale(1.05); }
   }
 
-  .status-completed {
-    @apply bg-foreground text-background;
-  }
-
-  .status-error {
-    @apply bg-destructive text-destructive-foreground;
-  }
-
-  .status-uploading {
-    @apply bg-primary text-primary-foreground animate-upload-pulse;
-  }
-
-  .status-uploading {
-    @apply bg-primary text-primary-foreground animate-upload-pulse;
-  }
-}
-
-@layer utilities {
-  .text-gradient {
-    @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, hsl(var(--foreground)) 0%, hsl(var(--muted-foreground)) 100%);
-  }
-
-  .scrollbar-thin {
-    scrollbar-width: thin;
-    scrollbar-color: hsl(var(--muted)) transparent;
-  }
-
-  .scrollbar-thin::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-  }
-
-  .scrollbar-thin::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .scrollbar-thin::-webkit-scrollbar-thumb {
-    background: hsl(var(--muted));
-    border-radius: 3px;
-  }
-
-  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-    background: hsl(var(--muted-foreground));
+  /* ─── Focus ring ─────────────────────────────────────── */
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-primary/40 focus:ring-offset-2 focus:ring-offset-background;
   }
 }

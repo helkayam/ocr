@@ -34,7 +34,10 @@
       "Bash(awk '{print $9, $5}')",
       "Bash(awk '{printf \"%-40s %8s\\\\n\", $9, $5}')",
       "Bash(awk '{printf \"  %-30s %8s\\\\n\", $9, $5}')",
-      "Bash(grep -v \"^\\\\.$\")"
+      "Bash(grep -v \"^\\\\.$\")",
+      "Bash(npm run *)",
+      "Bash(node *)",
+      "Bash(python3 *)"
     ]
   }
 }

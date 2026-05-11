@@ -262,6 +262,51 @@ def delete_file_endpoint(file_id: str):
         delete_object(object_name)
 
 
+# ─── PDF page renderer ───────────────────────────────────────────────────────
+
+@router.get("/{file_id}/page/{page_num}")
+def get_page_image(
+    file_id: str,
+    page_num: int,
+    scale: float = Query(default=2.0, ge=0.5, le=4.0),
+):
+    """Render a single PDF page to PNG for the source-preview panel."""
+    import fitz
+    from fastapi.responses import Response as FastAPIResponse
+    import app.registry as rag_registry
+
+    rec = rag_registry.get(file_id)
+    if not rec:
+        raise HTTPException(status_code=404, detail=f"Document {file_id!r} not registered")
+
+    pdf_path = Path("data/raw") / f"{file_id}.pdf"
+    if not pdf_path.exists():
+        raise HTTPException(status_code=404, detail="PDF file not found on disk")
+
+    try:
+        doc = fitz.open(str(pdf_path))
+        if page_num < 1 or page_num > len(doc):
+            doc.close()
+            raise HTTPException(
+                status_code=404,
+                detail=f"Page {page_num} out of range — document has {len(doc)} page(s)",
+            )
+        page = doc[page_num - 1]
+        pix = page.get_pixmap(matrix=fitz.Matrix(scale, scale))
+        png_bytes = pix.tobytes("png")
+        doc.close()
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Failed to render page: {exc}")
+
+    return FastAPIResponse(
+        content=png_bytes,
+        media_type="image/png",
+        headers={"Cache-Control": "max-age=86400"},
+    )
+
+
 # ─── Reindex ──────────────────────────────────────────────────────────────────
 
 @router.post("/{file_id}/reindex", response_model=ReindexResponse)

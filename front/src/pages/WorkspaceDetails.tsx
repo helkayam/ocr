@@ -1,6 +1,7 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import type { ImperativePanelHandle } from 'react-resizable-panels';
 import { Header } from '@/components/Header';
 import { FileUploadArea } from '@/components/FileUploadArea';
 import { FileUploadQueue } from '@/components/FileUploadQueue';
@@ -10,15 +11,25 @@ import { SearchBar } from '@/components/SearchBar';
 import { MetadataModal } from '@/components/MetadataModal';
 import { PDFPreviewModal } from '@/components/PDFPreviewModal';
 import { QueryBox } from '@/components/QueryBox';
-import { FileItem, FileType, UploadQueueItem } from '@/types/files';
+import { SourcePreviewPanel } from '@/components/SourcePreviewPanel';
+import {
+  ResizablePanelGroup,
+  ResizablePanel,
+  ResizableHandle,
+} from '@/components/ui/resizable';
+import { CitedSource, FileItem, FileType, UploadQueueItem } from '@/types/files';
 import { api } from '@/lib/api';
 import { toast } from 'sonner';
-import { ArrowLeft } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { ArrowLeft, Upload, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import * as DialogPrimitive from '@radix-ui/react-dialog';
+import { Dialog, DialogPortal, DialogTitle } from '@/components/ui/dialog';
 
 export default function WorkspaceDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+
+  // ── Remote data ────────────────────────────────────────────────────────────
 
   const { data: workspace } = useQuery({
     queryKey: ['workspace', id],
@@ -33,21 +44,49 @@ export default function WorkspaceDetails() {
     refetchInterval: (query) => {
       const data = query.state.data;
       if (!data) return false;
-      const ACTIVE_STATUSES = new Set(['pending', 'ocr_completed', 'chunked']);
-      const hasActive = data.some(
-        f => f.processing_status != null && ACTIVE_STATUSES.has(f.processing_status)
-      );
-      return hasActive ? 3_000 : false;
+      const ACTIVE = new Set(['pending', 'ocr_completed', 'chunked']);
+      return data.some(f => f.processing_status != null && ACTIVE.has(f.processing_status))
+        ? 3_000
+        : false;
     },
   });
 
+  // ── Source-preview state ───────────────────────────────────────────────────
+
+  const [activeSource, setActiveSource] = useState<CitedSource | null>(null);
+  const previewPanelRef = useRef<ImperativePanelHandle>(null);
+
+  // Programmatically open / collapse the right panel when activeSource changes
+  useEffect(() => {
+    if (activeSource) {
+      previewPanelRef.current?.resize(40);
+    } else {
+      previewPanelRef.current?.collapse();
+    }
+  }, [activeSource]);
+
+  const handleClosePreview = useCallback(() => {
+    setActiveSource(null); // effect above will call collapse()
+  }, []);
+
+  // ── Upload state ───────────────────────────────────────────────────────────
+
   const [uploadQueue, setUploadQueue] = useState<UploadQueueItem[]>([]);
+  const [uploadDrawerOpen, setUploadDrawerOpen] = useState(false);
+
+  // ── Filter / search state ──────────────────────────────────────────────────
+
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTypes, setSelectedTypes] = useState<FileType[]>([]);
+
+  // ── Modal state ────────────────────────────────────────────────────────────
+
   const [selectedFile, setSelectedFile] = useState<FileItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [previewFile, setPreviewFile] = useState<FileItem | null>(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+
+  // ── Handlers ───────────────────────────────────────────────────────────────
 
   const handleFilesSelected = useCallback(async (newFiles: File[]) => {
     const queueItems: UploadQueueItem[] = newFiles.map(file => ({
@@ -56,7 +95,6 @@ export default function WorkspaceDetails() {
       progress: 0,
       status: 'uploading' as const,
     }));
-
     setUploadQueue(prev => [...prev, ...queueItems]);
 
     await Promise.all(
@@ -68,16 +106,14 @@ export default function WorkspaceDetails() {
             content_type: item.file.type || 'application/octet-stream',
             file_size: item.file.size,
           });
-
           setUploadQueue(prev =>
-            prev.map(q => q.id === item.id ? { ...q, progress: 30 } : q)
+            prev.map(q => q.id === item.id ? { ...q, progress: 30 } : q),
           );
 
           const putRes = await fetch(upload_url, { method: 'PUT', body: item.file });
           if (!putRes.ok) throw new Error('Storage upload failed');
-
           setUploadQueue(prev =>
-            prev.map(q => q.id === item.id ? { ...q, progress: 75 } : q)
+            prev.map(q => q.id === item.id ? { ...q, progress: 75 } : q),
           );
 
           await api.files.confirmUpload({
@@ -87,24 +123,22 @@ export default function WorkspaceDetails() {
             file_size: item.file.size,
             content_type: item.file.type || 'application/octet-stream',
           });
-
           setUploadQueue(prev =>
             prev.map(q =>
-              q.id === item.id ? { ...q, progress: 100, status: 'completed' } : q
-            )
+              q.id === item.id ? { ...q, progress: 100, status: 'completed' } : q,
+            ),
           );
-
           toast.success(`${item.file.name} uploaded`);
           refetchFiles();
         } catch {
           setUploadQueue(prev =>
             prev.map(q =>
-              q.id === item.id ? { ...q, status: 'error', error: 'Upload failed' } : q
-            )
+              q.id === item.id ? { ...q, status: 'error', error: 'Upload failed' } : q,
+            ),
           );
           toast.error(`Failed to upload ${item.file.name}`);
         }
-      })
+      }),
     );
   }, [id, refetchFiles]);
 
@@ -114,7 +148,7 @@ export default function WorkspaceDetails() {
 
   const handleTypeToggle = useCallback((type: FileType) => {
     setSelectedTypes(prev =>
-      prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type]
+      prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type],
     );
   }, []);
 
@@ -144,77 +178,218 @@ export default function WorkspaceDetails() {
     return matchesSearch && matchesType;
   });
 
+  // ── Render ─────────────────────────────────────────────────────────────────
+
   return (
-    <div className="min-h-screen bg-background">
-      <Header workspaceName={workspace?.name} />
+    // h-screen + flex-col so the panel group fills exactly the viewport height
+    <div className="h-screen flex flex-col overflow-hidden">
+      <Header
+        workspaceName={workspace?.name}
+        onUploadClick={() => setUploadDrawerOpen(true)}
+      />
 
-      <main className="container mx-auto px-4 py-8">
-        <Button variant="ghost" size="sm" className="mb-6" onClick={() => navigate('/')}>
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Workspaces
-        </Button>
+      {/*
+        flex-1 + min-h-0 lets the ResizablePanelGroup expand to fill the
+        remaining height without overflowing the viewport.
+      */}
+      <div className="flex-1 min-h-0 overflow-hidden">
+        <ResizablePanelGroup direction="horizontal" className="h-full">
 
-        {/* SOP Search — full width at the top */}
-        <div className="mb-8 animate-fade-in">
-          <QueryBox workspaceId={id!} />
-        </div>
+          {/* ── Left panel: chat + file list ── */}
+          <ResizablePanel
+            defaultSize={100}
+            minSize={35}
+            style={{ transition: 'flex 180ms ease' }}
+          >
+            <div className="h-full overflow-y-auto">
+              <div className="max-w-5xl mx-auto px-4 py-8">
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Upload Column */}
-          <div className="lg:col-span-1 space-y-6">
-            <div className="animate-fade-in">
-              <h2 className="text-xl font-semibold mb-4">Upload Files</h2>
-              <FileUploadArea
-                onFilesSelected={handleFilesSelected}
-                isUploading={uploadQueue.some(q => q.status === 'uploading')}
-              />
-            </div>
+                {/* Back button */}
+                <motion.button
+                  whileHover={{ x: -3 }}
+                  whileTap={{ scale: 0.96 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+                  onClick={() => navigate('/')}
+                  className="flex items-center gap-1.5 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors mb-7"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  Back to Workspaces
+                </motion.button>
 
-            {uploadQueue.length > 0 && (
-              <div className="animate-fade-in">
-                <FileUploadQueue items={uploadQueue} onRemove={handleRemoveFromQueue} />
-              </div>
-            )}
-          </div>
+                {/* RAG query box */}
+                <motion.div
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4 }}
+                  className="mb-8"
+                >
+                  <QueryBox
+                    workspaceId={id!}
+                    onCitationClick={(source) => setActiveSource(source)}
+                  />
+                </motion.div>
 
-          {/* Files Column */}
-          <div className="lg:col-span-2 space-y-6">
-            <div className="animate-fade-in">
-              <h2 className="text-xl font-semibold mb-4">Files</h2>
-              <div className="space-y-4">
-                <SearchBar
-                  value={searchQuery}
-                  onChange={setSearchQuery}
-                  placeholder="Search by file name..."
-                  className="w-full"
-                />
-                <FileFilters
-                  selectedTypes={selectedTypes}
-                  onTypeToggle={handleTypeToggle}
-                  onClearFilters={() => setSelectedTypes([])}
-                />
-              </div>
-            </div>
+                {/* File list */}
+                <div className="space-y-5">
+                  <motion.div
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1, duration: 0.4 }}
+                  >
+                    <h2 className="text-xl font-extrabold mb-4 text-gradient">Files</h2>
+                    <div
+                      className="p-4 rounded-3xl bg-white border border-white/80 space-y-4"
+                      style={{ boxShadow: '0 4px 16px rgba(239,68,68,0.06), inset 0 1px 0 rgba(255,255,255,0.95)' }}
+                    >
+                      <SearchBar
+                        value={searchQuery}
+                        onChange={setSearchQuery}
+                        placeholder="Search by file name..."
+                        className="w-full"
+                      />
+                      <FileFilters
+                        selectedTypes={selectedTypes}
+                        onTypeToggle={handleTypeToggle}
+                        onClearFilters={() => setSelectedTypes([])}
+                      />
+                    </div>
+                  </motion.div>
 
-            <div className="animate-fade-in" style={{ animationDelay: '100ms' }}>
-              {filesLoading ? (
-                <div className="space-y-2">
-                  {[1, 2, 3, 4].map(i => (
-                    <div key={i} className="h-14 rounded-lg bg-card border border-border animate-pulse" />
-                  ))}
+                  <motion.div
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.18, duration: 0.4 }}
+                  >
+                    {filesLoading ? (
+                      <div className="space-y-2">
+                        {[1, 2, 3, 4].map(i => (
+                          <div
+                            key={i}
+                            className="h-14 rounded-2xl animate-pulse"
+                            style={{ background: 'linear-gradient(135deg, hsl(0,0%,96%), hsl(0,0%,93%))' }}
+                          />
+                        ))}
+                      </div>
+                    ) : (
+                      <FileListTable
+                        files={filteredFiles}
+                        onViewDetails={handleViewDetails}
+                        onPreview={handlePreview}
+                        onDelete={handleDeleteFile}
+                      />
+                    )}
+                  </motion.div>
                 </div>
-              ) : (
-                <FileListTable
-                  files={filteredFiles}
-                  onViewDetails={handleViewDetails}
-                  onPreview={handlePreview}
-                  onDelete={handleDeleteFile}
-                />
-              )}
+
+              </div>
             </div>
-          </div>
-        </div>
-      </main>
+          </ResizablePanel>
+
+          {/* ── Resize handle — invisible until panel opens ── */}
+          <ResizableHandle
+            withHandle
+            className={activeSource ? '' : 'opacity-0 pointer-events-none'}
+          />
+
+          {/* ── Right panel: source preview ── */}
+          <ResizablePanel
+            ref={previewPanelRef}
+            defaultSize={0}
+            collapsible
+            collapsedSize={0}
+            minSize={28}
+            maxSize={62}
+            style={{ transition: 'flex 180ms ease' }}
+            onCollapse={() => setActiveSource(null)}
+          >
+            {activeSource && (
+              <SourcePreviewPanel
+                source={activeSource}
+                onClose={handleClosePreview}
+              />
+            )}
+          </ResizablePanel>
+
+        </ResizablePanelGroup>
+      </div>
+
+      {/* ── Upload modal (portaled — unaffected by overflow-hidden) ── */}
+      <Dialog open={uploadDrawerOpen} onOpenChange={setUploadDrawerOpen}>
+        <DialogPortal forceMount>
+          <AnimatePresence>
+            {uploadDrawerOpen && (
+              <>
+                <DialogPrimitive.Overlay asChild forceMount>
+                  <motion.div
+                    key="upload-overlay"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.18 }}
+                    className="fixed inset-0 z-50 bg-black/65 backdrop-blur-sm"
+                  />
+                </DialogPrimitive.Overlay>
+
+                <DialogPrimitive.Content
+                  forceMount
+                  className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none focus:outline-none"
+                >
+                  <motion.div
+                    key="upload-modal"
+                    initial={{ opacity: 0, scale: 0.88, y: 20 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.9, y: 12 }}
+                    transition={{ type: 'spring', stiffness: 420, damping: 32 }}
+                    className="relative w-full max-w-lg flex flex-col bg-white rounded-3xl overflow-hidden pointer-events-auto"
+                    style={{
+                      maxHeight: '90vh',
+                      boxShadow: '0 24px 80px rgba(0,0,0,0.28), 0 8px 24px rgba(0,0,0,0.14)',
+                    }}
+                  >
+                    <DialogTitle className="sr-only">Upload Files</DialogTitle>
+
+                    <div
+                      className="flex items-center justify-between px-6 py-5 border-b border-white/10 shrink-0"
+                      style={{ background: 'linear-gradient(135deg, hsl(0,0%,10%) 0%, hsl(0,84%,32%) 100%)' }}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 rounded-xl bg-white/10">
+                          <Upload className="h-5 w-5 text-white" />
+                        </div>
+                        <span className="font-bold text-white text-lg tracking-tight">Upload Files</span>
+                      </div>
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                        onClick={() => setUploadDrawerOpen(false)}
+                        className="p-2 rounded-xl text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+                      >
+                        <X className="h-5 w-5" />
+                      </motion.button>
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                      <FileUploadArea
+                        onFilesSelected={handleFilesSelected}
+                        isUploading={uploadQueue.some(q => q.status === 'uploading')}
+                      />
+                      {uploadQueue.length > 0 && (
+                        <div
+                          className="p-4 rounded-3xl bg-white border border-gray-100"
+                          style={{ boxShadow: '0 4px 16px rgba(239,68,68,0.08), inset 0 1px 0 rgba(255,255,255,0.95)' }}
+                        >
+                          <FileUploadQueue items={uploadQueue} onRemove={handleRemoveFromQueue} />
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+                </DialogPrimitive.Content>
+              </>
+            )}
+          </AnimatePresence>
+        </DialogPortal>
+      </Dialog>
 
       <MetadataModal
         file={selectedFile}

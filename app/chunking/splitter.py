@@ -291,7 +291,13 @@ def _merge_hanging_text(pages: list[OCRPage]) -> list[OCRPage]:
         )
 
     return [
-        OCRPage(page_num=p.page_num, stats=p.stats, blocks=page_blocks[idx])
+        OCRPage(
+            page_num=p.page_num,
+            stats=p.stats,
+            blocks=page_blocks[idx],
+            page_width=p.page_width,
+            page_height=p.page_height,
+        )
         for idx, p in enumerate(pages)
     ]
 
@@ -350,6 +356,14 @@ def split(
             extra            = {"header_block_ids": header_block_ids} if header_block_ids else {}
             pending_headers  = []
 
+            if page.page_width > 0 and page.page_height > 0:
+                extra.update({
+                    "y_top": block.y_top,
+                    "y_bottom": block.y_bottom,
+                    "page_width": page.page_width,
+                    "page_height": page.page_height,
+                })
+
             content = f"{header_prefix}\n{block.text}".strip() if header_prefix else block.text
 
             if block.type == "table":
@@ -363,7 +377,7 @@ def split(
                     parent = _make_chunk(
                         document_id, page.page_num, block_id, idx,
                         sub, "text", False,
-                        extra if idx == 0 else {},
+                        extra,  # propagate bbox to all sub-chunks of the same block
                     )
                     all_children.extend(_child_chunks_from_parent(parent))
 

@@ -126,7 +126,24 @@ class QueryRequest(BaseModel):
     workspace_id: Optional[str] = Field(default=None)
 
 
+class BBoxOut(BaseModel):
+    y_top: float
+    y_bottom: float
+    page_width: float
+    page_height: float
+
+
+class CitedSourceOut(BaseModel):
+    document_id: str
+    file_name: str
+    page_num: int
+    chunk_id: str
+    text_snippet: str
+    bbox: Optional[BBoxOut] = None
+
+
 class QueryResponse(BaseModel):
     query: str
     answer: str
+    sources: List[CitedSourceOut] = []
 

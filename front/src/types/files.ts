@@ -69,9 +69,26 @@ export interface SearchResult {
   score: number;
 }
 
+export interface BBox {
+  y_top: number;
+  y_bottom: number;
+  page_width: number;
+  page_height: number;
+}
+
+export interface CitedSource {
+  document_id: string;
+  file_name: string;
+  page_num: number;
+  chunk_id: string;
+  text_snippet: string;
+  bbox: BBox | null;
+}
+
 export interface RagAnswer {
   query: string;
   answer: string;
+  sources: CitedSource[];
 }
 
 // ─── Sensors ─────────────────────────────────────────────────────────────────

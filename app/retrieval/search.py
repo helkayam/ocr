@@ -6,7 +6,7 @@ from typing import Optional
 from loguru import logger
 
 from app.indexing import db, embedder
-from app.models import SearchResult
+from app.models import BBox, SearchResult
 from app.retrieval import reranker
 
 INDEX_DIR = Path("data/index")
@@ -16,6 +16,21 @@ _TOP_CANDIDATES = 20
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
+
+def _parse_bbox(extra_json: str) -> Optional[BBox]:
+    try:
+        d = json.loads(extra_json or "{}")
+        pw, ph = d.get("page_width", 0), d.get("page_height", 0)
+        if pw > 0 and ph > 0 and "y_top" in d and "y_bottom" in d:
+            # Normalise inverted coordinates produced by multi-column / RTL OCR quirks
+            y_top    = min(d["y_top"],    d["y_bottom"])
+            y_bottom = max(d["y_top"],    d["y_bottom"])
+            if y_bottom > y_top:  # discard zero-height degenerate boxes
+                return BBox(y_top=y_top, y_bottom=y_bottom, page_width=pw, page_height=ph)
+    except Exception:
+        pass
+    return None
+
 
 def _parent_text(child_text: str, extra_json: str) -> str:
     """Return the parent chunk text from metadata, falling back to child text.
@@ -116,13 +131,15 @@ def search(
         raw["metadatas"][0],
         raw["distances"][0],
     ):
+        extra_json = meta.get("extra", "{}")
         candidates.append(
             SearchResult(
                 chunk_id=chunk_id,
                 document_id=meta["document_id"],
                 page_num=meta["page_num"],
-                text=_parent_text(child_text, meta.get("extra", "{}")),
+                text=_parent_text(child_text, extra_json),
                 score=dist,
+                bbox=_parse_bbox(extra_json),
             )
         )
 
@@ -227,12 +244,14 @@ def hybrid_search(
         raw_dense["metadatas"][0],
         raw_dense["distances"][0],
     ):
+        extra_json = meta.get("extra", "{}")
         dense_map[chunk_id] = SearchResult(
             chunk_id=chunk_id,
             document_id=meta["document_id"],
             page_num=meta["page_num"],
-            text=_parent_text(child_text, meta.get("extra", "{}")),
+            text=_parent_text(child_text, extra_json),
             score=dist,
+            bbox=_parse_bbox(extra_json),
         )
 
     logger.debug("Dense stage: {} candidates in {:.2f}s", len(dense_ids), time.perf_counter() - _t0)
@@ -260,12 +279,14 @@ def hybrid_search(
         for chunk_id, child_text, meta in zip(
             fetched["ids"], fetched["documents"], fetched["metadatas"]
         ):
+            extra_json = meta.get("extra", "{}")
             dense_map[chunk_id] = SearchResult(
                 chunk_id=chunk_id,
                 document_id=meta["document_id"],
                 page_num=meta["page_num"],
-                text=_parent_text(child_text, meta.get("extra", "{}")),
+                text=_parent_text(child_text, extra_json),
                 score=0.0,
+                bbox=_parse_bbox(extra_json),
             )
 
     candidates: list[SearchResult] = [

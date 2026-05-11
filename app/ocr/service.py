@@ -285,6 +285,8 @@ class OCRService:
                 "max_font_size":    round(max_size, 2),
             },
             "blocks": all_blocks,
+            "page_width": float(page.width),
+            "page_height": float(page.height),
         }
 
     def _process_tesseract_image(self, image, page_num) -> Optional[Dict]:
@@ -333,6 +335,8 @@ class OCRService:
                 "max_font_size":    round(max_height, 2),
             },
             "blocks": self._merge_lines_into_blocks(raw_lines_dicts, median_height),
+            "page_width": float(image.width),
+            "page_height": float(image.height),
         }
 
     def extract_structured_from_pdf(self, pdf_path: str) -> List[Dict]:

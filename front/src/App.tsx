@@ -20,15 +20,16 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner
-        theme="dark"
+        theme="light"
         position="top-right"
         toastOptions={{
           style: {
-            background: 'hsl(0 0% 12%)',
-            border: '1px solid hsl(0 0% 20%)',
-            color: 'hsl(0 0% 100%)',
+            background: 'white',
+            border: '1px solid rgba(239,68,68,0.15)',
+            color: '#171717',
+            borderRadius: '1.25rem',
+            boxShadow: '0 8px 32px rgba(239,68,68,0.12), 0 2px 8px rgba(0,0,0,0.08)',
           },
-          className: 'sonner-toast',
         }}
       />
       <BrowserRouter>

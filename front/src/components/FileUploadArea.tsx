@@ -1,8 +1,9 @@
 import { useCallback, useState } from 'react';
-import { Upload, FileUp, AlertCircle } from 'lucide-react';
+import { Upload, FileUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { FileType, UploadQueueItem } from '@/types/files';
+import { FileType } from '@/types/files';
 import { toast } from 'sonner';
+import { motion } from 'framer-motion';
 
 interface FileUploadAreaProps {
   onFilesSelected: (files: File[]) => void;
@@ -10,12 +11,10 @@ interface FileUploadAreaProps {
 }
 
 const ACCEPTED_TYPES: Record<string, FileType> = {
-  // MIME types
   'application/pdf': 'pdf',
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'docx',
   'application/geo+json': 'geojson',
   'application/json': 'geojson',
-  // Extensions (fallback when MIME type is empty or unrecognised)
   '.pdf': 'pdf',
   '.docx': 'docx',
   '.geojson': 'geojson',
@@ -25,6 +24,13 @@ const ACCEPTED_TYPES: Record<string, FileType> = {
   '.shx': 'shapefile',
   '.prj': 'shapefile',
 };
+
+const TYPE_PILLS = [
+  { label: 'PDF',     from: 'hsl(0,84%,65%)',   to: 'hsl(20,90%,60%)' },
+  { label: 'DOCX',    from: 'hsl(215,90%,62%)', to: 'hsl(199,89%,55%)' },
+  { label: 'GeoJSON', from: 'hsl(142,60%,50%)', to: 'hsl(158,64%,48%)' },
+  { label: 'SHP',     from: 'hsl(30,90%,60%)',  to: 'hsl(38,92%,55%)' },
+];
 
 export function FileUploadArea({ onFilesSelected, isUploading }: FileUploadAreaProps) {
   const [isDragging, setIsDragging] = useState(false);
@@ -43,11 +49,9 @@ export function FileUploadArea({ onFilesSelected, isUploading }: FileUploadAreaP
 
   const validateFiles = (files: File[]): File[] => {
     const validFiles: File[] = [];
-    
     files.forEach(file => {
       const extension = '.' + file.name.split('.').pop()?.toLowerCase();
       const isValidType = ACCEPTED_TYPES[file.type] || ACCEPTED_TYPES[extension];
-      
       if (isValidType) {
         validFiles.push(file);
       } else {
@@ -56,7 +60,6 @@ export function FileUploadArea({ onFilesSelected, isUploading }: FileUploadAreaP
         });
       }
     });
-
     return validFiles;
   };
 
@@ -64,34 +67,32 @@ export function FileUploadArea({ onFilesSelected, isUploading }: FileUploadAreaP
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(false);
-
     const droppedFiles = Array.from(e.dataTransfer.files);
     const validFiles = validateFiles(droppedFiles);
-    
-    if (validFiles.length > 0) {
-      onFilesSelected(validFiles);
-    }
+    if (validFiles.length > 0) onFilesSelected(validFiles);
   }, [onFilesSelected]);
 
   const handleFileInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(e.target.files || []);
     const validFiles = validateFiles(selectedFiles);
-    
-    if (validFiles.length > 0) {
-      onFilesSelected(validFiles);
-    }
-    
+    if (validFiles.length > 0) onFilesSelected(validFiles);
     e.target.value = '';
   }, [onFilesSelected]);
 
   return (
-    <div
+    <motion.div
+      animate={isDragging ? { scale: 1.02 } : { scale: 1 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
       className={cn(
-        'relative group rounded-xl border-2 border-dashed transition-all duration-300',
-        'bg-card/50 hover:bg-card/80',
-        isDragging ? 'dropzone-active border-primary' : 'border-primary/40 hover:border-primary/70',
+        'relative rounded-3xl border-2 border-dashed transition-all duration-300',
+        isDragging ? 'dropzone-active' : '',
         isUploading && 'pointer-events-none opacity-60'
       )}
+      style={!isDragging ? {
+        background: 'linear-gradient(135deg, hsl(0,0%,99%) 0%, hsl(0,0%,97%) 100%)',
+        borderColor: 'hsla(0,84%,60%,0.35)',
+        boxShadow: '0 4px 16px rgba(239,68,68,0.08), inset 0 1px 0 rgba(255,255,255,0.9)',
+      } : undefined}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
@@ -105,47 +106,63 @@ export function FileUploadArea({ onFilesSelected, isUploading }: FileUploadAreaP
           onChange={handleFileInput}
           disabled={isUploading}
         />
-        
-        <div className={cn(
-          'relative mb-6 p-6 rounded-full transition-all duration-300',
-          'bg-primary/10 group-hover:bg-primary/20',
-          isDragging && 'scale-110 bg-primary/30'
-        )}>
-          {isDragging ? (
-            <FileUp className="h-12 w-12 text-primary animate-bounce" />
-          ) : (
-            <Upload className="h-12 w-12 text-primary transition-transform group-hover:scale-110" />
-          )}
-          
-          {/* Glow effect */}
-          <div className={cn(
-            'absolute inset-0 rounded-full transition-opacity duration-300',
-            'bg-primary/20 blur-xl',
-            isDragging ? 'opacity-100' : 'opacity-0 group-hover:opacity-50'
-          )} />
-        </div>
 
-        <h3 className="text-lg font-semibold text-foreground mb-2">
+        {/* Icon bubble */}
+        <motion.div
+          animate={isDragging ? { scale: 1.15, rotate: -8 } : { scale: 1, rotate: 0 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 18 }}
+          className="relative mb-6 p-5 rounded-3xl"
+          style={{
+            background: isDragging
+              ? 'linear-gradient(135deg, hsl(0,84%,55%) 0%, hsl(0,84%,42%) 100%)'
+              : 'linear-gradient(135deg, hsl(0,0%,96%) 0%, hsl(0,0%,92%) 100%)',
+            boxShadow: isDragging
+              ? '0 8px 24px rgba(239,68,68,0.4), inset 0 1px 0 rgba(255,255,255,0.3)'
+              : '0 4px 12px rgba(239,68,68,0.10), inset 0 1px 0 rgba(255,255,255,0.9)',
+          }}
+        >
+          {isDragging
+            ? <FileUp className="h-11 w-11 text-white" />
+            : <Upload className="h-11 w-11" style={{ color: 'hsl(0,84%,58%)' }} />
+          }
+        </motion.div>
+
+        <h3 className="text-lg font-bold mb-1.5" style={{ color: isDragging ? 'hsl(0,84%,55%)' : 'hsl(0,0%,9%)' }}>
           {isDragging ? 'Drop files here' : 'Drag files here'}
         </h3>
-        
-        <p className="text-sm text-muted-foreground text-center mb-4">
-          PDF / DOCX / GeoJSON / Shapefile
+
+        <p className="text-sm text-muted-foreground text-center mb-5 font-medium">
+          PDF · DOCX · GeoJSON · Shapefile
         </p>
 
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <span className="px-3 py-1.5 rounded-full bg-muted/50 border border-border">
-            or click to browse
-          </span>
-        </div>
+        <motion.div
+          whileHover={{ scale: 1.04 }}
+          whileTap={{ scale: 0.96 }}
+          className="px-4 py-2 rounded-2xl text-sm font-semibold text-white mb-6"
+          style={{
+            background: 'linear-gradient(135deg, hsl(0,84%,55%) 0%, hsl(0,84%,42%) 100%)',
+            boxShadow: '0 4px 12px rgba(239,68,68,0.32), inset 0 1px 0 rgba(255,255,255,0.25)',
+          }}
+        >
+          or click to browse
+        </motion.div>
 
-        <div className="flex flex-wrap justify-center gap-2 mt-6">
-          <span className="px-2 py-1 text-xs rounded bg-red-500/20 text-red-400 border border-red-500/30">PDF</span>
-          <span className="px-2 py-1 text-xs rounded bg-blue-500/20 text-blue-400 border border-blue-500/30">DOCX</span>
-          <span className="px-2 py-1 text-xs rounded bg-green-500/20 text-green-400 border border-green-500/30">GeoJSON</span>
-          <span className="px-2 py-1 text-xs rounded bg-orange-500/20 text-orange-400 border border-orange-500/30">SHP</span>
+        {/* Type pills */}
+        <div className="flex flex-wrap justify-center gap-2">
+          {TYPE_PILLS.map(({ label, from, to }) => (
+            <span
+              key={label}
+              className="px-2.5 py-1 text-xs rounded-xl font-semibold text-white"
+              style={{
+                background: `linear-gradient(135deg, ${from} 0%, ${to} 100%)`,
+                boxShadow: '0 2px 6px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.2)',
+              }}
+            >
+              {label}
+            </span>
+          ))}
         </div>
       </label>
-    </div>
+    </motion.div>
   );
 }

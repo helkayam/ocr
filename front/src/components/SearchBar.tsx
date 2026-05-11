@@ -1,6 +1,7 @@
 import { Search, X } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface SearchBarProps {
   value: string;
@@ -14,13 +15,20 @@ export function SearchBar({ value, onChange, placeholder = 'Search files...', cl
 
   return (
     <div className={cn('relative', className)}>
-      <div className={cn(
-        'relative flex items-center transition-all duration-300',
-        'bg-card border rounded-lg overflow-hidden',
-        isFocused ? 'border-primary ring-2 ring-primary/20' : 'border-border'
-      )}>
-        <Search className="absolute left-3 h-4 w-4 text-muted-foreground pointer-events-none" />
-        
+      <div
+        className="relative flex items-center rounded-2xl bg-white border transition-all duration-200"
+        style={{
+          borderColor: isFocused ? 'hsl(0,84%,58%)' : 'hsl(0,0%,88%)',
+          boxShadow: isFocused
+            ? '0 0 0 3px hsla(0,84%,60%,0.12), 0 4px 12px rgba(239,68,68,0.10), inset 0 1px 0 rgba(255,255,255,0.9)'
+            : '0 2px 8px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.8)',
+        }}
+      >
+        <Search
+          className="absolute left-3.5 h-4 w-4 pointer-events-none transition-colors duration-200"
+          style={{ color: isFocused ? 'hsl(0,84%,55%)' : 'hsl(0,0%,52%)' }}
+        />
+
         <input
           type="text"
           value={value}
@@ -28,28 +36,24 @@ export function SearchBar({ value, onChange, placeholder = 'Search files...', cl
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           placeholder={placeholder}
-          className={cn(
-            'w-full bg-transparent py-2.5 pl-10 pr-10 text-sm',
-            'placeholder:text-muted-foreground',
-            'focus:outline-none'
-          )}
+          className="w-full bg-transparent py-2.5 pl-10 pr-10 text-sm focus:outline-none placeholder:text-muted-foreground font-medium"
         />
 
-        {value && (
-          <button
-            onClick={() => onChange('')}
-            className="absolute right-3 p-1 rounded-full hover:bg-muted transition-colors"
-          >
-            <X className="h-3.5 w-3.5 text-muted-foreground" />
-          </button>
-        )}
+        <AnimatePresence>
+          {value && (
+            <motion.button
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0, opacity: 0 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+              onClick={() => onChange('')}
+              className="absolute right-3 p-1 rounded-xl hover:bg-muted transition-colors"
+            >
+              <X className="h-3.5 w-3.5 text-muted-foreground" />
+            </motion.button>
+          )}
+        </AnimatePresence>
       </div>
-      
-      {/* Underline effect */}
-      <div className={cn(
-        'absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 bg-primary transition-all duration-300',
-        isFocused ? 'w-full' : 'w-0'
-      )} />
     </div>
   );
 }

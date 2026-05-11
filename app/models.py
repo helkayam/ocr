@@ -47,6 +47,8 @@ class OCRPage(BaseModel):
     page_num: int
     stats: PageStats
     blocks: List[Block]
+    page_width: float = 0.0
+    page_height: float = 0.0
 
 
 class OCRResult(BaseModel):
@@ -78,17 +80,29 @@ class Chunk(BaseModel):
 # Retrieval & RAG schema
 # ---------------------------------------------------------------------------
 
+class BBox(BaseModel):
+    y_top: float
+    y_bottom: float
+    page_width: float
+    page_height: float
+
+
 class SearchResult(BaseModel):
     chunk_id: str
     document_id: str
     page_num: int
     text: str
     score: float  # lower = more similar (ChromaDB L2 / cosine distance)
+    bbox: Optional[BBox] = None
 
 
 class CitedSource(BaseModel):
     document_id: str
+    file_name: str = ""
     page_num: int
+    chunk_id: str = ""
+    text_snippet: str = ""
+    bbox: Optional[BBox] = None
 
 
 class RAGResponse(BaseModel):

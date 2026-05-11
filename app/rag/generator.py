@@ -144,7 +144,13 @@ def generate(query: str, context: List[SearchResult]) -> RAGResponse:
     )
 
     sources = [
-        CitedSource(document_id=r.document_id, page_num=r.page_num)
+        CitedSource(
+            document_id=r.document_id,
+            page_num=r.page_num,
+            chunk_id=r.chunk_id,
+            text_snippet=r.text[:300],
+            bbox=r.bbox,
+        )
         for r in context
     ]
     return RAGResponse(query=query, answer=answer, sources=sources)

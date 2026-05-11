@@ -7,6 +7,7 @@ import { SearchBar } from '@/components/SearchBar';
 import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api';
 import { Plus, FolderOpen } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export default function WorkspacesList() {
   const navigate = useNavigate();
@@ -23,23 +24,49 @@ export default function WorkspacesList() {
   );
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
       <Header />
 
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-10">
         {/* Hero Section */}
-        <div className="text-center mb-12 animate-fade-in">
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-            Digital Librarian
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+          className="text-center mb-14"
+        >
+          {/* Decorative badge */}
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.1, type: 'spring', stiffness: 300 }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-5 text-sm font-semibold text-white"
+            style={{
+              background: 'linear-gradient(135deg, hsl(0,84%,55%) 0%, hsl(0,84%,42%) 100%)',
+              boxShadow: '0 4px 16px rgba(239,68,68,0.38), inset 0 1px 0 rgba(255,255,255,0.25)',
+            }}
+          >
+            <span className="h-2 w-2 rounded-full bg-white/80 animate-pulse" />
+            Document Intelligence Platform
+          </motion.div>
+
+          <h1 className="text-5xl md:text-6xl font-extrabold mb-4 leading-tight">
+            <span className="text-foreground">Digital </span>
+            <span className="text-gradient">Librarian</span>
           </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Secure document management system for emergency organizations.
-            Upload, organize, and validate critical files with confidence.
+          <p className="text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed">
+            Secure document management for emergency organizations.
+            Upload, organize, and query critical files with confidence.
           </p>
-        </div>
+        </motion.div>
 
         {/* Actions Bar */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-8 items-start sm:items-center justify-between animate-fade-in" style={{ animationDelay: '100ms' }}>
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15, duration: 0.4 }}
+          className="flex flex-col sm:flex-row gap-4 mb-10 items-start sm:items-center justify-between"
+        >
           <SearchBar
             value={searchQuery}
             onChange={setSearchQuery}
@@ -47,46 +74,93 @@ export default function WorkspacesList() {
             className="w-full sm:w-80"
           />
 
-          <Button variant="hero" size="lg" onClick={() => navigate('/create')}>
-            <Plus className="h-5 w-5 mr-2" />
-            Create New Workspace
-          </Button>
-        </div>
+          <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }} transition={{ type: 'spring', stiffness: 400, damping: 18 }}>
+            <button
+              onClick={() => navigate('/create')}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-2xl text-sm font-bold text-white whitespace-nowrap"
+              style={{
+                background: 'linear-gradient(135deg, hsl(0,84%,55%) 0%, hsl(0,84%,42%) 100%)',
+                boxShadow: '0 6px 20px rgba(239,68,68,0.42), inset 0 1px 0 rgba(255,255,255,0.25)',
+              }}
+            >
+              <Plus className="h-4 w-4" />
+              Create New Workspace
+            </button>
+          </motion.div>
+        </motion.div>
 
         {/* Workspaces Grid */}
         {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3].map(i => (
-              <div key={i} className="h-48 rounded-xl bg-card border border-border animate-pulse" />
+              <div
+                key={i}
+                className="h-52 rounded-3xl animate-pulse"
+                style={{ background: 'linear-gradient(135deg, hsl(0,0%,96%), hsl(0,0%,93%))' }}
+              />
             ))}
           </div>
         ) : filteredWorkspaces.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in" style={{ animationDelay: '200ms' }}>
-            {filteredWorkspaces.map((workspace, index) => (
-              <div
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch"
+            initial="hidden"
+            animate="visible"
+            variants={{
+              hidden: {},
+              visible: { transition: { staggerChildren: 0.08 } },
+            }}
+          >
+            {filteredWorkspaces.map((workspace) => (
+              <motion.div
                 key={workspace.id}
-                className="animate-fade-in"
-                style={{ animationDelay: `${(index + 3) * 100}ms` }}
+                className="h-full"
+                variants={{
+                  hidden: { opacity: 0, y: 24, scale: 0.97 },
+                  visible: { opacity: 1, y: 0, scale: 1, transition: { type: 'spring', stiffness: 300, damping: 24 } },
+                }}
               >
                 <WorkspaceCard
                   workspace={workspace}
                   onClick={() => navigate(`/workspace/${workspace.id}`)}
                 />
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         ) : (
-          <div className="text-center py-20 animate-fade-in">
-            <FolderOpen className="h-16 w-16 mx-auto text-muted-foreground/50 mb-4" />
-            <h3 className="text-xl font-medium text-foreground mb-2">No workspaces found</h3>
-            <p className="text-muted-foreground mb-6">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ type: 'spring', stiffness: 280 }}
+            className="text-center py-24"
+          >
+            <div
+              className="inline-flex p-6 rounded-3xl mb-6"
+              style={{
+                background: 'linear-gradient(135deg, hsl(0,0%,96%), hsl(0,0%,93%))',
+                boxShadow: '0 4px 16px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9)',
+              }}
+            >
+              <FolderOpen className="h-14 w-14 text-muted-foreground/40" />
+            </div>
+            <h3 className="text-2xl font-bold text-foreground mb-2">No workspaces found</h3>
+            <p className="text-muted-foreground mb-8 text-base">
               {searchQuery ? 'Try a different search term' : 'Create your first workspace to get started'}
             </p>
-            <Button variant="default" onClick={() => navigate('/create')}>
-              <Plus className="h-4 w-4 mr-2" />
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.96 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 18 }}
+              onClick={() => navigate('/create')}
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl text-sm font-bold text-white"
+              style={{
+                background: 'linear-gradient(135deg, hsl(0,84%,55%) 0%, hsl(0,84%,42%) 100%)',
+                boxShadow: '0 6px 20px rgba(239,68,68,0.42), inset 0 1px 0 rgba(255,255,255,0.25)',
+              }}
+            >
+              <Plus className="h-4 w-4" />
               Create Workspace
-            </Button>
-          </div>
+            </motion.button>
+          </motion.div>
         )}
       </main>
     </div>
