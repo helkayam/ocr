@@ -253,6 +253,14 @@ When adding new retrieval or indexing code, always pass and filter on `workspace
 
 13. **Workspace lifecycle.** `DELETE /workspaces/{id}` is implemented in `backend/api/workspaces.py` + `backend/services/workspace_service.py`. Always clean up workspace documents via the RAG pipeline delete before deleting the workspace record.
 
+14. **Mandatory user origin for simulations.** Triggering an emergency simulation requires a valid user-supplied origin point (`origin_lat`, `origin_lng`). The frontend must gate the "Simulate" action behind a confirmed `userEvacOrigin` state — the button must be disabled until the user has placed their origin pin on the map. `emergency_service.simulate()` calculates all Haversine distances from this origin, not from the sensor location. Never fall back to the sensor coordinates as a routing origin.
+
+15. **Explicit category flow — no filename guessing.** Geo layer categories (`Cameras`, `Shelters`, `Buildings`, etc.) are determined exclusively by the user's selection in the upload UI. The chosen category is sent to the backend and stored as `geo_category` in the `geo_features` table. No code anywhere in the stack may infer a category by parsing filenames, extensions, or any string heuristics. If `geo_category` is missing, treat it as unknown — do not guess.
+
+16. **Expanded GeoFeatureType — 7 canonical values.** Both the backend (`backend/api/schemas.py` / `backend/services/geo_service.py`) and the frontend (`front/src/types/files.ts`) must recognise exactly these feature types: `shelter`, `camera`, `building`, `exit`, `muster_point`, `extinguisher`, `assembly`. No other values are valid. Any enum, Literal type, or validation that lists fewer types is incomplete and must be updated.
+
+17. **Cascade deletes for geo features.** Every `geo_feature` and `geo_layer` row carries a `file_id` foreign reference to the file that created it. Deleting a file (via `DELETE /files/{file_id}` or workspace cleanup) must atomically remove all derived `geo_features` and `geo_layers` rows with that `file_id`. Never leave orphaned geo rows after a file is deleted. This logic lives in `backend/services/geo_service.py` and must be called from the file-deletion path in `backend/api/files.py`.
+
 ---
 
 ## Engineering Principles & Code Hygiene
@@ -328,8 +336,10 @@ sensors          (sensor_id, workspace_id, name, sensor_type, status, endpoint,
                   linked_file_id, lat REAL, lng REAL)
                   -- sensor_type: SIREN | TERRORIST | HAZMAT
 geo_layers       (layer_id, workspace_id, ...)
-geo_features     (feature_id, workspace_id, feature_type, label, lat, lng, floor, metadata)
-                  -- feature_type: shelter | exit | muster_point | extinguisher | assembly
+geo_features     (feature_id, workspace_id, feature_type, label, lat, lng, floor, metadata,
+                  file_id, geo_category)
+                  -- feature_type (7 canonical): shelter | camera | building | exit | muster_point | extinguisher | assembly
+                  -- geo_category: user-selected layer category persisted from the upload UI (e.g. "Cameras", "Shelters", "Buildings")
 emergency_events (event_id, workspace_id, sensor_id, sensor_name, sensor_type,
                   alert_level, rag_query, rag_answer,
                   intent_action, intent_target, intent_urgency,
