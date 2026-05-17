@@ -9,8 +9,10 @@ router = APIRouter(prefix="/sensors", tags=["sensors"])
 
 class SensorCreate(BaseModel):
     workspace_id: str
-    name: str
     sensor_type: str
+    lat: float
+    lng: float
+    name: Optional[str] = None
     endpoint: Optional[str] = None
 
 
@@ -23,15 +25,22 @@ class SensorOut(BaseModel):
     workspace_id: str
     name: str
     sensor_type: str
-    endpoint: Optional[str]
+    endpoint: Optional[str] = None
     status: str
-    linked_file_id: Optional[str]
+    linked_file_id: Optional[str] = None
+    lat: Optional[float] = None
+    lng: Optional[float] = None
 
 
 @router.post("", response_model=SensorOut)
 def create_sensor(body: SensorCreate):
     s = sensor_service.create_sensor(
-        body.workspace_id, body.name, body.sensor_type, body.endpoint
+        workspace_id=body.workspace_id,
+        sensor_type=body.sensor_type,
+        lat=body.lat,
+        lng=body.lng,
+        name=body.name,
+        endpoint=body.endpoint,
     )
     return SensorOut(**s)
 

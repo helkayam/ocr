@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from api import workspaces, files
 from api import search, sensors, map as map_router, report
 from api.rag_router import documents_router, query_router
+from api.emergency_router import router as emergency_router
 from db import init_pool, get_db, db_available
 from services.storage_service import ensure_bucket
 
@@ -30,6 +31,7 @@ app.include_router(map_router.router)
 app.include_router(report.router)
 app.include_router(documents_router)
 app.include_router(query_router)
+app.include_router(emergency_router)
 
 
 @app.get("/")
@@ -94,7 +96,42 @@ CREATE TABLE IF NOT EXISTS sensors (
     endpoint       TEXT,
     status         TEXT      DEFAULT 'active',
     linked_file_id TEXT,
+    lat            REAL,
+    lng            REAL,
     created_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS geo_features (
+    feature_id   TEXT      PRIMARY KEY,
+    workspace_id TEXT      NOT NULL,
+    feature_type TEXT      NOT NULL,
+    label        TEXT      NOT NULL,
+    lat          REAL      NOT NULL,
+    lng          REAL      NOT NULL,
+    floor        TEXT,
+    metadata     TEXT      DEFAULT '{}',
+    created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS emergency_events (
+    event_id              TEXT      PRIMARY KEY,
+    workspace_id          TEXT      NOT NULL,
+    sensor_id             TEXT,
+    sensor_name           TEXT,
+    sensor_type           TEXT,
+    alert_level           TEXT      DEFAULT 'high',
+    rag_query             TEXT,
+    rag_answer            TEXT,
+    intent_action         TEXT,
+    intent_target         TEXT,
+    intent_urgency        TEXT,
+    nearest_feature_id    TEXT,
+    nearest_feature_type  TEXT,
+    nearest_feature_label TEXT,
+    nearest_distance_m    REAL,
+    directive             TEXT,
+    status                TEXT      DEFAULT 'simulated',
+    created_at            TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS geo_layers (
@@ -129,7 +166,26 @@ def init_db():
             stmt = stmt.strip()
             if stmt:
                 cur.execute(stmt)
+    _migrate_db()
     print("Database schema ready")
+
+
+def _migrate_db():
+    """Idempotent column additions for existing deployments (safe on both PG and SQLite)."""
+    if not db_available():
+        return
+    migrations = [
+        "ALTER TABLE sensors ADD COLUMN lat REAL",
+        "ALTER TABLE sensors ADD COLUMN lng REAL",
+        "ALTER TABLE geo_layers ADD COLUMN geo_category TEXT",
+        "ALTER TABLE geo_features ADD COLUMN file_id TEXT",
+    ]
+    with get_db() as cur:
+        for sql in migrations:
+            try:
+                cur.execute(sql)
+            except Exception:
+                pass  # column already exists (PG: DuplicateColumn, SQLite: OperationalError)
 
 
 @app.on_event("startup")

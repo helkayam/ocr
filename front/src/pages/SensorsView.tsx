@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Header } from '@/components/Header';
+import { EmergencyResultCard } from '@/components/EmergencyResultCard';
 import { api } from '@/lib/api';
-import { Sensor, SensorType, FileItem } from '@/types/files';
+import { Sensor, SensorType, EmergencySimResult } from '@/types/files';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -11,18 +12,13 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import {
   ArrowLeft, Plus, Trash2, Link2, Cpu,
-  Eye, Droplets, AlertTriangle, Thermometer, Wind, Heart, Globe
+  AlertTriangle, Zap
 } from 'lucide-react';
 
-const SENSOR_TYPES: { type: SensorType; label: string; icon: React.FC<any>; color: string }[] = [
-  { type: 'SMOKE',       label: 'Smoke / Fire',    icon: Wind,        color: 'text-orange-400' },
-  { type: 'FLOOD',       label: 'Flood / Water',   icon: Droplets,    color: 'text-blue-400' },
-  { type: 'EARTHQUAKE',  label: 'Earthquake',      icon: AlertTriangle, color: 'text-red-400' },
-  { type: 'CCTV',        label: 'CCTV Camera',     icon: Eye,         color: 'text-purple-400' },
-  { type: 'TEMPERATURE', label: 'Temperature',     icon: Thermometer, color: 'text-yellow-400' },
-  { type: 'GAS',         label: 'Gas / Chemical',  icon: Wind,        color: 'text-green-400' },
-  { type: 'MEDICAL',     label: 'Medical',         icon: Heart,       color: 'text-pink-400' },
-  { type: 'API',         label: 'External API',    icon: Globe,       color: 'text-sky-400' },
+const SENSOR_TYPES: { type: SensorType; label: string; emoji: string; color: string }[] = [
+  { type: 'SIREN',     label: 'Missile Alarm',         emoji: '🚨', color: 'text-red-400' },
+  { type: 'TERRORIST', label: 'Terrorist Infiltration', emoji: '⚠️', color: 'text-purple-400' },
+  { type: 'HAZMAT',    label: 'Hazardous Materials',   emoji: '☢️', color: 'text-orange-400' },
 ];
 
 export default function SensorsView() {
@@ -48,19 +44,26 @@ export default function SensorsView() {
     enabled: !!id,
   });
 
+  // ── Create form state ──────────────────────────────────────────────────────
   const [showForm, setShowForm] = useState(false);
   const [name, setName] = useState('');
-  const [sensorType, setSensorType] = useState<SensorType>('SMOKE');
+  const [sensorType, setSensorType] = useState<SensorType>('SIREN');
   const [endpoint, setEndpoint] = useState('');
+  const [latStr, setLatStr] = useState('');
+  const [lngStr, setLngStr] = useState('');
   const [linkTarget, setLinkTarget] = useState<string | null>(null);
 
+  // ── Simulation state ───────────────────────────────────────────────────────
+  const [activeSim, setActiveSim] = useState<string | null>(null);
+  const [simResult, setSimResult] = useState<EmergencySimResult | null>(null);
+
+  // ── Mutations ──────────────────────────────────────────────────────────────
   const createMutation = useMutation({
     mutationFn: api.sensors.create,
     onSuccess: () => {
       refetchSensors();
       setShowForm(false);
-      setName('');
-      setEndpoint('');
+      setName(''); setEndpoint(''); setLatStr(''); setLngStr('');
       toast.success('Sensor added');
     },
     onError: () => toast.error('Failed to add sensor'),
@@ -78,14 +81,42 @@ export default function SensorsView() {
     onError: () => toast.error('Failed to link sensor'),
   });
 
+  const simulateMutation = useMutation({
+    mutationFn: (sensorId: string) =>
+      api.emergency.simulate({
+        workspace_id: id!,
+        sensor_id: sensorId,
+      }),
+    onSuccess: data => {
+      setSimResult(data);
+      toast.success('Simulation complete');
+    },
+    onError: () => toast.error('Simulation failed — check server logs'),
+  });
+
+  // ── Handlers ───────────────────────────────────────────────────────────────
   const handleCreate = () => {
     if (!name.trim()) { toast.error('Sensor name is required'); return; }
+    const lat = latStr ? parseFloat(latStr) : undefined;
+    const lng = lngStr ? parseFloat(lngStr) : undefined;
+    if ((latStr && isNaN(lat!)) || (lngStr && isNaN(lng!))) {
+      toast.error('Coordinates must be valid numbers');
+      return;
+    }
     createMutation.mutate({
       workspace_id: id!,
       name: name.trim(),
       sensor_type: sensorType,
       endpoint: endpoint.trim() || undefined,
+      lat,
+      lng,
     });
+  };
+
+  const handleSimulate = (sensorId: string) => {
+    setSimResult(null);
+    setActiveSim(sensorId);
+    simulateMutation.mutate(sensorId);
   };
 
   const sopFiles = files.filter(f => f.type === 'pdf' || f.type === 'docx');
@@ -104,7 +135,7 @@ export default function SensorsView() {
           <div>
             <h1 className="text-2xl font-bold">Sensor Matrix</h1>
             <p className="text-muted-foreground text-sm mt-1">
-              Connect hardware sensors and map them to SOPs for automated response.
+              Connect hardware sensors and simulate emergency responses from ingested protocols.
             </p>
           </div>
           <Button onClick={() => setShowForm(!showForm)}>
@@ -123,7 +154,7 @@ export default function SensorsView() {
                 <Input
                   value={name}
                   onChange={e => setName(e.target.value)}
-                  placeholder="e.g. Lobby Smoke Detector #1"
+                  placeholder="e.g. Lobby Siren #1"
                   className="bg-muted/50 h-9"
                 />
               </div>
@@ -133,6 +164,28 @@ export default function SensorsView() {
                   value={endpoint}
                   onChange={e => setEndpoint(e.target.value)}
                   placeholder="192.168.1.100 or https://..."
+                  className="bg-muted/50 h-9"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs">Latitude (optional)</Label>
+                <Input
+                  type="number"
+                  step="any"
+                  value={latStr}
+                  onChange={e => setLatStr(e.target.value)}
+                  placeholder="e.g. 31.895"
+                  className="bg-muted/50 h-9"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs">Longitude (optional)</Label>
+                <Input
+                  type="number"
+                  step="any"
+                  value={lngStr}
+                  onChange={e => setLngStr(e.target.value)}
+                  placeholder="e.g. 35.015"
                   className="bg-muted/50 h-9"
                 />
               </div>
@@ -152,7 +205,7 @@ export default function SensorsView() {
                         : 'border-border text-muted-foreground hover:bg-muted'
                     )}
                   >
-                    <st.icon className={cn('h-3.5 w-3.5', sensorType === st.type ? 'text-primary' : st.color)} />
+                    <span>{st.emoji}</span>
                     {st.label}
                   </button>
                 ))}
@@ -181,70 +234,118 @@ export default function SensorsView() {
             {sensors.map(sensor => {
               const meta = SENSOR_TYPES.find(t => t.type === sensor.sensor_type) ?? SENSOR_TYPES[0];
               const linkedFile = files.find(f => f.id === sensor.linked_file_id);
+              const isSimulating = activeSim === sensor.sensor_id && simulateMutation.isPending;
+
               return (
-                <div key={sensor.sensor_id} className="p-4 rounded-xl bg-card border border-border space-y-3">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex items-center gap-2 min-w-0">
-                      <div className="p-2 rounded-lg bg-muted shrink-0">
-                        <meta.icon className={cn('h-4 w-4', meta.color)} />
+                <div key={sensor.sensor_id} className="flex flex-col rounded-xl bg-card border border-border">
+                  <div className="p-4 space-y-3 flex-1">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <div className="p-2 rounded-lg bg-muted shrink-0 text-xl leading-none">
+                          {meta.emoji}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium truncate">{sensor.name}</p>
+                          <p className={cn('text-xs', meta.color)}>{meta.label}</p>
+                        </div>
                       </div>
-                      <div className="min-w-0">
-                        <p className="text-sm font-medium truncate">{sensor.name}</p>
-                        <p className="text-xs text-muted-foreground">{meta.label}</p>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <span className={cn(
+                          'text-xs px-2 py-0.5 rounded-full',
+                          sensor.status === 'active'
+                            ? 'bg-success/20 text-success'
+                            : 'bg-muted text-muted-foreground'
+                        )}>
+                          {sensor.status}
+                        </span>
+                        <button onClick={() => deleteMutation.mutate(sensor.sensor_id)}>
+                          <Trash2 className="h-3.5 w-3.5 text-muted-foreground hover:text-destructive transition-colors" />
+                        </button>
                       </div>
                     </div>
-                    <div className="flex items-center gap-1 shrink-0">
-                      <span className={cn(
-                        'text-xs px-2 py-0.5 rounded-full',
-                        sensor.status === 'active'
-                          ? 'bg-success/20 text-success'
-                          : 'bg-muted text-muted-foreground'
-                      )}>
-                        {sensor.status}
-                      </span>
-                      <button onClick={() => deleteMutation.mutate(sensor.sensor_id)}>
-                        <Trash2 className="h-3.5 w-3.5 text-muted-foreground hover:text-destructive transition-colors" />
-                      </button>
+
+                    {sensor.endpoint && (
+                      <p className="text-xs font-mono text-muted-foreground truncate">{sensor.endpoint}</p>
+                    )}
+
+                    {sensor.lat != null && sensor.lng != null && (
+                      <p className="text-xs text-muted-foreground font-mono">
+                        📍 {sensor.lat.toFixed(4)}, {sensor.lng.toFixed(4)}
+                      </p>
+                    )}
+
+                    <div className="pt-2 border-t border-border">
+                      {linkedFile ? (
+                        <div className="flex items-center gap-2">
+                          <Link2 className="h-3.5 w-3.5 text-primary shrink-0" />
+                          <span className="text-xs text-primary truncate">{linkedFile.name}</span>
+                        </div>
+                      ) : (
+                        <div className="space-y-1.5">
+                          <p className="text-xs text-muted-foreground">Link to SOP:</p>
+                          {sopFiles.length === 0 ? (
+                            <p className="text-xs text-muted-foreground italic">No SOP files uploaded</p>
+                          ) : (
+                            <select
+                              className="w-full text-xs bg-muted border border-border rounded px-2 py-1 text-foreground"
+                              defaultValue=""
+                              onChange={e => {
+                                if (e.target.value) {
+                                  linkMutation.mutate({ sensorId: sensor.sensor_id, fileId: e.target.value });
+                                }
+                              }}
+                            >
+                              <option value="">Select a file…</option>
+                              {sopFiles.map(f => (
+                                <option key={f.id} value={f.id}>{f.name}</option>
+                              ))}
+                            </select>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
 
-                  {sensor.endpoint && (
-                    <p className="text-xs font-mono text-muted-foreground truncate">{sensor.endpoint}</p>
-                  )}
-
-                  <div className="pt-2 border-t border-border">
-                    {linkedFile ? (
-                      <div className="flex items-center gap-2">
-                        <Link2 className="h-3.5 w-3.5 text-primary shrink-0" />
-                        <span className="text-xs text-primary truncate">{linkedFile.name}</span>
-                      </div>
-                    ) : (
-                      <div className="space-y-1.5">
-                        <p className="text-xs text-muted-foreground">Link to SOP:</p>
-                        {sopFiles.length === 0 ? (
-                          <p className="text-xs text-muted-foreground italic">No SOP files uploaded</p>
-                        ) : (
-                          <select
-                            className="w-full text-xs bg-muted border border-border rounded px-2 py-1 text-foreground"
-                            defaultValue=""
-                            onChange={e => {
-                              if (e.target.value) {
-                                linkMutation.mutate({ sensorId: sensor.sensor_id, fileId: e.target.value });
-                              }
-                            }}
-                          >
-                            <option value="">Select a file…</option>
-                            {sopFiles.map(f => (
-                              <option key={f.id} value={f.id}>{f.name}</option>
-                            ))}
-                          </select>
-                        )}
-                      </div>
-                    )}
+                  {/* Simulate section */}
+                  <div className="px-4 pb-4">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full h-8 text-xs border-orange-500/30 text-orange-400 hover:bg-orange-500/10"
+                      onClick={() => handleSimulate(sensor.sensor_id)}
+                      disabled={isSimulating}
+                    >
+                      {isSimulating ? (
+                        <>
+                          <span className="animate-spin mr-1.5">⏳</span>
+                          Simulating...
+                        </>
+                      ) : (
+                        <>
+                          <AlertTriangle className="h-3.5 w-3.5 mr-1.5" />
+                          Simulate Alert
+                        </>
+                      )}
+                    </Button>
                   </div>
                 </div>
               );
             })}
+          </div>
+        )}
+
+        {/* Simulation result panel */}
+        {(simulateMutation.isPending || simResult) && (
+          <div className="mt-8">
+            <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">
+              Simulation Result
+            </h2>
+            <div className="max-w-2xl">
+              <EmergencyResultCard
+                result={simResult}
+                isLoading={simulateMutation.isPending}
+              />
+            </div>
           </div>
         )}
       </main>

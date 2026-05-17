@@ -93,15 +93,7 @@ export interface RagAnswer {
 
 // ─── Sensors ─────────────────────────────────────────────────────────────────
 
-export type SensorType =
-  | 'SMOKE'
-  | 'FLOOD'
-  | 'EARTHQUAKE'
-  | 'CCTV'
-  | 'TEMPERATURE'
-  | 'GAS'
-  | 'MEDICAL'
-  | 'API';
+export type SensorType = 'SIREN' | 'TERRORIST' | 'HAZMAT';
 
 export interface Sensor {
   sensor_id: string;
@@ -111,6 +103,8 @@ export interface Sensor {
   endpoint?: string;
   status: string;
   linked_file_id?: string;
+  lat?: number;
+  lng?: number;
 }
 
 // ─── Map / GIS ────────────────────────────────────────────────────────────────
@@ -132,6 +126,59 @@ export interface MapLayer {
   filename: string;
   feature_count: number;
   geojson: object;
+  geo_category?: string; // 'cameras' | 'shelters' | 'buildings' | null
+}
+
+// ─── Emergency Simulation ─────────────────────────────────────────────────────
+
+export type GeoFeatureType = 'shelter' | 'exit' | 'muster_point' | 'extinguisher' | 'assembly' | 'camera' | 'building';
+export type AlertLevel = 'low' | 'medium' | 'high' | 'critical';
+
+export interface GeoFeature {
+  feature_id: string;
+  workspace_id: string;
+  feature_type: GeoFeatureType | string;
+  label: string;
+  lat: number;
+  lng: number;
+  floor?: string;
+  metadata?: Record<string, unknown>;
+  distance_m?: number;
+  distance_display?: string;
+}
+
+export interface EmergencyIntent {
+  action: string;
+  target_type: GeoFeatureType | 'none';
+  urgency: AlertLevel;
+}
+
+export interface EmergencySimResult {
+  event_id: string;
+  sensor: Sensor;
+  alert_level: AlertLevel;
+  rag_query: string;
+  rag_answer: string;
+  rag_sources: CitedSource[];
+  intent: EmergencyIntent;
+  nearest_feature: GeoFeature | null;
+  directive: string;
+}
+
+export interface EmergencyEvent {
+  event_id: string;
+  workspace_id: string;
+  sensor_name: string | null;
+  sensor_type: string | null;
+  alert_level: AlertLevel;
+  intent_action: string | null;
+  intent_target: string | null;
+  intent_urgency: AlertLevel | null;
+  nearest_feature_label: string | null;
+  nearest_distance_m: number | null;
+  directive: string | null;
+  status: string;
+  created_at: string;
 }
 
 // ─── Readiness Report ────────────────────────────────────────────────────────

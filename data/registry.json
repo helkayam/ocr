@@ -23,14 +23,6 @@
     "file_hash": "811afa4e530321ee3fcf357fe250dd892cae163bf031cd6399e2a4767939f51c",
     "workspace_id": "0fff6cb7-8721-4399-a8fd-95d2d9b1c73e"
   },
-  "a9283d0c-9790-4c62-93bf-619ea73f6c12": {
-    "document_id": "a9283d0c-9790-4c62-93bf-619ea73f6c12",
-    "file_name": "נוהל חירום מודיעין.pdf",
-    "status": "indexed",
-    "created_at": "2026-05-07T11:02:17.964780Z",
-    "file_hash": "0f8fe32821908d7a687f9dedd9f357a819ca048cc9976fb0a4792c8a5baddc3b",
-    "workspace_id": "511b04a8-cefb-4153-a19c-8a55b4203f55"
-  },
   "e4130cf6-3366-48f7-b469-025ef93876db": {
     "document_id": "e4130cf6-3366-48f7-b469-025ef93876db",
     "file_name": "RulesOfProcedure.pdf",
@@ -38,5 +30,13 @@
     "created_at": "2026-05-11T12:22:06.714763Z",
     "file_hash": "98f45f94b6c21b355d296d8f16bdb1af6e0d71a08906783afe6b19cdb24d7e59",
     "workspace_id": "0fff6cb7-8721-4399-a8fd-95d2d9b1c73e"
+  },
+  "f208e646-b1b2-4afd-9d43-57924d79f9a9": {
+    "document_id": "f208e646-b1b2-4afd-9d43-57924d79f9a9",
+    "file_name": "פרוטוקול הנחיות אופרטיבי.pdf",
+    "status": "indexed",
+    "created_at": "2026-05-14T10:35:05.194109Z",
+    "file_hash": "1628db5c428cbf553183fc38eae10f11d647c8fd9fd4bad04fc7226be22766f7",
+    "workspace_id": "511b04a8-cefb-4153-a19c-8a55b4203f55"
   }
 }

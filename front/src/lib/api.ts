@@ -1,5 +1,8 @@
 import {
+  EmergencyEvent,
+  EmergencySimResult,
   FileItem,
+  GeoFeature,
   MapLayer,
   MapTag,
   RagAnswer,
@@ -53,6 +56,14 @@ function del(path: string): Promise<void> {
   return request<void>(path, { method: 'DELETE' });
 }
 
+function patch<T>(path: string, body: unknown): Promise<T> {
+  return request<T>(path, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+}
+
 // ─── API surface ──────────────────────────────────────────────────────────────
 
 export const api = {
@@ -79,6 +90,7 @@ export const api = {
       filename: string;
       file_size: number;
       content_type: string;
+      geo_category?: string;
     }): Promise<{ file: FileItem }> => post('/files/confirm-upload', body),
     getStatus: (fileId: string): Promise<{ file_id: string; processing_status: string }> =>
       request(`/files/${fileId}/status`),
@@ -103,9 +115,10 @@ export const api = {
       request(`/sensors?workspace_id=${encodeURIComponent(workspaceId)}`),
     create: (body: {
       workspace_id: string;
-      name: string;
       sensor_type: string;
-      endpoint?: string;
+      lat: number;
+      lng: number;
+      name?: string;
     }): Promise<Sensor> => post('/sensors', body),
     delete: (sensorId: string): Promise<void> => del(`/sensors/${sensorId}`),
     link: (sensorId: string, fileId: string): Promise<Sensor> =>
@@ -132,5 +145,44 @@ export const api = {
   report: {
     get: (workspaceId: string): Promise<ReadinessReport> =>
       request(`/report/${workspaceId}`),
+  },
+
+  emergency: {
+    simulate: (body: {
+      workspace_id: string;
+      sensor_id: string;
+      alert_level?: string;
+      override_query?: string;
+      origin_lat?: number;
+      origin_lng?: number;
+    }): Promise<EmergencySimResult> => post('/emergency/simulate', body),
+
+    getFeatures: (workspaceId: string, featureType?: string): Promise<GeoFeature[]> =>
+      request(
+        `/emergency/features/${encodeURIComponent(workspaceId)}` +
+        (featureType ? `?feature_type=${encodeURIComponent(featureType)}` : '')
+      ),
+
+    addFeature: (body: {
+      workspace_id: string;
+      feature_type: string;
+      label: string;
+      lat: number;
+      lng: number;
+      floor?: string;
+      metadata?: Record<string, unknown>;
+    }): Promise<GeoFeature> => post('/emergency/features', body),
+
+    deleteFeature: (featureId: string): Promise<void> =>
+      del(`/emergency/features/${featureId}`),
+
+    updateSensorLocation: (
+      sensorId: string,
+      lat: number,
+      lng: number,
+    ): Promise<Sensor> => patch(`/emergency/sensors/${sensorId}/location`, { lat, lng }),
+
+    getEvents: (workspaceId: string): Promise<EmergencyEvent[]> =>
+      request(`/emergency/events/${encodeURIComponent(workspaceId)}`),
   },
 };

@@ -1,9 +1,11 @@
 """
-GIS Service — parse GeoJSON / Shapefile, store layers, manage map tags.
+GIS Service — parse GeoJSON / Shapefile, store layers, manage map tags,
+and typed emergency geo features with Haversine proximity routing.
 """
 
 import io
 import json
+import math
 import os
 import tempfile
 import uuid
@@ -105,17 +107,23 @@ def _extract_coords(geom: dict) -> list:
 # Persistence
 # ---------------------------------------------------------------------------
 
-def store_geo_layer(file_id: str, workspace_id: str, geo_data: dict) -> None:
+def store_geo_layer(
+    file_id: str,
+    workspace_id: str,
+    geo_data: dict,
+    geo_category: Optional[str] = None,
+) -> None:
     if not db_available() or not geo_data.get("geojson"):
         return
     with get_db() as cur:
         cur.execute(
             """
-            INSERT INTO geo_layers (layer_id, file_id, workspace_id, geojson_data, feature_count)
-            VALUES (%s, %s, %s, %s, %s)
+            INSERT INTO geo_layers (layer_id, file_id, workspace_id, geojson_data, feature_count, geo_category)
+            VALUES (%s, %s, %s, %s, %s, %s)
             ON CONFLICT (file_id) DO UPDATE
                 SET geojson_data   = EXCLUDED.geojson_data,
-                    feature_count  = EXCLUDED.feature_count
+                    feature_count  = EXCLUDED.feature_count,
+                    geo_category   = EXCLUDED.geo_category
             """,
             (
                 str(uuid.uuid4()),
@@ -123,6 +131,7 @@ def store_geo_layer(file_id: str, workspace_id: str, geo_data: dict) -> None:
                 workspace_id,
                 json.dumps(geo_data["geojson"]),
                 geo_data["feature_count"],
+                geo_category,
             ),
         )
 
@@ -134,7 +143,7 @@ def get_layers(workspace_id: str) -> List[dict]:
         cur.execute(
             """
             SELECT gl.layer_id, gl.file_id, gl.feature_count, gl.geojson_data,
-                   f.filename
+                   gl.geo_category, f.filename
             FROM geo_layers gl
             JOIN files f ON f.file_id = gl.file_id
             WHERE gl.workspace_id = %s
@@ -155,6 +164,7 @@ def get_layers(workspace_id: str) -> List[dict]:
                 "filename": r["filename"],
                 "feature_count": r["feature_count"],
                 "geojson": gj,
+                "geo_category": r.get("geo_category"),
             }
         )
     return result
@@ -209,3 +219,132 @@ def delete_tag(tag_id: str) -> None:
         return
     with get_db() as cur:
         cur.execute("DELETE FROM map_tags WHERE tag_id = %s", (tag_id,))
+
+
+# ---------------------------------------------------------------------------
+# Emergency geo features — typed POIs for proximity routing
+# ---------------------------------------------------------------------------
+
+def _haversine_m(lat1: float, lng1: float, lat2: float, lng2: float) -> float:
+    """Return distance in metres between two WGS-84 coordinates (Haversine formula)."""
+    R = 6_371_000.0
+    phi1, phi2 = math.radians(lat1), math.radians(lat2)
+    dphi = math.radians(lat2 - lat1)
+    dlambda = math.radians(lng2 - lng1)
+    a = math.sin(dphi / 2) ** 2 + math.cos(phi1) * math.cos(phi2) * math.sin(dlambda / 2) ** 2
+    return R * 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+
+
+def add_geo_feature(
+    workspace_id: str,
+    feature_type: str,
+    label: str,
+    lat: float,
+    lng: float,
+    floor: Optional[str] = None,
+    metadata: Optional[dict] = None,
+    file_id: Optional[str] = None,
+) -> dict:
+    feature_id = str(uuid.uuid4())
+    meta_json = json.dumps(metadata or {})
+    feat = dict(
+        feature_id=feature_id,
+        workspace_id=workspace_id,
+        feature_type=feature_type,
+        label=label,
+        lat=lat,
+        lng=lng,
+        floor=floor,
+        metadata=metadata or {},
+        file_id=file_id,
+    )
+    if db_available():
+        with get_db() as cur:
+            cur.execute(
+                """
+                INSERT INTO geo_features
+                    (feature_id, workspace_id, feature_type, label, lat, lng, floor, metadata, file_id)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                """,
+                (feature_id, workspace_id, feature_type, label, lat, lng, floor, meta_json, file_id),
+            )
+    return feat
+
+
+def delete_geo_entities_for_file(file_id: str) -> None:
+    """Delete all geo_features and geo_layers rows linked to the given file."""
+    if not db_available():
+        return
+    with get_db() as cur:
+        cur.execute("DELETE FROM geo_features WHERE file_id = %s", (file_id,))
+        cur.execute("DELETE FROM geo_layers WHERE file_id = %s", (file_id,))
+
+
+def list_geo_features(
+    workspace_id: str, feature_type: Optional[str] = None
+) -> List[dict]:
+    if not db_available():
+        return []
+    with get_db() as cur:
+        if feature_type:
+            cur.execute(
+                "SELECT * FROM geo_features WHERE workspace_id = %s AND feature_type = %s "
+                "ORDER BY created_at DESC",
+                (workspace_id, feature_type),
+            )
+        else:
+            cur.execute(
+                "SELECT * FROM geo_features WHERE workspace_id = %s ORDER BY created_at DESC",
+                (workspace_id,),
+            )
+        rows = [dict(r) for r in cur.fetchall()]
+    for r in rows:
+        if isinstance(r.get("metadata"), str):
+            try:
+                r["metadata"] = json.loads(r["metadata"])
+            except Exception:
+                r["metadata"] = {}
+    return rows
+
+
+def delete_geo_feature(feature_id: str) -> None:
+    if not db_available():
+        return
+    with get_db() as cur:
+        cur.execute("DELETE FROM geo_features WHERE feature_id = %s", (feature_id,))
+
+
+_NON_ROUTING_TYPES = {"camera", "building"}
+
+
+def find_nearest_feature(
+    workspace_id: str,
+    feature_type: str,
+    lat: float,
+    lng: float,
+) -> Optional[dict]:
+    """
+    Return the nearest geo_feature of `feature_type` in `workspace_id`.
+
+    Fallback order:
+      1. Exact feature_type match (expected: 'shelter')
+      2. Any routing-relevant feature (excludes camera/building)
+    Returns None if the workspace has no usable emergency features.
+    """
+    if feature_type == "none" or not db_available():
+        return None
+
+    # 1. Exact match
+    rows = list_geo_features(workspace_id, feature_type)
+
+    # 2. Last resort: any routing feature (skip cameras / buildings)
+    if not rows:
+        all_rows = list_geo_features(workspace_id)
+        rows = [r for r in all_rows if r.get("feature_type") not in _NON_ROUTING_TYPES]
+
+    if not rows:
+        return None
+
+    best = min(rows, key=lambda r: _haversine_m(lat, lng, r["lat"], r["lng"]))
+    best["distance_m"] = round(_haversine_m(lat, lng, best["lat"], best["lng"]), 1)
+    return best

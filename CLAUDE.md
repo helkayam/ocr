@@ -85,6 +85,9 @@ ocr/
 │   ├── rag/
 │   │   ├── generator.py        # Groq/OpenAI LLM switcher with constraint-aware Hebrew system prompt
 │   │   └── evaluate.py         # Recall@K + grounding accuracy evaluation
+│   ├── emergency/
+│   │   ├── __init__.py
+│   │   └── intent_extractor.py # LLM function-calling: rag_answer → IntentResult (action/target_type/urgency)
 │   └── worker/
 │       ├── main.py             # RQ worker listener
 │       └── tasks.py            # Background task: OCR → chunk → index
@@ -95,14 +98,16 @@ ocr/
 │   │   ├── files.py            # Upload, confirm-upload, bridges to app/ingest
 │   │   ├── rag_router.py       # /documents/ and /query endpoints (imports from schemas.py)
 │   │   ├── workspaces.py       # Workspace CRUD incl. DELETE
-│   │   └── schemas.py          # ALL API-layer Pydantic models (FileItem, Workspace, RAG schemas)
+│   │   ├── emergency_router.py # POST /emergency/simulate, geo feature CRUD, event log
+│   │   └── schemas.py          # ALL API-layer Pydantic models (FileItem, Workspace, RAG, Emergency schemas)
 │   └── services/
 │       ├── file_service.py     # DB persistence for file metadata
 │       ├── storage_service.py  # MinIO or local_storage fallback
 │       ├── workspace_service.py
 │       ├── nlp_service.py
-│       ├── sensor_service.py
-│       ├── geo_service.py
+│       ├── sensor_service.py   # includes get_sensor(), update_sensor_location()
+│       ├── geo_service.py      # Haversine + find_nearest_feature(), geo_features CRUD
+│       ├── emergency_service.py # simulate() orchestrator: RAG → intent → geo → directive
 │       └── report_service.py
 ├── front/                      # React + TypeScript frontend
 │   ├── src/
@@ -115,7 +120,9 @@ ocr/
 │   │   │   ├── QueryBox.tsx           # RAG query input + answer display
 │   │   │   ├── FileListTable.tsx      # File table with status badges
 │   │   │   ├── FileStatusBadge.tsx    # Polling badge (refetches every 3s if processing)
-│   │   │   └── FileUploadArea.tsx     # Drag-drop upload
+│   │   │   ├── FileUploadArea.tsx     # Drag-drop upload
+│   │   │   ├── EmergencyResultCard.tsx # Simulation result display (intent, directive, nearest feature)
+│   │   │   └── GeoFeatureManager.tsx  # Geo POI CRUD panel used in MapView
 │   │   └── types/files.ts      # TypeScript interfaces: FileItem, Workspace, RagAnswer
 │   └── package.json
 ├── data/                       # All persistent pipeline data (never commit to git)
@@ -313,13 +320,24 @@ The generator (`app/rag/generator.py`) uses a four-step internal protocol (invis
 ## Database Schema (`backend/main.py`)
 
 ```sql
-workspaces (workspace_id, name, description, file_count, total_size)
-files      (file_id, workspace_id, filename, file_type, content_type,
-            file_size, object_name, status, processing_status)
-document_chunks (chunk_id, file_id, workspace_id, content, chunk_index, embedding)
-sensors    (sensor_id, workspace_id, ...)
-geo_layers (layer_id, workspace_id, ...)
+workspaces       (workspace_id, name, description, file_count, total_size)
+files            (file_id, workspace_id, filename, file_type, content_type,
+                  file_size, object_name, status, processing_status)
+document_chunks  (chunk_id, file_id, workspace_id, content, chunk_index, embedding)
+sensors          (sensor_id, workspace_id, name, sensor_type, status, endpoint,
+                  linked_file_id, lat REAL, lng REAL)
+                  -- sensor_type: SIREN | TERRORIST | HAZMAT
+geo_layers       (layer_id, workspace_id, ...)
+geo_features     (feature_id, workspace_id, feature_type, label, lat, lng, floor, metadata)
+                  -- feature_type: shelter | exit | muster_point | extinguisher | assembly
+emergency_events (event_id, workspace_id, sensor_id, sensor_name, sensor_type,
+                  alert_level, rag_query, rag_answer,
+                  intent_action, intent_target, intent_urgency,
+                  nearest_feature_id, nearest_feature_type, nearest_feature_label,
+                  nearest_distance_m, directive, status, created_at)
 ```
+
+**Migration note:** `lat`/`lng` columns were added to `sensors` via `_migrate_db()` in `backend/main.py` (safe no-op if already present).
 
 ---
 

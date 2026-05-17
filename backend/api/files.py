@@ -112,23 +112,62 @@ def confirm_upload(request: ConfirmUploadRequest, background_tasks: BackgroundTa
             object_name,
         )
     elif fname_lower.endswith((".geojson", ".json")):
-        background_tasks.add_task(
-            _process_geojson_bg,
+        # Run synchronously — buildings (Polygon) have no fallback marker visibility,
+        # so the layer must be stored before the response triggers a UI refetch.
+        _process_geojson_bg(
             request.file_id,
             request.workspace_id,
             object_name,
+            request.geo_category,
         )
 
     return ConfirmUploadResponse(file=file_item)
 
 
-def _process_geojson_bg(file_id: str, workspace_id: str, object_name: str) -> None:
+def _process_geojson_bg(
+    file_id: str,
+    workspace_id: str,
+    object_name: str,
+    geo_category: Optional[str] = None,
+) -> None:
     try:
         data = get_file_bytes(object_name)
         geo = parse_geojson(data)
-        store_geo_layer(file_id, workspace_id, geo)
+        store_geo_layer(file_id, workspace_id, geo, geo_category)
+
+        # Auto-register Point features as emergency geo_features for shelters/cameras
+        if geo_category in ("shelters", "cameras") and geo.get("geojson"):
+            from services.geo_service import add_geo_feature
+            feature_type = "shelter" if geo_category == "shelters" else "camera"
+            features = geo["geojson"].get("features", [])
+            registered = 0
+            for feat in features:
+                geom = feat.get("geometry") or {}
+                if geom.get("type") == "Point":
+                    coords = geom.get("coordinates", [])
+                    if len(coords) >= 2:
+                        lng_val, lat_val = float(coords[0]), float(coords[1])
+                        props = feat.get("properties") or {}
+                        label = (
+                            props.get("name") or props.get("NAME") or
+                            props.get("label") or props.get("LABEL") or
+                            f"{geo_category[:-1].title()} {registered + 1}"
+                        )
+                        add_geo_feature(
+                            workspace_id=workspace_id,
+                            feature_type=feature_type,
+                            label=str(label),
+                            lat=lat_val,
+                            lng=lng_val,
+                            file_id=file_id,
+                        )
+                        registered += 1
+            logger.info(
+                "[geojson_bg] auto-registered {} {} features from {}",
+                registered, feature_type, object_name,
+            )
     except Exception as e:
-        print(f"GeoJSON processing failed for {file_id}: {e}")
+        logger.error("GeoJSON processing failed for {}: {}", file_id, e)
 
 
 # ─── Local-storage upload endpoint (used when MinIO is unavailable) ──────────
@@ -250,6 +289,14 @@ def delete_file_endpoint(file_id: str):
             pass  # already gone from registry; continue cleanup
         except Exception as exc:
             raise HTTPException(status_code=500, detail=str(exc))
+
+    # Delete geo layers and emergency features linked to this file
+    try:
+        from services.geo_service import delete_geo_entities_for_file
+        delete_geo_entities_for_file(file_id)
+        logger.info("[files] Geo entities deleted for {}", file_id)
+    except Exception as exc:
+        logger.error("[files] Geo entity delete failed for {}: {}", file_id, exc)
 
     # Remove from SQL DB (also clears document_chunks rows)
     try:

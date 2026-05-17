@@ -85,6 +85,7 @@ class ConfirmUploadRequest(BaseModel):
     filename: str
     file_size: int
     content_type: str
+    geo_category: Optional[str] = None  # "cameras" | "shelters" | "buildings" — GeoJSON only
 
 
 # Response schemas
@@ -146,4 +147,75 @@ class QueryResponse(BaseModel):
     query: str
     answer: str
     sources: List[CitedSourceOut] = []
+
+
+# ── Emergency simulation schemas ──────────────────────────────────────────────
+
+class GeoFeatureCreate(BaseModel):
+    workspace_id: str
+    feature_type: str = Field(..., description="shelter|exit|muster_point|extinguisher|assembly")
+    label: str
+    lat: float
+    lng: float
+    floor: Optional[str] = None
+    metadata: Optional[dict] = None
+
+
+class GeoFeatureOut(BaseModel):
+    feature_id: str
+    workspace_id: str
+    feature_type: str
+    label: str
+    lat: float
+    lng: float
+    floor: Optional[str] = None
+    metadata: Optional[dict] = None
+
+
+class SensorLocationUpdate(BaseModel):
+    lat: float
+    lng: float
+
+
+class EmergencySimRequest(BaseModel):
+    workspace_id: str
+    sensor_id: str
+    alert_level: str = Field(default="high")
+    override_query: Optional[str] = None
+    origin_lat: Optional[float] = None   # user-selected evacuation origin
+    origin_lng: Optional[float] = None
+
+
+class IntentOut(BaseModel):
+    action: str
+    target_type: str
+    urgency: str
+
+
+class EmergencySimResponse(BaseModel):
+    event_id: str
+    sensor: dict
+    alert_level: str
+    rag_query: str
+    rag_answer: str
+    rag_sources: List[dict] = []
+    intent: IntentOut
+    nearest_feature: Optional[dict] = None
+    directive: str
+
+
+class EmergencyEventOut(BaseModel):
+    event_id: str
+    workspace_id: str
+    sensor_name: Optional[str] = None
+    sensor_type: Optional[str] = None
+    alert_level: str = "high"
+    intent_action: Optional[str] = None
+    intent_target: Optional[str] = None
+    intent_urgency: Optional[str] = None
+    nearest_feature_label: Optional[str] = None
+    nearest_distance_m: Optional[float] = None
+    directive: Optional[str] = None
+    status: str = "simulated"
+    created_at: Optional[datetime] = None
 

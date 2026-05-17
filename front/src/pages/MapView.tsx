@@ -1,368 +1,485 @@
-import { useState, useCallback } from 'react';
+/**
+ * MapView — Full-screen tactical map with floating action dock,
+ * simulation overlay, and slide-in control panels.
+ *
+ * Simulation flow (strict two-step):
+ *   1. User selects a sensor  → stages it, opens SimulationOverlay in "origin" phase
+ *   2. User clicks the map    → sets userEvacOrigin
+ *   3. User clicks "Run"      → mutation fires with origin_lat/lng
+ *   Routing from sensor coords is impossible; origin is always user-supplied.
+ */
+import { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { AnimatePresence, motion } from 'framer-motion';
 import type { Feature, Geometry, GeoJsonProperties } from 'geojson';
 import { Header } from '@/components/Header';
-import { MapComponent, LAYER_COLORS } from '@/components/MapComponent';
-import { QueryBox } from '@/components/QueryBox';
+import { MapComponent } from '@/components/MapComponent';
 import { api } from '@/lib/api';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-import { ArrowLeft, MapPin, Layers, Tag, Trash2, Plus, ChevronDown } from 'lucide-react';
+import { ArrowLeft, Plus, Upload, Cpu, Zap, Crosshair, MapPin, X } from 'lucide-react';
+import { Sensor, SensorType, EmergencySimResult } from '@/types/files';
+import { SimulationOverlay } from '@/components/sim/SimulationOverlay';
+import { AlarmWidget } from '@/components/sim/AlarmWidget';
+import { AddEntityPanel } from '@/components/sim/AddEntityPanel';
+import { ControlCenterDrawer } from '@/components/sim/ControlCenterDrawer';
+import { UploadLayerModal } from '@/components/sim/UploadLayerModal';
+import { cn } from '@/lib/utils';
 
-const TAG_COLORS = [
-  { label: 'Red',    value: '#ef4444' },
-  { label: 'Blue',   value: '#3b82f6' },
-  { label: 'Green',  value: '#22c55e' },
-  { label: 'Yellow', value: '#eab308' },
-  { label: 'Purple', value: '#a855f7' },
-];
+// ─── Types ────────────────────────────────────────────────────────────────────
 
-const TAG_TYPES = ['point', 'assembly', 'hazard', 'exit', 'hydrant', 'camera'];
+type EntityType = 'Sensor' | 'Camera' | 'Shelter' | 'Building';
+type GeoCategory = 'cameras' | 'shelters' | 'buildings';
 
-/** Extract a human-readable name from a GeoJSON feature's properties. */
-function featureName(
-  props: Record<string, unknown>,
-  fallback: string,
-): string {
-  const v =
-    props['name']  ?? props['NAME']  ??
-    props['label'] ?? props['LABEL'] ??
-    props['title'] ?? props['TITLE'] ??
-    props['id']    ?? props['ID'];
-  return v != null && String(v).trim() ? String(v).trim() : fallback;
+const ENTITY_TO_FEATURE: Record<EntityType, string> = {
+  Camera:   'camera',
+  Shelter:  'shelter',
+  Building: 'building',
+  Sensor:   'shelter',
+};
+
+// ─── Floating Dock ────────────────────────────────────────────────────────────
+
+interface DockButtonProps {
+  icon: React.ElementType;
+  label: string;
+  active?: boolean;
+  prominent?: boolean;
+  pulse?: boolean;
+  onClick: () => void;
 }
+
+function DockButton({ icon: Icon, label, active, prominent, pulse, onClick }: DockButtonProps) {
+  return (
+    <motion.button
+      whileHover={{ scale: 1.08 }}
+      whileTap={{ scale: 0.93 }}
+      transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+      onClick={onClick}
+      title={label}
+      className={cn(
+        'flex flex-col items-center gap-1 w-14 py-3 rounded-2xl text-xs font-bold transition-all select-none',
+        prominent
+          ? 'text-white'
+          : active
+          ? 'bg-primary/15 text-primary border border-primary/30'
+          : 'bg-card/90 text-muted-foreground hover:text-foreground border border-border/60 hover:bg-card',
+        pulse && 'animate-pulse',
+      )}
+      style={prominent ? {
+        background: 'linear-gradient(160deg, hsl(0,84%,55%) 0%, hsl(0,84%,38%) 100%)',
+        boxShadow: '0 4px 24px rgba(239,68,68,0.55), inset 0 1px 0 rgba(255,255,255,0.2)',
+      } : undefined}
+    >
+      <Icon className={cn('h-5 w-5', prominent && 'drop-shadow')} />
+      <span className="leading-none text-[10px] uppercase tracking-wide">{label}</span>
+    </motion.button>
+  );
+}
+
+// ─── Component ────────────────────────────────────────────────────────────────
 
 export default function MapView() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const qc = useQueryClient();
 
+  // ── Server data ────────────────────────────────────────────────────────────
   const { data: workspace } = useQuery({
     queryKey: ['workspace', id],
     queryFn: () => api.workspaces.get(id!),
     enabled: !!id,
   });
-
   const { data: layers = [] } = useQuery({
     queryKey: ['map-layers', id],
     queryFn: () => api.map.getLayers(id!),
     enabled: !!id,
   });
-
-  const { data: tags = [], refetch: refetchTags } = useQuery({
-    queryKey: ['map-tags', id],
-    queryFn: () => api.map.getTags(id!),
+  const { data: sensors = [], refetch: refetchSensors } = useQuery({
+    queryKey: ['sensors', id],
+    queryFn: () => api.sensors.list(id!),
+    enabled: !!id,
+  });
+  const { data: geoFeatures = [], refetch: refetchGeoFeatures } = useQuery({
+    queryKey: ['geo-features', id],
+    queryFn: () => api.emergency.getFeatures(id!),
     enabled: !!id,
   });
 
-  // ── Tag placement state ────────────────────────────────────────────────────
-  const [tagMode, setTagMode] = useState(false);
-  const [pendingCoord, setPendingCoord] = useState<{ lat: number; lng: number } | null>(null);
-  const [tagLabel, setTagLabel] = useState('');
-  const [tagType, setTagType] = useState('point');
-  const [tagColor, setTagColor] = useState('#ef4444');
+  // ── Panel state ────────────────────────────────────────────────────────────
+  const [simPanelOpen, setSimPanelOpen] = useState(false);
+  const [controlCenterOpen, setControlCenterOpen] = useState(false);
+  const [addEntityOpen, setAddEntityOpen] = useState(false);
+  const [uploadLayerOpen, setUploadLayerOpen] = useState(false);
 
-  // ── Map navigation state ───────────────────────────────────────────────────
+  const openPanel = (panel: 'sim' | 'control' | 'entity' | 'upload') => {
+    setSimPanelOpen(panel === 'sim');
+    setControlCenterOpen(panel === 'control');
+    setAddEntityOpen(panel === 'entity');
+    setUploadLayerOpen(panel === 'upload');
+  };
+
+  const anyPanelOpen = simPanelOpen || controlCenterOpen || addEntityOpen;
+
+  // ── Entity placement ───────────────────────────────────────────────────────
+  const [placementMode, setPlacementMode] = useState(false);
+  const [pendingCoord, setPendingCoord] = useState<{ lat: number; lng: number } | null>(null);
+  const [entityType, setEntityType] = useState<EntityType>('Sensor');
+  const [sensorType, setSensorType] = useState<SensorType>('SIREN');
+
+  // ── Layer navigation ───────────────────────────────────────────────────────
   const [selectedLayerIdx, setSelectedLayerIdx] = useState<number | null>(null);
-  const [expandedLayerId, setExpandedLayerId] = useState<string | null>(null);
   const [selectedFeature, setSelectedFeature] = useState<object | null>(null);
 
-  // ── RAG context state ──────────────────────────────────────────────────────
-  const [activeMapContext, setActiveMapContext] = useState<string | null>(null);
-  const clearContext = useCallback(() => setActiveMapContext(null), []);
+  // ── GeoJSON upload ─────────────────────────────────────────────────────────
+  const [geoCategory, setGeoCategory] = useState<GeoCategory>('buildings');
+  const [uploadProgress, setUploadProgress] = useState<string | null>(null);
 
-  /** Called when the user clicks a GeoJSON feature directly on the map. */
-  const handleFeatureClick = useCallback(
-    (feature: Feature<Geometry, GeoJsonProperties>) => {
-      const name = featureName(
-        (feature.properties ?? {}) as Record<string, unknown>,
-        '',
-      );
-      if (name) setActiveMapContext(name);
-    },
-    [],
-  );
+  // ── Simulation state ───────────────────────────────────────────────────────
+  // Two-step flow: stage sensor → user picks origin on map → run simulation.
+  const [simSensor, setSimSensor] = useState<Sensor | null>(null);
+  const [userEvacOrigin, setUserEvacOrigin] = useState<{ lat: number; lng: number } | null>(null);
+  const [simResult, setSimResult] = useState<EmergencySimResult | null>(null);
+  const [flyToCoord, setFlyToCoord] = useState<[number, number] | null>(null);
 
-  // ── Tag mutations ──────────────────────────────────────────────────────────
-  const addTagMutation = useMutation({
-    mutationFn: api.map.addTag,
+  // ── Mutations ──────────────────────────────────────────────────────────────
+  const addSensorMutation = useMutation({
+    mutationFn: api.sensors.create,
     onSuccess: () => {
-      refetchTags();
+      refetchSensors();
       setPendingCoord(null);
-      setTagLabel('');
-      toast.success('Tag added');
+      setPlacementMode(false);
+      toast.success('Sensor placed');
     },
+    onError: () => toast.error('Failed to add sensor'),
   });
 
-  const deleteTagMutation = useMutation({
-    mutationFn: api.map.deleteTag,
+  const deleteSensorMutation = useMutation({
+    mutationFn: api.sensors.delete,
+    onSuccess: () => { refetchSensors(); toast.success('Sensor removed'); },
+  });
+
+  const addGeoFeatureMutation = useMutation({
+    mutationFn: api.emergency.addFeature,
     onSuccess: () => {
-      refetchTags();
-      toast.success('Tag deleted');
+      refetchGeoFeatures();
+      setPendingCoord(null);
+      setPlacementMode(false);
+      toast.success('Feature placed');
     },
+    onError: () => toast.error('Failed to add feature'),
   });
 
-  void qc; // kept for future cache invalidation
+  const deleteGeoFeatureMutation = useMutation({
+    mutationFn: api.emergency.deleteFeature,
+    onSuccess: () => refetchGeoFeatures(),
+  });
+
+  // Accepts explicit origin coords — sensor coords are never used for routing.
+  const simulateMutation = useMutation({
+    mutationFn: ({ sensor, origin }: { sensor: Sensor; origin: { lat: number; lng: number } }) =>
+      api.emergency.simulate({
+        workspace_id: id!,
+        sensor_id: sensor.sensor_id,
+        origin_lat: origin.lat,
+        origin_lng: origin.lng,
+      }),
+    onSuccess: data => {
+      setSimResult(data);
+      toast.success('Simulation complete');
+    },
+    onError: () => toast.error('Simulation failed'),
+  });
+
+  // True while the sim panel is open, a sensor is staged, and we haven't fired yet.
+  // During this phase, map clicks set the evacuation origin instead of placing entities.
+  const originPickingMode =
+    simPanelOpen && simSensor !== null && !simulateMutation.isPending && simResult === null;
+
+  // Draw the evacuation route from the USER'S origin, never from the sensor.
+  const evacuationRoute = useMemo(() => {
+    const nf = simResult?.nearest_feature;
+    if (!nf || !userEvacOrigin) return null;
+    return {
+      from: [userEvacOrigin.lat, userEvacOrigin.lng] as [number, number],
+      to: [nf.lat, nf.lng] as [number, number],
+    };
+  }, [simResult, userEvacOrigin]);
+
+  // ── Handlers ───────────────────────────────────────────────────────────────
 
   const handleMapClick = (lat: number, lng: number) => {
-    setPendingCoord({ lat, lng });
+    if (originPickingMode) {
+      // Origin-picking phase: capture user location, do not place an entity.
+      setUserEvacOrigin({ lat, lng });
+    } else if (placementMode) {
+      setPendingCoord({ lat, lng });
+    }
   };
 
-  const handleAddTag = () => {
-    if (!pendingCoord || !tagLabel.trim()) return;
-    addTagMutation.mutate({
-      workspace_id: id!,
-      label: tagLabel.trim(),
-      lat: pendingCoord.lat,
-      lng: pendingCoord.lng,
-      tag_type: tagType,
-      color: tagColor,
-    });
+  // Step 1 (from picker list inside SimulationOverlay): stage the sensor.
+  // No simulation fired here — waits for the user to set their origin.
+  const handleSelectSensor = (sensor: Sensor) => {
+    setSimSensor(sensor);
+    setSimResult(null);
+    setUserEvacOrigin(null);
   };
+
+  // Step 1 (from map popup or ControlCenterDrawer): stage sensor and open sim panel.
+  const handleSimulateSensor = (sensor: Sensor) => {
+    setSimSensor(sensor);
+    setSimResult(null);
+    setUserEvacOrigin(null);
+    openPanel('sim');
+  };
+
+  // Step 3: called by "Run Simulation" button — only reachable when origin is set.
+  const handleRunSimulation = () => {
+    if (!simSensor || !userEvacOrigin) return;
+    simulateMutation.mutate({ sensor: simSensor, origin: userEvacOrigin });
+  };
+
+  // Reset sensor selection back to the picker phase.
+  const handleResetSensor = () => {
+    setSimSensor(null);
+    setUserEvacOrigin(null);
+    setSimResult(null);
+  };
+
+  const handlePlaceEntity = () => {
+    if (!pendingCoord) return;
+    const { lat, lng } = pendingCoord;
+    if (entityType === 'Sensor') {
+      addSensorMutation.mutate({ workspace_id: id!, sensor_type: sensorType, lat, lng });
+    } else {
+      addGeoFeatureMutation.mutate({
+        workspace_id: id!,
+        feature_type: ENTITY_TO_FEATURE[entityType],
+        label: `${entityType} ${new Date().toLocaleTimeString('en', { hour: '2-digit', minute: '2-digit' })}`,
+        lat,
+        lng,
+      });
+    }
+  };
+
+  const handleGeoJsonUpload = async (file: File) => {
+    if (!id) return;
+    setUploadProgress('Uploading...');
+    try {
+      const { upload_url, file_id } = await api.files.getUploadUrl({
+        workspace_id: id,
+        filename: file.name,
+        content_type: 'application/geo+json',
+        file_size: file.size,
+      });
+      await fetch(upload_url, { method: 'PUT', body: file, headers: { 'Content-Type': 'application/geo+json' } });
+      await api.files.confirmUpload({
+        file_id, workspace_id: id, filename: file.name,
+        file_size: file.size, content_type: 'application/geo+json', geo_category: geoCategory,
+      });
+      setUploadProgress(null);
+      qc.invalidateQueries({ queryKey: ['map-layers', id] });
+      qc.invalidateQueries({ queryKey: ['geo-features', id] });
+      toast.success('GeoJSON layer uploaded');
+    } catch {
+      setUploadProgress(null);
+      toast.error('Upload failed');
+    }
+  };
+
+  const handleFeatureClick = (_feature: Feature<Geometry, GeoJsonProperties>) => {};
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="h-screen flex flex-col overflow-hidden">
       <Header workspaceName={workspace?.name} />
 
-      <main className="container mx-auto px-4 py-6 flex-1 flex flex-col gap-6">
-        <Button variant="ghost" size="sm" className="self-start" onClick={() => navigate(`/workspace/${id}`)}>
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Files
-        </Button>
-
-        <div className="flex flex-col lg:flex-row gap-6 flex-1">
-          {/* ── Map ─────────────────────────────────────────────────────────── */}
-          <div className="flex-1 min-h-[500px] animate-fade-in">
-            <MapComponent
-              layers={layers}
-              tags={tags}
-              tagMode={tagMode}
-              onMapClick={handleMapClick}
-              onTagDelete={tid => deleteTagMutation.mutate(tid)}
-              onFeatureClick={handleFeatureClick}
-              selectedLayerIndex={selectedLayerIdx}
-              selectedFeature={selectedFeature}
-              className="h-full min-h-[500px]"
-            />
-          </div>
-
-          {/* ── Sidebar ──────────────────────────────────────────────────────── */}
-          <div className="w-full lg:w-80 space-y-4 animate-fade-in lg:overflow-y-auto lg:max-h-[calc(100vh-10rem)]">
-
-            {/* SOP Search — wired to activeMapContext set by map clicks */}
-            <QueryBox
-              workspaceId={id!}
-              activeMapContext={activeMapContext}
-              onClearContext={clearContext}
-            />
-
-            {/* Tag placement */}
-            <div className="p-4 rounded-xl bg-card border border-border">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-semibold flex items-center gap-2">
-                  <Tag className="h-4 w-4 text-primary" />
-                  Tag Points
-                </h3>
-                <Button
-                  size="sm"
-                  variant={tagMode ? 'default' : 'outline'}
-                  onClick={() => { setTagMode(!tagMode); setPendingCoord(null); }}
-                >
-                  {tagMode ? 'Cancel' : <><Plus className="h-3.5 w-3.5 mr-1" />Add Tag</>}
-                </Button>
-              </div>
-
-              {pendingCoord && tagMode && (
-                <div className="space-y-3 pt-2 border-t border-border">
-                  <p className="text-xs text-muted-foreground">
-                    📍 {pendingCoord.lat.toFixed(5)}, {pendingCoord.lng.toFixed(5)}
-                  </p>
-                  <div className="space-y-1">
-                    <Label className="text-xs">Label</Label>
-                    <Input
-                      value={tagLabel}
-                      onChange={e => setTagLabel(e.target.value)}
-                      placeholder="e.g. Assembly Point A"
-                      className="bg-muted/50 h-8 text-sm"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-xs">Type</Label>
-                    <div className="flex flex-wrap gap-1">
-                      {TAG_TYPES.map(t => (
-                        <button
-                          key={t}
-                          onClick={() => setTagType(t)}
-                          className={cn(
-                            'px-2 py-0.5 rounded text-xs border transition-colors capitalize',
-                            tagType === t
-                              ? 'bg-primary/10 border-primary text-primary'
-                              : 'border-border text-muted-foreground hover:bg-muted'
-                          )}
-                        >
-                          {t}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-xs">Color</Label>
-                    <div className="flex gap-2">
-                      {TAG_COLORS.map(c => (
-                        <button
-                          key={c.value}
-                          onClick={() => setTagColor(c.value)}
-                          title={c.label}
-                          className={cn(
-                            'w-6 h-6 rounded-full border-2 transition-transform',
-                            tagColor === c.value ? 'border-white scale-125' : 'border-transparent'
-                          )}
-                          style={{ background: c.value }}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                  <Button
-                    size="sm"
-                    className="w-full"
-                    onClick={handleAddTag}
-                    disabled={!tagLabel.trim() || addTagMutation.isPending}
-                  >
-                    <MapPin className="h-3.5 w-3.5 mr-1.5" />
-                    Save Tag
-                  </Button>
-                </div>
-              )}
-            </div>
-
-            {/* GIS Layers */}
-            <div className="p-4 rounded-xl bg-card border border-border">
-              <h3 className="text-sm font-semibold flex items-center gap-2 mb-3">
-                <Layers className="h-4 w-4 text-primary" />
-                GIS Layers
-                <span className="ml-auto text-xs text-muted-foreground">{layers.length}</span>
-              </h3>
-              {layers.length === 0 ? (
-                <p className="text-xs text-muted-foreground">
-                  No GIS layers yet. Upload a GeoJSON file in the Files tab.
-                </p>
-              ) : (
-                <ul className="space-y-1">
-                  {layers.map((layer, i) => {
-                    const isExpanded = expandedLayerId === layer.layer_id;
-                    const isSelected = selectedLayerIdx === i;
-                    const features = (
-                      (layer.geojson as { features?: Feature<Geometry, GeoJsonProperties>[] })
-                        ?.features ?? []
-                    );
-                    return (
-                      <li key={layer.layer_id}>
-                        {/* Layer row — click to zoom */}
-                        <button
-                          onClick={() => {
-                            setSelectedLayerIdx(i);
-                            setSelectedFeature(null);
-                            setExpandedLayerId(isExpanded ? null : layer.layer_id);
-                          }}
-                          className={cn(
-                            'w-full flex items-center gap-2 px-2 py-1.5 rounded-lg transition-colors text-left',
-                            isSelected
-                              ? 'bg-primary/10 text-primary'
-                              : 'hover:bg-muted/50 text-foreground'
-                          )}
-                        >
-                          <div
-                            className="w-3 h-3 rounded-full shrink-0"
-                            style={{ background: LAYER_COLORS[i % LAYER_COLORS.length] }}
-                          />
-                          <span className="text-xs truncate flex-1">{layer.filename}</span>
-                          <span className="text-xs text-muted-foreground shrink-0 mr-1">
-                            {layer.feature_count}
-                          </span>
-                          {features.length > 0 && (
-                            <ChevronDown
-                              className={cn(
-                                'h-3.5 w-3.5 text-muted-foreground shrink-0 transition-transform duration-200',
-                                isExpanded && 'rotate-180'
-                              )}
-                            />
-                          )}
-                        </button>
-
-                        {/* Feature sub-list — click to zoom + set context */}
-                        {isExpanded && features.length > 0 && (
-                          <ul className="ml-5 mt-0.5 mb-1 border-l border-border pl-2 space-y-0.5">
-                            {features.slice(0, 12).map((feat, fi) => {
-                              const props = (feat.properties ?? {}) as Record<string, unknown>;
-                              const fname = featureName(props, `Feature ${fi + 1}`);
-                              return (
-                                <li key={fi}>
-                                  <button
-                                    onClick={() => {
-                                      setSelectedFeature(feat);
-                                      setActiveMapContext(fname);
-                                    }}
-                                    className="w-full text-left text-xs py-0.5 px-1 rounded hover:bg-muted/50 text-muted-foreground hover:text-foreground transition-colors truncate"
-                                  >
-                                    {fname}
-                                  </button>
-                                </li>
-                              );
-                            })}
-                            {features.length > 12 && (
-                              <li className="text-xs text-muted-foreground px-1 py-0.5">
-                                +{features.length - 12} more
-                              </li>
-                            )}
-                          </ul>
-                        )}
-                      </li>
-                    );
-                  })}
-                </ul>
-              )}
-            </div>
-
-            {/* Tags list */}
-            <div className="p-4 rounded-xl bg-card border border-border">
-              <h3 className="text-sm font-semibold flex items-center gap-2 mb-3">
-                <MapPin className="h-4 w-4 text-primary" />
-                Tags
-                <span className="ml-auto text-xs text-muted-foreground">{tags.length}</span>
-              </h3>
-              {tags.length === 0 ? (
-                <p className="text-xs text-muted-foreground">No tags yet. Enable "Add Tag" and click the map.</p>
-              ) : (
-                <ul className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
-                  {tags.map(tag => (
-                    <li key={tag.tag_id} className="flex items-center gap-2 group">
-                      <div
-                        className="w-3 h-3 rounded-full shrink-0"
-                        style={{ background: tag.color }}
-                      />
-                      <div className="min-w-0 flex-1">
-                        <p className="text-xs font-medium truncate">{tag.label}</p>
-                        <p className="text-xs text-muted-foreground capitalize">{tag.tag_type}</p>
-                      </div>
-                      <button
-                        onClick={() => deleteTagMutation.mutate(tag.tag_id)}
-                        className="opacity-0 group-hover:opacity-100 transition-opacity"
-                        title="Delete"
-                      >
-                        <Trash2 className="h-3.5 w-3.5 text-destructive" />
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          </div>
+      <div className="flex-1 relative min-h-0 overflow-hidden">
+        <div className="absolute inset-0">
+          <MapComponent
+            layers={layers}
+            sensors={sensors}
+            geoFeatures={geoFeatures}
+            tagMode={placementMode}
+            originPickingMode={originPickingMode}
+            userEvacOrigin={userEvacOrigin}
+            onMapClick={handleMapClick}
+            onSensorDelete={sid => deleteSensorMutation.mutate(sid)}
+            onGeoFeatureDelete={fid => deleteGeoFeatureMutation.mutate(fid)}
+            onSensorSimulate={handleSimulateSensor}
+            selectedLayerIndex={selectedLayerIdx}
+            selectedFeature={selectedFeature}
+            onFeatureClick={handleFeatureClick}
+            flyToCoord={flyToCoord}
+            evacuationRoute={evacuationRoute}
+            className="h-full"
+          />
         </div>
-      </main>
+
+        {/* ── Back button ─────────────────────────────────────────────────── */}
+        <div className="absolute top-4 left-4 z-[850]">
+          <motion.button
+            whileHover={{ x: -2 }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+            onClick={() => navigate(`/workspace/${id}`)}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-card/90 backdrop-blur-sm border border-border text-sm font-medium text-foreground hover:bg-card shadow-lg transition-colors"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back
+          </motion.button>
+        </div>
+
+        {/* ── Top-center banners (only one shown at a time) ──────────────── */}
+        <AnimatePresence>
+          {originPickingMode && (
+            <motion.div
+              key="origin-banner"
+              initial={{ opacity: 0, y: -16 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -16 }}
+              className="absolute top-4 left-1/2 -translate-x-1/2 z-[850] flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-semibold shadow-xl pointer-events-none select-none"
+              style={{ background: '#2563eb', color: '#fff', boxShadow: '0 4px 20px rgba(37,99,235,0.45)' }}
+            >
+              <MapPin className="h-4 w-4 shrink-0" />
+              {userEvacOrigin
+                ? 'Origin set — click to change'
+                : 'Click map to set your evacuation starting point'}
+            </motion.div>
+          )}
+
+          {placementMode && !originPickingMode && (
+            <motion.div
+              key="placement-banner"
+              initial={{ opacity: 0, y: -16 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -16 }}
+              className="absolute top-4 left-1/2 -translate-x-1/2 z-[850] flex items-center gap-2 px-4 py-2.5 rounded-full bg-primary text-primary-foreground text-sm font-semibold shadow-xl"
+              style={{ boxShadow: '0 4px 20px rgba(239,68,68,0.4)' }}
+            >
+              <Crosshair className="h-4 w-4 animate-spin" style={{ animationDuration: '3s' }} />
+              Click map to place {entityType}
+              <button
+                onClick={() => { setPlacementMode(false); setPendingCoord(null); }}
+                className="ml-1 hover:opacity-75 transition-opacity"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* ── Floating action dock ────────────────────────────────────────── */}
+        <motion.div
+          className="absolute top-1/2 -translate-y-1/2 z-[850] flex flex-col gap-2"
+          animate={{ right: anyPanelOpen ? 444 : 16 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+        >
+          <DockButton
+            icon={Zap}
+            label="Sim"
+            prominent
+            pulse={simulateMutation.isPending}
+            onClick={() => {
+              if (simPanelOpen) { setSimPanelOpen(false); } else openPanel('sim');
+            }}
+          />
+          <DockButton
+            icon={Plus}
+            label="Entity"
+            active={addEntityOpen}
+            onClick={() => { if (addEntityOpen) setAddEntityOpen(false); else openPanel('entity'); }}
+          />
+          <DockButton
+            icon={Upload}
+            label="Layer"
+            onClick={() => setUploadLayerOpen(true)}
+          />
+          <DockButton
+            icon={Cpu}
+            label="Control"
+            active={controlCenterOpen}
+            onClick={() => { if (controlCenterOpen) setControlCenterOpen(false); else openPanel('control'); }}
+          />
+        </motion.div>
+
+        {/* ── Alarm widget — visible when sim panel is closed ─────────────── */}
+        <AnimatePresence>
+          {(simResult || simulateMutation.isPending) && !simPanelOpen && (
+            <AlarmWidget
+              sensor={simSensor}
+              result={simResult}
+              isLoading={simulateMutation.isPending}
+              onClick={() => openPanel('sim')}
+            />
+          )}
+        </AnimatePresence>
+
+        {/* ── Simulation overlay ──────────────────────────────────────────── */}
+        <AnimatePresence>
+          {simPanelOpen && (
+            <SimulationOverlay
+              sensors={sensors}
+              simSensor={simSensor}
+              simResult={simResult}
+              isLoading={simulateMutation.isPending}
+              userEvacOrigin={userEvacOrigin}
+              onSelectSensor={handleSelectSensor}
+              onRunSimulation={handleRunSimulation}
+              onResetSensor={handleResetSensor}
+              onClose={() => setSimPanelOpen(false)}
+              onFlyToFeature={(lat, lng) => setFlyToCoord([lat, lng])}
+            />
+          )}
+        </AnimatePresence>
+
+        {/* ── Control center drawer ───────────────────────────────────────── */}
+        <AnimatePresence>
+          {controlCenterOpen && (
+            <ControlCenterDrawer
+              sensors={sensors}
+              layers={layers}
+              geoFeatures={geoFeatures}
+              selectedLayerIdx={selectedLayerIdx}
+              onSelectLayer={i => { setSelectedLayerIdx(i); setSelectedFeature(null); }}
+              onDeleteSensor={sid => deleteSensorMutation.mutate(sid)}
+              onSimulateSensor={handleSimulateSensor}
+              onFlyToSensor={s => { if (s.lat != null && s.lng != null) setFlyToCoord([s.lat, s.lng]); }}
+              onDeleteFeature={fid => deleteGeoFeatureMutation.mutate(fid)}
+              onClose={() => setControlCenterOpen(false)}
+            />
+          )}
+        </AnimatePresence>
+
+        {/* ── Add entity panel ────────────────────────────────────────────── */}
+        <AnimatePresence>
+          {addEntityOpen && (
+            <AddEntityPanel
+              placementMode={placementMode}
+              onTogglePlacement={() => setPlacementMode(p => !p)}
+              pendingCoord={pendingCoord}
+              onClearCoord={() => setPendingCoord(null)}
+              onCoordChange={coord => setPendingCoord(coord)}
+              entityType={entityType}
+              onEntityTypeChange={setEntityType}
+              sensorType={sensorType}
+              onSensorTypeChange={setSensorType}
+              onPlace={handlePlaceEntity}
+              isPlacing={addSensorMutation.isPending || addGeoFeatureMutation.isPending}
+              onClose={() => { setAddEntityOpen(false); setPlacementMode(false); setPendingCoord(null); }}
+            />
+          )}
+        </AnimatePresence>
+      </div>
+
+      <UploadLayerModal
+        open={uploadLayerOpen}
+        onClose={() => setUploadLayerOpen(false)}
+        geoCategory={geoCategory}
+        onGeoCategoryChange={setGeoCategory}
+        onUpload={handleGeoJsonUpload}
+        isUploading={!!uploadProgress}
+        uploadProgress={uploadProgress}
+      />
     </div>
   );
 }
