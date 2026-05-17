@@ -246,6 +246,14 @@ export default function MapView() {
     setSimResult(null);
   };
 
+  // Full clear: wipes all simulation state and closes the panel.
+  const handleClearSimulation = () => {
+    setSimSensor(null);
+    setUserEvacOrigin(null);
+    setSimResult(null);
+    setSimPanelOpen(false);
+  };
+
   const handlePlaceEntity = () => {
     if (!pendingCoord) return;
     const { lat, lng } = pendingCoord;
@@ -410,6 +418,7 @@ export default function MapView() {
               result={simResult}
               isLoading={simulateMutation.isPending}
               onClick={() => openPanel('sim')}
+              onClear={handleClearSimulation}
             />
           )}
         </AnimatePresence>
@@ -426,6 +435,7 @@ export default function MapView() {
               onSelectSensor={handleSelectSensor}
               onRunSimulation={handleRunSimulation}
               onResetSensor={handleResetSensor}
+              onClearSimulation={handleClearSimulation}
               onClose={() => setSimPanelOpen(false)}
               onFlyToFeature={(lat, lng) => setFlyToCoord([lat, lng])}
             />

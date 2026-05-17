@@ -28,6 +28,7 @@ interface SimulationOverlayProps {
   onSelectSensor: (sensor: Sensor) => void;
   onRunSimulation: () => void;
   onResetSensor: () => void;
+  onClearSimulation: () => void;
   onClose: () => void;
   onFlyToFeature?: (lat: number, lng: number) => void;
 }
@@ -270,11 +271,11 @@ function LoadingView({ sensor }: { sensor: Sensor }) {
 
 function ResultView({
   result,
-  onClose: _onClose,
+  onClearSimulation,
   onFlyToFeature,
 }: {
   result: EmergencySimResult;
-  onClose: () => void;
+  onClearSimulation: () => void;
   onFlyToFeature?: (lat: number, lng: number) => void;
 }) {
   const [showRag, setShowRag] = useState(true);
@@ -405,6 +406,15 @@ function ResultView({
           </AnimatePresence>
         </div>
 
+        {/* Clear simulation */}
+        <button
+          onClick={onClearSimulation}
+          className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-semibold text-slate-500 hover:text-slate-800 hover:bg-slate-200 border border-slate-200 transition-all"
+        >
+          <X className="h-3.5 w-3.5" />
+          נקה סימולציה
+        </button>
+
       </div>
     </div>
   );
@@ -421,6 +431,7 @@ export function SimulationOverlay({
   onSelectSensor,
   onRunSimulation,
   onResetSensor,
+  onClearSimulation,
   onClose,
   onFlyToFeature,
 }: SimulationOverlayProps) {
@@ -479,7 +490,7 @@ export function SimulationOverlay({
           </motion.div>
         ) : phase === 'result' && simResult ? (
           <motion.div key="result" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex-1 flex flex-col">
-            <ResultView result={simResult} onClose={onClose} onFlyToFeature={onFlyToFeature} />
+            <ResultView result={simResult} onClearSimulation={onClearSimulation} onFlyToFeature={onFlyToFeature} />
           </motion.div>
         ) : phase === 'origin' && simSensor ? (
           <motion.div key="origin" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }} className="flex-1 flex flex-col">
