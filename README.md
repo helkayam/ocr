@@ -52,6 +52,7 @@ Ensure the following are installed on your system **before** starting:
 | npm | 9+ | `npm --version` |
 | Tesseract OCR | 4.x / 5.x | See install note below |
 | Hebrew language pack | — | `tesseract-ocr-heb` |
+| libmagic1 | — | Required by `python-magic` for file type validation |
 
 **Install Tesseract with Hebrew support:**
 
@@ -62,6 +63,16 @@ sudo apt-get install tesseract-ocr tesseract-ocr-heb
 # macOS (Homebrew)
 brew install tesseract
 brew install tesseract-lang   # includes heb
+```
+
+**Install libmagic1:**
+
+```bash
+# Ubuntu / Debian
+sudo apt-get install libmagic1
+
+# macOS (Homebrew)
+brew install libmagic
 ```
 
 ---
@@ -132,6 +143,8 @@ MINIO_ENDPOINT=localhost:9000
 
 > **Important:** Never hardcode API keys in source files. The `.env` file is in `.gitignore` — keep it that way.
 
+> **Frontend note:** Vite only reads variables prefixed with `VITE_` from the root `.env`. If the frontend can't reach the backend, ensure `VITE_API_URL=http://localhost:8000` is set. You can symlink the root `.env` into `front/` (`ln -s ../.env front/.env`) or create a separate `front/.env` with just that variable.
+
 ---
 
 ## How to Run
@@ -150,6 +163,7 @@ The API is now available at `http://localhost:8000`. Interactive docs at `http:/
 ### Terminal 2 — Frontend (Vite dev server)
 
 ```bash
+source venv/bin/activate
 cd front
 npm run dev
 ```
@@ -162,7 +176,7 @@ Only required if you have Redis running and want asynchronous OCR jobs:
 
 ```bash
 source venv/bin/activate
-python -m backend.worker.main
+python -m app.worker.main
 ```
 
 > **Note:** Without Redis, ingestion runs synchronously in the API process — this works fine for development and small document sets.
@@ -285,20 +299,3 @@ ocr/
 ```
 
 ---
-
-## Common Issues
-
-| Problem | Fix |
-|---|---|
-| `ModuleNotFoundError` on startup | Run `source venv/bin/activate` before any Python command |
-| Tesseract not found | Install `tesseract-ocr` and ensure it's on your `PATH` |
-| Hebrew OCR returns garbage | Confirm `tesseract-ocr-heb` language pack is installed |
-| ChromaDB dimension mismatch | Self-healing init will auto-delete and recreate the collection on next startup |
-| `Simulate` button disabled | You must place your evacuation origin pin on the map first |
-| Files stuck at `pending` | Check that the backend is running; without Redis the worker runs inline |
-
----
-
-## License
-
-This project is provided for evaluation and educational purposes.

@@ -108,6 +108,28 @@ export const api = {
   rag: {
     query: (body: { query: string; top_k?: number; workspace_id?: string }): Promise<RagAnswer> =>
       post('/query/', body),
+
+    /**
+     * Stream the RAG answer as SSE — same event protocol as emergency.simulateStream.
+     * Events: status("retrieving"|"streaming") | token(string) | result(RagAnswer) | error
+     */
+    queryStream: async (
+      body: { query: string; top_k?: number; workspace_id?: string },
+      signal?: AbortSignal,
+    ): Promise<ReadableStreamDefaultReader<Uint8Array>> => {
+      const res = await fetch(`${BASE}/query/stream`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+        signal,
+      });
+      if (!res.ok) {
+        const msg = await res.text().catch(() => res.statusText);
+        throw new Error(`${res.status}: ${msg}`);
+      }
+      if (!res.body) throw new Error('Response body is null');
+      return res.body.getReader();
+    },
   },
 
   sensors: {
@@ -148,14 +170,35 @@ export const api = {
   },
 
   emergency: {
-    simulate: (body: {
-      workspace_id: string;
-      sensor_id: string;
-      alert_level?: string;
-      override_query?: string;
-      origin_lat?: number;
-      origin_lng?: number;
-    }): Promise<EmergencySimResult> => post('/emergency/simulate', body),
+    /**
+     * Stream the emergency simulation as SSE.
+     * Returns a ReadableStreamDefaultReader<Uint8Array> the caller must drain.
+     * Pass an AbortSignal to cancel mid-stream (e.g. when the user clears the sim).
+     */
+    simulateStream: async (
+      body: {
+        workspace_id: string;
+        sensor_id: string;
+        alert_level?: string;
+        override_query?: string;
+        origin_lat?: number;
+        origin_lng?: number;
+      },
+      signal?: AbortSignal,
+    ): Promise<ReadableStreamDefaultReader<Uint8Array>> => {
+      const res = await fetch(`${BASE}/emergency/simulate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+        signal,
+      });
+      if (!res.ok) {
+        const msg = await res.text().catch(() => res.statusText);
+        throw new Error(`${res.status}: ${msg}`);
+      }
+      if (!res.body) throw new Error('Response body is null');
+      return res.body.getReader();
+    },
 
     getFeatures: (workspaceId: string, featureType?: string): Promise<GeoFeature[]> =>
       request(

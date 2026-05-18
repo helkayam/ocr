@@ -12,10 +12,18 @@ data/ocr/*
 data/chunks/*
 data/index/
 data/cache/
+data/registry.json
 !data/**/.gitkeep
 
-# SQLite databases
+# SQLite databases & WAL journal files
 *.sqlite3
+*.db
+*.db-shm
+*.db-wal
+
+# Local fallback storage (MinIO / SQLite not available)
+backend/local_storage/
+backend/local_data/
 
 # Logs & Cache
 *.log

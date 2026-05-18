@@ -1,32 +1,57 @@
-pydantic
-python-dotenv
-loguru
-pdfplumber
-pytesseract
-pillow
-pymupdf
-python-magic
-python-multipart
-sentence-transformers
-chromadb
-groq
-tenacity
+# ── Core framework ────────────────────────────────────────────────────────────
 fastapi
-uvicorn
-redis
-rq
+uvicorn[standard]         # includes uvloop, httptools, websockets for better perf
+python-multipart          # required by FastAPI for file upload / form data parsing
+
+# ── Data validation ───────────────────────────────────────────────────────────
+pydantic>=2.0             # v2 API used throughout: model_dump, model_validate, model_copy
+
+# ── CLI ───────────────────────────────────────────────────────────────────────
 click
-httpx
-rank_bm25
+
+# ── Logging ───────────────────────────────────────────────────────────────────
+loguru
+
+# ── OCR & document extraction ─────────────────────────────────────────────────
+pymupdf                   # import fitz — PDF rendering and image extraction
+pytesseract               # Hebrew OCR via Tesseract (requires tesseract-ocr-heb system pkg)
+pdfplumber                # structured PDF text + table extraction
+pillow                    # PIL.Image — used when rendering PDF pages to PNG
+python-magic              # MIME type detection (requires libmagic1 system package)
+pypdf                     # lightweight PDF reader used in nlp_service
+python-docx               # .docx text extraction (from docx import Document)
+
+# ── Embeddings & vector search ────────────────────────────────────────────────
+sentence-transformers     # intfloat/multilingual-e5-small — 384-dim bi-encoder
+chromadb                  # local persistent vector DB (data/index/)
+pysqlite3-binary          # upgraded sqlite3 required by ChromaDB at import time
+rank-bm25                 # BM25Okapi sparse index (from rank_bm25 import BM25Okapi)
+numpy                     # array ops for embeddings and sentence-transformers
+
+# ── LLM & retrieval APIs ──────────────────────────────────────────────────────
+openai                    # used for both OpenAI AND Groq (via its OpenAI-compatible URL)
+requests                  # Jina reranker HTTP calls (app/retrieval/reranker.py)
+tenacity                  # exponential backoff for LLM rate limits
+httpx                     # async HTTP client used by FastAPI internals / chromadb
+
+# ── Database ──────────────────────────────────────────────────────────────────
+psycopg2-binary           # PostgreSQL driver (auto-fallback to SQLite if unavailable)
+
+# ── Task queue ────────────────────────────────────────────────────────────────
+redis                     # Redis client (from redis import Redis)
+rq                        # Redis Queue worker (from rq import Queue, Worker)
+
+# ── File storage ──────────────────────────────────────────────────────────────
+minio                     # S3-compatible object storage (from minio import Minio)
+
+# ── Geo / GIS ─────────────────────────────────────────────────────────────────
+pyshp                     # Shapefile parsing (import shapefile)
+
+# ── Configuration ─────────────────────────────────────────────────────────────
+python-dotenv             # loads .env into os.environ (from dotenv import load_dotenv)
+
+# ── Reporting & evaluation ────────────────────────────────────────────────────
+tabulate                  # ASCII table output in evaluation reports
+
+# ── Testing ───────────────────────────────────────────────────────────────────
 pytest
-pysqlite3-binary
-requests
-# Protocol Genesis full-stack dependencies
-minio
-pypdf
-python-docx
-pyshp
-numpy
-psycopg2-binary
-tabulate
-openai

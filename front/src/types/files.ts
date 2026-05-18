@@ -181,6 +181,21 @@ export interface EmergencyEvent {
   created_at: string;
 }
 
+// ─── Streaming simulation ─────────────────────────────────────────────────────
+
+/**
+ * Phases emitted by the backend SSE stream during emergency simulation.
+ * Each phase maps to one of the four loading-stage indicators in SimulationOverlay.
+ */
+export type StreamPhase =
+  | 'idle'
+  | 'connecting'
+  | 'retrieving'
+  | 'streaming'
+  | 'analyzing'
+  | 'routing'
+  | 'done';
+
 // ─── Readiness Report ────────────────────────────────────────────────────────
 
 export interface ReadinessReport {

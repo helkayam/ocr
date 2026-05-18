@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import { useState, useRef } from 'react';
 import { api } from '@/lib/api';
 import { CitedSource, RagAnswer } from '@/types/files';
 import { Input } from '@/components/ui/input';
@@ -14,33 +13,94 @@ interface QueryBoxProps {
   onCitationClick?: (source: CitedSource) => void;
 }
 
+type QueryPhase = 'idle' | 'retrieving' | 'streaming' | 'done';
+
+/** Split a completed answer into body prose and the page-footer line. */
+function parseAnswer(answer: string): { body: string; footer: string | null } {
+  const marker = 'מספרי העמודים עליהם הסתמכתי';
+  const idx = answer.lastIndexOf(marker);
+  if (idx === -1) return { body: answer.trim(), footer: null };
+  return { body: answer.slice(0, idx).trim(), footer: answer.slice(idx).trim() };
+}
+
 export function QueryBox({ workspaceId, activeMapContext, onClearContext, onCitationClick }: QueryBoxProps) {
   const [query, setQuery] = useState('');
+  const [phase, setPhase] = useState<QueryPhase>('idle');
+  const [streamingText, setStreamingText] = useState('');
   const [ragAnswer, setRagAnswer] = useState<RagAnswer | null>(null);
-  const [searched, setSearched] = useState(false);
+  const abortRef = useRef<AbortController | null>(null);
 
-  const ragMutation = useMutation({
-    mutationFn: (q: string) => api.rag.query({ query: q, top_k: 5, workspace_id: workspaceId }),
-    onSuccess: (data) => setRagAnswer(data),
-  });
+  const isStreaming = phase === 'retrieving' || phase === 'streaming';
+  const hasResult   = phase === 'done' && ragAnswer !== null;
+  const searched    = phase !== 'idle';
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!query.trim()) return;
-    const raw = query.trim();
-    const q = activeMapContext ? `[Context: ${activeMapContext}] ${raw}` : raw;
-    setSearched(true);
-    ragMutation.mutate(q);
-  };
+    if (!query.trim() || isStreaming) return;
 
-  const parseAnswer = (answer: string) => {
-    const footerMarker = 'מספרי העמודים עליהם הסתמכתי';
-    const idx = answer.lastIndexOf(footerMarker);
-    if (idx === -1) return { body: answer.trim(), footer: null };
-    return {
-      body: answer.slice(0, idx).trim(),
-      footer: answer.slice(idx).trim(),
-    };
+    // Cancel any in-flight stream before starting a new one.
+    abortRef.current?.abort();
+    abortRef.current = new AbortController();
+
+    const raw = query.trim();
+    const q   = activeMapContext ? `[Context: ${activeMapContext}] ${raw}` : raw;
+
+    setPhase('retrieving');
+    setStreamingText('');
+    setRagAnswer(null);
+
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    try {
+      const reader = await api.rag.queryStream(
+        { query: q, top_k: 5, workspace_id: workspaceId },
+        abortRef.current.signal,
+      );
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const events = buffer.split('\n\n');
+        buffer = events.pop() ?? '';
+
+        for (const block of events) {
+          if (!block.trim()) continue;
+
+          let eventName = 'message';
+          let data = '';
+          for (const line of block.split('\n')) {
+            if (line.startsWith('event: ')) eventName = line.slice(7).trim();
+            else if (line.startsWith('data: ')) data = line.slice(6);
+          }
+
+          if (!data.trim()) continue;
+
+          try {
+            if (eventName === 'status') {
+              const s = JSON.parse(data) as string;
+              if (s === 'streaming') setPhase('streaming');
+            } else if (eventName === 'token') {
+              setStreamingText(prev => prev + (JSON.parse(data) as string));
+            } else if (eventName === 'result') {
+              setRagAnswer(JSON.parse(data) as RagAnswer);
+              setPhase('done');
+            } else if (eventName === 'error') {
+              const err = JSON.parse(data) as { detail: string };
+              throw new Error(err.detail);
+            }
+          } catch (parseErr) {
+            if (!(parseErr instanceof SyntaxError)) throw parseErr;
+          }
+        }
+      }
+    } catch (err) {
+      if ((err as Error).name !== 'AbortError') {
+        setPhase('done'); // stay in a visible state
+      }
+    }
   };
 
   return (
@@ -73,10 +133,7 @@ export function QueryBox({ workspaceId, activeMapContext, onClearContext, onCita
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             className="flex items-center gap-2 px-3 py-2 rounded-2xl border text-xs"
-            style={{
-              background: 'hsla(0,0%,97%,1)',
-              borderColor: 'hsla(0,84%,60%,0.25)',
-            }}
+            style={{ background: 'hsla(0,0%,97%,1)', borderColor: 'hsla(0,84%,60%,0.25)' }}
           >
             <MapPin className="h-3 w-3 shrink-0" style={{ color: 'hsl(0,84%,55%)' }} />
             <span className="font-semibold flex-1 truncate" style={{ color: 'hsl(0,84%,50%)' }}>
@@ -104,12 +161,12 @@ export function QueryBox({ workspaceId, activeMapContext, onClearContext, onCita
             placeholder="לדוגמה: מה לעשות במקרה של שריפה?"
             className="text-sm pr-4 pl-4 py-2.5 rounded-2xl border-0 bg-muted/60 focus-visible:ring-2 focus-visible:ring-primary/30"
             style={{ boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.06)' }}
-            disabled={ragMutation.isPending}
+            disabled={isStreaming}
           />
         </div>
         <motion.button
           type="submit"
-          disabled={ragMutation.isPending || !query.trim()}
+          disabled={isStreaming || !query.trim()}
           whileHover={{ scale: 1.06 }}
           whileTap={{ scale: 0.93 }}
           transition={{ type: 'spring', stiffness: 400, damping: 18 }}
@@ -119,7 +176,7 @@ export function QueryBox({ workspaceId, activeMapContext, onClearContext, onCita
             boxShadow: '0 4px 14px rgba(239,68,68,0.38), inset 0 1px 0 rgba(255,255,255,0.2)',
           }}
         >
-          {ragMutation.isPending
+          {isStreaming
             ? <Loader2 className="h-4 w-4 animate-spin" />
             : <Search className="h-4 w-4" />
           }
@@ -137,7 +194,8 @@ export function QueryBox({ workspaceId, activeMapContext, onClearContext, onCita
             transition={{ duration: 0.25 }}
             className="min-h-[80px]"
           >
-            {ragMutation.isPending ? (
+            {/* Retrieving phase — spinner only */}
+            {phase === 'retrieving' && (
               <div className="flex items-center gap-2.5 text-xs text-muted-foreground py-5 justify-center">
                 <div
                   className="p-1.5 rounded-lg"
@@ -145,38 +203,58 @@ export function QueryBox({ workspaceId, activeMapContext, onClearContext, onCita
                 >
                   <Loader2 className="h-3 w-3 text-white animate-spin" />
                 </div>
-                Generating Hebrew answer…
+                Retrieving context…
               </div>
-            ) : ragAnswer ? (
-              (() => {
-                const { body, footer } = parseAnswer(ragAnswer.answer);
-                return (
-                  <div
-                    className="space-y-3 p-4 rounded-2xl"
-                    style={{
-                      background: 'linear-gradient(135deg, hsla(0,0%,99%,0.95), hsla(0,0%,97%,0.95))',
-                      boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.05)',
-                    }}
-                  >
-                    <AnswerBody
-                      body={body}
-                      sources={ragAnswer.sources ?? []}
-                      onCitationClick={onCitationClick ?? (() => {})}
-                    />
-                    {footer && (
-                      <div
-                        dir="rtl"
-                        lang="he"
-                        className="text-xs text-muted-foreground pt-3 border-t"
-                        style={{ borderColor: 'hsl(0,0%,90%)' }}
-                      >
-                        {footer}
-                      </div>
-                    )}
-                  </div>
-                );
-              })()
-            ) : (
+            )}
+
+            {/* Streaming phase — live token output with cursor */}
+            {phase === 'streaming' && (
+              <div
+                dir="rtl"
+                lang="he"
+                className="text-sm text-slate-800 leading-relaxed text-right whitespace-pre-wrap p-4 rounded-2xl"
+                style={{
+                  background: 'linear-gradient(135deg, hsla(0,0%,99%,0.95), hsla(0,0%,97%,0.95))',
+                  boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.05)',
+                }}
+              >
+                {streamingText}
+                <span className="inline-block w-[2px] h-3.5 bg-red-400 ml-0.5 animate-pulse align-middle" />
+              </div>
+            )}
+
+            {/* Done — full AnswerBody with sources */}
+            {hasResult && (() => {
+              const { body, footer } = parseAnswer(ragAnswer!.answer);
+              return (
+                <div
+                  className="space-y-3 p-4 rounded-2xl"
+                  style={{
+                    background: 'linear-gradient(135deg, hsla(0,0%,99%,0.95), hsla(0,0%,97%,0.95))',
+                    boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.05)',
+                  }}
+                >
+                  <AnswerBody
+                    body={body}
+                    sources={ragAnswer!.sources ?? []}
+                    onCitationClick={onCitationClick ?? (() => {})}
+                  />
+                  {footer && (
+                    <div
+                      dir="rtl"
+                      lang="he"
+                      className="text-xs text-muted-foreground pt-3 border-t"
+                      style={{ borderColor: 'hsl(0,0%,90%)' }}
+                    >
+                      {footer}
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
+
+            {/* Done but no answer (error / empty result) */}
+            {phase === 'done' && !ragAnswer && (
               <p className="text-xs text-muted-foreground text-center py-4">
                 No answer returned. Try uploading indexed PDF documents first.
               </p>

@@ -7,14 +7,14 @@
  * The "Run Simulation" button is locked until `userEvacOrigin` is populated,
  * making user-origin selection a strict prerequisite for triggering the API.
  */
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   X, Zap, CheckCircle, MapPin, Navigation,
   ChevronDown, ChevronUp, Cpu, Crosshair,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Sensor, EmergencySimResult } from '@/types/files';
+import { Sensor, EmergencySimResult, StreamPhase } from '@/types/files';
 import { ThreeJSAlarm } from './ThreeJSAlarm';
 
 type Urgency = 'low' | 'medium' | 'high' | 'critical';
@@ -24,6 +24,8 @@ interface SimulationOverlayProps {
   simSensor: Sensor | null;
   simResult: EmergencySimResult | null;
   isLoading: boolean;
+  streamPhase: StreamPhase;
+  streamingText: string;
   userEvacOrigin: { lat: number; lng: number } | null;
   onSelectSensor: (sensor: Sensor) => void;
   onRunSimulation: () => void;
@@ -67,6 +69,17 @@ const LOADING_STAGES = [
   'מנתח פעולות נדרשות...',
   'מחשב מסלולי פינוי...',
 ];
+
+/** Maps each SSE status phase to a 0-based stage index in LOADING_STAGES. */
+const PHASE_TO_STAGE: Record<StreamPhase, number> = {
+  idle:       0,
+  connecting: 0,
+  retrieving: 0,
+  streaming:  1,
+  analyzing:  2,
+  routing:    3,
+  done:       4,
+};
 
 // ─── Phase views ──────────────────────────────────────────────────────────────
 
@@ -224,38 +237,45 @@ function OriginPickingView({
   );
 }
 
-function LoadingView({ sensor }: { sensor: Sensor }) {
-  const [stageIdx, setStageIdx] = useState(0);
-  useEffect(() => {
-    setStageIdx(0);
-    const delays = [1500, 3200, 5200];
-    const timers = delays.map((d, i) => setTimeout(() => setStageIdx(i + 1), d));
-    return () => timers.forEach(clearTimeout);
-  }, []);
+function LoadingView({
+  sensor,
+  streamPhase,
+  streamingText,
+}: {
+  sensor: Sensor;
+  streamPhase: StreamPhase;
+  streamingText: string;
+}) {
   const meta = SENSOR_META[sensor.sensor_type] ?? SENSOR_META.SIREN;
+  // Derive stage index directly from the live SSE phase — no artificial timers.
+  const stageIdx = PHASE_TO_STAGE[streamPhase] ?? 0;
+
   return (
-    <div className="flex-1 flex flex-col items-center justify-center gap-6 p-8">
-      <div className="flex flex-col items-center gap-2">
-        <ThreeJSAlarm active size={160} urgency="high" />
-        <p className="text-2xl">{meta.emoji}</p>
+    <div className="flex-1 flex flex-col items-center gap-4 p-5 overflow-hidden">
+      {/* Alarm + sensor label */}
+      <div className="flex flex-col items-center gap-1 shrink-0">
+        <ThreeJSAlarm active size={120} urgency="high" />
+        <p className="text-xl">{meta.emoji}</p>
       </div>
-      <div className="text-center space-y-1" dir="rtl">
+      <div className="text-center space-y-0.5 shrink-0" dir="rtl">
         <p className="text-sm font-bold text-orange-500 tracking-widest">סימולציה פעילה</p>
-        <p className="text-base font-semibold text-slate-900">{sensor.name}</p>
+        <p className="text-sm font-semibold text-slate-900">{sensor.name}</p>
         <p className="text-xs text-slate-500">{meta.label}</p>
       </div>
-      <div className="w-full space-y-2" dir="rtl">
+
+      {/* Stage indicators — driven by real SSE phase, zero artificial delay */}
+      <div className="w-full space-y-1.5 shrink-0" dir="rtl">
         {LOADING_STAGES.map((stage, i) => (
           <motion.div
             key={stage}
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: i <= stageIdx ? 1 : 0.25, x: 0 }}
-            transition={{ delay: i * 0.05 }}
+            transition={{ delay: i * 0.04 }}
             className={cn(
               'flex items-center gap-2 text-xs px-3 py-2 rounded-lg',
               i < stageIdx   && 'bg-green-50 text-green-700 border border-green-200',
               i === stageIdx && 'bg-orange-50 text-orange-700 border border-orange-200',
-              i > stageIdx   && 'text-slate-400'
+              i > stageIdx   && 'text-slate-400',
             )}
           >
             <span className="flex-1 text-right">{stage}</span>
@@ -265,6 +285,19 @@ function LoadingView({ sensor }: { sensor: Sensor }) {
           </motion.div>
         ))}
       </div>
+
+      {/* Live RAG answer — streams in token by token as Groq yields chunks */}
+      {streamingText && (
+        <div
+          dir="rtl"
+          className="w-full flex-1 min-h-0 overflow-y-auto rounded-lg bg-white border border-slate-200 px-3 py-2.5 text-xs text-slate-700 leading-relaxed text-right"
+        >
+          {streamingText}
+          {streamPhase === 'streaming' && (
+            <span className="inline-block w-[2px] h-3 bg-orange-400 ml-0.5 animate-pulse align-middle" />
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -427,6 +460,8 @@ export function SimulationOverlay({
   simSensor,
   simResult,
   isLoading,
+  streamPhase,
+  streamingText,
   userEvacOrigin,
   onSelectSensor,
   onRunSimulation,
@@ -486,7 +521,7 @@ export function SimulationOverlay({
       <AnimatePresence mode="wait">
         {phase === 'loading' && simSensor ? (
           <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex-1 flex flex-col">
-            <LoadingView sensor={simSensor} />
+            <LoadingView sensor={simSensor} streamPhase={streamPhase} streamingText={streamingText} />
           </motion.div>
         ) : phase === 'result' && simResult ? (
           <motion.div key="result" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex-1 flex flex-col">

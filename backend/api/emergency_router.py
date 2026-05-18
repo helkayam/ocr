@@ -2,22 +2,22 @@
 Emergency Simulation API endpoints:
   - Geo features CRUD (typed emergency POIs)
   - Sensor location update
-  - Simulation trigger
+  - Simulation trigger (streaming SSE)
   - Event history
 """
 from __future__ import annotations
 
+import json
 from typing import List, Optional
 
 from fastapi import APIRouter, HTTPException, status
+from fastapi.responses import StreamingResponse
 
 from api.schemas import (
     GeoFeatureCreate,
     GeoFeatureOut,
     SensorLocationUpdate,
     EmergencySimRequest,
-    IntentOut,
-    EmergencySimResponse,
     EmergencyEventOut,
 )
 from services import emergency_service, geo_service, sensor_service
@@ -64,35 +64,40 @@ def update_sensor_location(sensor_id: str, body: SensorLocationUpdate):
     return s
 
 
-# ── Simulation ────────────────────────────────────────────────────────────────
+# ── Simulation (SSE streaming) ────────────────────────────────────────────────
 
-@router.post("/simulate", response_model=EmergencySimResponse)
-def simulate_emergency(req: EmergencySimRequest):
-    try:
-        result = emergency_service.simulate(
-            workspace_id=req.workspace_id,
-            sensor_id=req.sensor_id,
-            alert_level=req.alert_level,
-            override_query=req.override_query,
-            origin_lat=req.origin_lat,
-            origin_lng=req.origin_lng,
-        )
-    except ValueError as exc:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc))
-    except Exception as exc:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(exc)
-        )
-    return EmergencySimResponse(
-        event_id=result["event_id"],
-        sensor=result["sensor"],
-        alert_level=result["alert_level"],
-        rag_query=result["rag_query"],
-        rag_answer=result["rag_answer"],
-        rag_sources=result.get("rag_sources", []),
-        intent=IntentOut(**result["intent"]),
-        nearest_feature=result.get("nearest_feature"),
-        directive=result["directive"],
+@router.post("/simulate")
+def simulate_emergency(req: EmergencySimRequest) -> StreamingResponse:
+    """
+    Stream the emergency simulation as Server-Sent Events.
+
+    Event types emitted (all data values are JSON-encoded strings):
+      status  — one of: connecting | retrieving | streaming | analyzing | routing
+      token   — a single incremental text chunk from the LLM RAG generation
+      result  — final JSON payload with the complete EmergencySimResult structure
+      error   — unrecoverable error message; stream ends immediately after
+    """
+    def gen():
+        try:
+            yield from emergency_service.simulate_stream(
+                workspace_id=req.workspace_id,
+                sensor_id=req.sensor_id,
+                alert_level=req.alert_level,
+                override_query=req.override_query,
+                origin_lat=req.origin_lat,
+                origin_lng=req.origin_lng,
+            )
+        except Exception as exc:
+            yield f"event: error\ndata: {json.dumps({'detail': str(exc)})}\n\n"
+
+    return StreamingResponse(
+        gen(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",
+            "Connection": "keep-alive",
+        },
     )
 
 

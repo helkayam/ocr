@@ -8,9 +8,9 @@
  *   3. User clicks "Run"      → mutation fires with origin_lat/lng
  *   Routing from sensor coords is impossible; origin is always user-supplied.
  */
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { AnimatePresence, motion } from 'framer-motion';
 import type { Feature, Geometry, GeoJsonProperties } from 'geojson';
 import { Header } from '@/components/Header';
@@ -18,7 +18,7 @@ import { MapComponent } from '@/components/MapComponent';
 import { api } from '@/lib/api';
 import { toast } from 'sonner';
 import { ArrowLeft, Plus, Upload, Cpu, Zap, Crosshair, MapPin, X } from 'lucide-react';
-import { Sensor, SensorType, EmergencySimResult } from '@/types/files';
+import { Sensor, SensorType, EmergencySimResult, StreamPhase } from '@/types/files';
 import { SimulationOverlay } from '@/components/sim/SimulationOverlay';
 import { AlarmWidget } from '@/components/sim/AlarmWidget';
 import { AddEntityPanel } from '@/components/sim/AddEntityPanel';
@@ -142,6 +142,12 @@ export default function MapView() {
   const [simResult, setSimResult] = useState<EmergencySimResult | null>(null);
   const [flyToCoord, setFlyToCoord] = useState<[number, number] | null>(null);
 
+  // ── Streaming state ────────────────────────────────────────────────────────
+  const [isStreaming, setIsStreaming] = useState(false);
+  const [streamPhase, setStreamPhase] = useState<StreamPhase>('idle');
+  const [streamingText, setStreamingText] = useState('');
+  const abortRef = useRef<AbortController | null>(null);
+
   // ── Mutations ──────────────────────────────────────────────────────────────
   const addSensorMutation = useMutation({
     mutationFn: api.sensors.create,
@@ -175,26 +181,12 @@ export default function MapView() {
     onSuccess: () => refetchGeoFeatures(),
   });
 
-  // Accepts explicit origin coords — sensor coords are never used for routing.
-  const simulateMutation = useMutation({
-    mutationFn: ({ sensor, origin }: { sensor: Sensor; origin: { lat: number; lng: number } }) =>
-      api.emergency.simulate({
-        workspace_id: id!,
-        sensor_id: sensor.sensor_id,
-        origin_lat: origin.lat,
-        origin_lng: origin.lng,
-      }),
-    onSuccess: data => {
-      setSimResult(data);
-      toast.success('Simulation complete');
-    },
-    onError: () => toast.error('Simulation failed'),
-  });
+  // No simulateMutation — simulation now uses SSE streaming via handleRunSimulation.
 
   // True while the sim panel is open, a sensor is staged, and we haven't fired yet.
   // During this phase, map clicks set the evacuation origin instead of placing entities.
   const originPickingMode =
-    simPanelOpen && simSensor !== null && !simulateMutation.isPending && simResult === null;
+    simPanelOpen && simSensor !== null && !isStreaming && simResult === null;
 
   // Draw the evacuation route from the USER'S origin, never from the sensor.
   const evacuationRoute = useMemo(() => {
@@ -234,23 +226,105 @@ export default function MapView() {
   };
 
   // Step 3: called by "Run Simulation" button — only reachable when origin is set.
-  const handleRunSimulation = () => {
-    if (!simSensor || !userEvacOrigin) return;
-    simulateMutation.mutate({ sensor: simSensor, origin: userEvacOrigin });
+  // Consumes the SSE stream: updates streamPhase + streamingText on every event,
+  // then resolves simResult when the final "result" event arrives.
+  const handleRunSimulation = async () => {
+    if (!simSensor || !userEvacOrigin || !id) return;
+
+    abortRef.current = new AbortController();
+    setIsStreaming(true);
+    setStreamPhase('connecting');
+    setStreamingText('');
+    setSimResult(null);
+
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    try {
+      const reader = await api.emergency.simulateStream(
+        {
+          workspace_id: id,
+          sensor_id: simSensor.sensor_id,
+          origin_lat: userEvacOrigin.lat,
+          origin_lng: userEvacOrigin.lng,
+        },
+        abortRef.current.signal,
+      );
+
+      // Drain the SSE stream until the server closes it.
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+
+        // SSE events are separated by a blank line (\n\n).
+        const events = buffer.split('\n\n');
+        buffer = events.pop() ?? '';
+
+        for (const block of events) {
+          if (!block.trim()) continue;
+
+          let eventName = 'message';
+          let data = '';
+          for (const line of block.split('\n')) {
+            if (line.startsWith('event: ')) eventName = line.slice(7).trim();
+            else if (line.startsWith('data: ')) data = line.slice(6);
+          }
+
+          // Skip blocks with no data payload — JSON.parse('') throws.
+          if (!data.trim()) continue;
+
+          try {
+            if (eventName === 'status') {
+              setStreamPhase(JSON.parse(data) as StreamPhase);
+            } else if (eventName === 'token') {
+              const chunk = JSON.parse(data) as string;
+              setStreamingText(prev => prev + chunk);
+            } else if (eventName === 'result') {
+              const result = JSON.parse(data) as EmergencySimResult;
+              setSimResult(result);
+              setStreamPhase('done');
+              toast.success('Simulation complete');
+            } else if (eventName === 'error') {
+              const err = JSON.parse(data) as { detail: string };
+              throw new Error(err.detail);
+            }
+          } catch (parseErr) {
+            // Re-throw intentional errors; swallow corrupt SSE frames.
+            if ((parseErr as Error).message && !(parseErr instanceof SyntaxError)) throw parseErr;
+          }
+        }
+      }
+    } catch (err) {
+      if ((err as Error).name !== 'AbortError') {
+        toast.error('Simulation failed');
+      }
+    } finally {
+      setIsStreaming(false);
+    }
   };
 
   // Reset sensor selection back to the picker phase.
   const handleResetSensor = () => {
+    abortRef.current?.abort();
     setSimSensor(null);
     setUserEvacOrigin(null);
     setSimResult(null);
+    setStreamingText('');
+    setStreamPhase('idle');
+    setIsStreaming(false);
   };
 
   // Full clear: wipes all simulation state and closes the panel.
   const handleClearSimulation = () => {
+    abortRef.current?.abort();
     setSimSensor(null);
     setUserEvacOrigin(null);
     setSimResult(null);
+    setStreamingText('');
+    setStreamPhase('idle');
+    setIsStreaming(false);
     setSimPanelOpen(false);
   };
 
@@ -386,7 +460,7 @@ export default function MapView() {
             icon={Zap}
             label="Sim"
             prominent
-            pulse={simulateMutation.isPending}
+            pulse={isStreaming}
             onClick={() => {
               if (simPanelOpen) { setSimPanelOpen(false); } else openPanel('sim');
             }}
@@ -412,11 +486,11 @@ export default function MapView() {
 
         {/* ── Alarm widget — visible when sim panel is closed ─────────────── */}
         <AnimatePresence>
-          {(simResult || simulateMutation.isPending) && !simPanelOpen && (
+          {(simResult || isStreaming) && !simPanelOpen && (
             <AlarmWidget
               sensor={simSensor}
               result={simResult}
-              isLoading={simulateMutation.isPending}
+              isLoading={isStreaming}
               onClick={() => openPanel('sim')}
               onClear={handleClearSimulation}
             />
@@ -430,7 +504,9 @@ export default function MapView() {
               sensors={sensors}
               simSensor={simSensor}
               simResult={simResult}
-              isLoading={simulateMutation.isPending}
+              isLoading={isStreaming}
+              streamPhase={streamPhase}
+              streamingText={streamingText}
               userEvacOrigin={userEvacOrigin}
               onSelectSensor={handleSelectSensor}
               onRunSimulation={handleRunSimulation}

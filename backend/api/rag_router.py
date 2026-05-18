@@ -5,17 +5,23 @@ document_id == file_id so no additional mapping table is needed.
 """
 from __future__ import annotations
 
+import json
 import tempfile
 from pathlib import Path
 from typing import List
 
 from fastapi import APIRouter, BackgroundTasks, File, Form, HTTPException, UploadFile, status
+from fastapi.responses import StreamingResponse
 
 from app import pipeline
 import app.registry as rag_registry
 from app.ingest import manager as ingest_manager
 from app.worker.tasks import process_document
 from .schemas import BBoxOut, CitedSourceOut, DocumentOut, IngestResponse, QueryRequest, QueryResponse
+
+
+def _sse(event: str, data: str) -> str:
+    return f"event: {event}\ndata: {data}\n\n"
 
 
 # ---------------------------------------------------------------------------
@@ -82,6 +88,81 @@ async def upload_document(
 # ---------------------------------------------------------------------------
 # POST /query/
 # ---------------------------------------------------------------------------
+
+@query_router.post("/query/stream")
+def stream_query_documents(req: QueryRequest) -> StreamingResponse:
+    """
+    Stream the RAG answer as Server-Sent Events — same protocol as /emergency/simulate.
+
+    Events emitted:
+      status  — "retrieving" | "streaming"
+      token   — incremental text chunk from the LLM
+      result  — final JSON: {query, answer, sources: CitedSourceOut[]}
+      error   — unrecoverable error; stream ends immediately
+    """
+    def gen():
+        try:
+            from app.retrieval.search import hybrid_search
+            from app.rag.generator import stream_tokens
+
+            yield _sse("status", json.dumps("retrieving"))
+            context = []
+            try:
+                context = hybrid_search(req.query, top_k=req.top_k, workspace_id=req.workspace_id)
+            except Exception as exc:
+                from loguru import logger
+                logger.error("QueryStream: retrieval failed — {}", exc)
+
+            # Build sources now (before streaming) so we can include them in the result.
+            sources_out = []
+            for r in context:
+                rec = rag_registry.get(r.document_id)
+                file_name = rec.file_name if rec else r.document_id
+                bbox = (
+                    {"y_top": r.bbox.y_top, "y_bottom": r.bbox.y_bottom,
+                     "page_width": r.bbox.page_width, "page_height": r.bbox.page_height}
+                    if r.bbox else None
+                )
+                sources_out.append({
+                    "document_id": r.document_id,
+                    "file_name": file_name,
+                    "page_num": r.page_num,
+                    "chunk_id": r.chunk_id,
+                    "text_snippet": r.text[:300],
+                    "bbox": bbox,
+                })
+
+            yield _sse("status", json.dumps("streaming"))
+            full_answer = ""
+            try:
+                for delta in stream_tokens(req.query, context):
+                    full_answer += delta
+                    yield _sse("token", json.dumps(delta))
+            except Exception as exc:
+                from loguru import logger
+                logger.error("QueryStream: LLM streaming failed — {}", exc)
+                fallback = "המידע המבוקש לא נמצא במסמכים שסופקו."
+                full_answer = fallback
+                yield _sse("token", json.dumps(fallback))
+
+            yield _sse("result", json.dumps({
+                "query": req.query,
+                "answer": full_answer,
+                "sources": sources_out,
+            }))
+        except Exception as exc:
+            yield _sse("error", json.dumps({"detail": str(exc)}))
+
+    return StreamingResponse(
+        gen(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",
+            "Connection": "keep-alive",
+        },
+    )
+
 
 @query_router.post("/query/", response_model=QueryResponse)
 def query_documents(req: QueryRequest):

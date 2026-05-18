@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 import time
-from typing import List, Optional
+from typing import Generator, List, Optional
 
 import openai
 from dotenv import load_dotenv
@@ -114,6 +114,30 @@ def _call_llm(client: openai.OpenAI, model: str, messages: list) -> str:
 # ---------------------------------------------------------------------------
 # Public API
 # ---------------------------------------------------------------------------
+
+def stream_tokens(query: str, context: List[SearchResult]) -> Generator[str, None, None]:
+    """Yield raw LLM text deltas for *query* given retrieved *context* chunks.
+
+    Shared by the emergency simulation and the SOP query stream endpoints —
+    both perform retrieval independently and call this for the LLM streaming step.
+    """
+    client, model = _get_client()
+    user_message = _build_user_message(query, context)
+    stream = client.chat.completions.create(
+        model=model,
+        messages=[
+            {"role": "system", "content": _SYSTEM_PROMPT},
+            {"role": "user", "content": user_message},
+        ],
+        temperature=0.1,
+        stream=True,
+    )
+    for chunk in stream:
+        if chunk.choices:
+            delta = chunk.choices[0].delta.content
+            if delta:
+                yield delta
+
 
 def generate(query: str, context: List[SearchResult]) -> RAGResponse:
     """Generate a grounded Hebrew answer from *context* for *query*."""
