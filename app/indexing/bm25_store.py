@@ -1,4 +1,5 @@
 import json
+import threading
 from pathlib import Path
 from typing import Optional
 
@@ -12,6 +13,21 @@ except ImportError as _exc:
     ) from _exc
 
 _CORPUS_FILE = "bm25_corpus.json"
+
+# Module-level write locks keyed by resolved corpus path.
+# Each BM25Store is instantiated fresh per pipeline run, so per-instance locks
+# would be different objects and would NOT prevent concurrent writes from two
+# pipeline threads.  This registry ensures all instances sharing the same file
+# acquire the same lock before any read-modify-write cycle.
+_path_locks: dict[Path, threading.Lock] = {}
+_path_locks_guard = threading.Lock()
+
+
+def _get_path_lock(corpus_path: Path) -> threading.Lock:
+    with _path_locks_guard:
+        if corpus_path not in _path_locks:
+            _path_locks[corpus_path] = threading.Lock()
+        return _path_locks[corpus_path]
 
 
 def _tokenize(text: str) -> list[str]:
@@ -46,14 +62,23 @@ class BM25Store:
         # list[{"chunk_id": str, "document_id": str, "workspace_id": str, "text": str}]
         self._corpus: list[dict] = []
         self._bm25: Optional[BM25Okapi] = None
+        # Shared across ALL BM25Store instances that target the same file so that
+        # concurrent pipeline threads serialise their read-modify-write cycles.
+        self._lock = _get_path_lock(self._corpus_path)
         self._load()
 
     # ── persistence ──────────────────────────────────────────────────────────
 
-    def _load(self) -> None:
+    def _load_locked(self) -> None:
+        """Read corpus from disk. Must be called with self._lock held."""
         if not self._corpus_path.exists():
+            self._corpus = []
             return
         self._corpus = json.loads(self._corpus_path.read_text(encoding="utf-8"))
+
+    def _load(self) -> None:
+        """Initial load at construction time (no lock needed — object not yet shared)."""
+        self._load_locked()
         self._rebuild()
         logger.debug("BM25: loaded {} entries from corpus", len(self._corpus))
 
@@ -80,11 +105,15 @@ class BM25Store:
         and ``text``.  Existing entries with the same chunk_id are replaced.
         A single corpus rebuild happens after all entries are inserted.
         """
-        new_ids = {e["chunk_id"] for e in entries}
-        self._corpus = [c for c in self._corpus if c["chunk_id"] not in new_ids]
-        self._corpus.extend(entries)
-        self._rebuild()
-        self._save()
+        with self._lock:
+            # Re-load from disk so we merge against the latest state written by
+            # any other thread that completed between our __init__ and now.
+            self._load_locked()
+            new_ids = {e["chunk_id"] for e in entries}
+            self._corpus = [c for c in self._corpus if c["chunk_id"] not in new_ids]
+            self._corpus.extend(entries)
+            self._rebuild()
+            self._save()
         logger.debug(
             "BM25: upserted {} entries — corpus total: {}",
             len(entries), len(self._corpus),
@@ -92,12 +121,14 @@ class BM25Store:
 
     def delete_document(self, document_id: str) -> int:
         """Remove all chunks belonging to *document_id*.  Returns count removed."""
-        before       = len(self._corpus)
-        self._corpus = [c for c in self._corpus if c["document_id"] != document_id]
-        removed      = before - len(self._corpus)
-        if removed:
-            self._rebuild()
-            self._save()
+        with self._lock:
+            self._load_locked()
+            before       = len(self._corpus)
+            self._corpus = [c for c in self._corpus if c["document_id"] != document_id]
+            removed      = before - len(self._corpus)
+            if removed:
+                self._rebuild()
+                self._save()
         logger.info("BM25: removed {} entries for document_id={}", removed, document_id)
         return removed
 
@@ -134,10 +165,11 @@ class BM25Store:
 
     def reset(self) -> None:
         """Erase all data from memory and disk."""
-        self._corpus = []
-        self._bm25   = None
-        if self._corpus_path.exists():
-            self._corpus_path.unlink()
+        with self._lock:
+            self._corpus = []
+            self._bm25   = None
+            if self._corpus_path.exists():
+                self._corpus_path.unlink()
         logger.info("BM25: index reset")
 
     @property

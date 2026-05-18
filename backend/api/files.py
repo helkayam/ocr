@@ -1,6 +1,7 @@
 import mimetypes
 import os
 import tempfile
+import threading
 import uuid
 from pathlib import Path
 
@@ -8,6 +9,12 @@ from fastapi import APIRouter, BackgroundTasks, HTTPException, Query, Request
 from fastapi.responses import FileResponse
 from loguru import logger
 from typing import Optional, List
+
+# Limit concurrent RAG pipeline executions to 2.
+# OCR + embedding are CPU-heavy; beyond 2 concurrent jobs a VPS stalls and
+# all tasks appear frozen.  The semaphore is acquired before processing starts
+# and released once the pipeline completes (or errors), keeping queue depth bounded.
+_pipeline_sem = threading.Semaphore(2)
 
 from .schemas import (
     FileItem,
@@ -32,19 +39,27 @@ router = APIRouter(prefix="/files", tags=["files"])
 
 
 def _run_rag_pipeline(file_id: str, workspace_id: str = "__legacy__") -> None:
-    """Run the RAG pipeline for an already-ingested document."""
+    """Run the RAG pipeline for an already-ingested document.
+
+    Acquires _pipeline_sem before starting so at most 2 pipelines run
+    concurrently, preventing CPU/memory exhaustion on the VPS.
+    """
     from app.worker.tasks import process_document
 
-    try:
-        process_document(file_id, workspace_id=workspace_id)
-    except Exception:
-        logger.exception("[rag_bridge] RAG processing failed for {}", file_id)
+    logger.info("[rag_bridge] Waiting for pipeline slot — file_id={}", file_id)
+    with _pipeline_sem:
+        logger.info("[rag_bridge] Pipeline slot acquired — file_id={}", file_id)
         try:
-            import app.registry as rag_registry
-            from app.models import DocumentStatus
-            rag_registry.update_status(file_id, DocumentStatus.error)
+            process_document(file_id, workspace_id=workspace_id)
         except Exception:
-            logger.warning("[rag_bridge] Could not mark {} as error in registry", file_id)
+            logger.exception("[rag_bridge] RAG processing failed for {}", file_id)
+            try:
+                import app.registry as rag_registry
+                from app.models import DocumentStatus
+                rag_registry.update_status(file_id, DocumentStatus.error)
+            except Exception:
+                logger.warning("[rag_bridge] Could not mark {} as error in registry", file_id)
+    logger.info("[rag_bridge] Pipeline slot released — file_id={}", file_id)
 
 
 # ─── Upload flow ─────────────────────────────────────────────────────────────

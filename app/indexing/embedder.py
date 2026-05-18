@@ -1,4 +1,5 @@
 import os
+import threading
 from typing import Optional
 
 from loguru import logger
@@ -9,18 +10,23 @@ MODEL_NAME = "intfloat/multilingual-e5-small"
 _PASSAGE_PREFIX = "passage: "
 
 _model: Optional[SentenceTransformer] = None
+_model_lock = threading.Lock()
 
 
 def get_model() -> SentenceTransformer:
     """Lazy-load and cache the embedding model (loaded once per process)."""
     global _model
-    if _model is None:
-        # Force local cache — skip all Hugging Face Hub network checks
-        os.environ.setdefault("TRANSFORMERS_OFFLINE", "1")
-        os.environ.setdefault("HF_HUB_OFFLINE", "1")
-        logger.info("Loading embedding model: {}", MODEL_NAME)
-        _model = SentenceTransformer(MODEL_NAME)
-        logger.info("Embedding model loaded")
+    # Fast path — model already loaded, no lock needed (assignment is atomic in CPython).
+    if _model is not None:
+        return _model
+    with _model_lock:
+        # Re-check under the lock in case another thread loaded while we waited.
+        if _model is None:
+            os.environ.setdefault("TRANSFORMERS_OFFLINE", "1")
+            os.environ.setdefault("HF_HUB_OFFLINE", "1")
+            logger.info("Loading embedding model: {}", MODEL_NAME)
+            _model = SentenceTransformer(MODEL_NAME)
+            logger.info("Embedding model loaded")
     return _model
 
 

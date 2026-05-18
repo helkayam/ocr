@@ -115,6 +115,9 @@ def _sqlite_conn() -> sqlite3.Connection:
         conn = sqlite3.connect(
             _sqlite_path,
             detect_types=sqlite3.PARSE_DECLTYPES,
+            # Wait up to 30 s for a write lock instead of raising immediately.
+            # Default is 5 s, which is too short under concurrent pipeline threads.
+            timeout=30,
         )
         conn.row_factory = sqlite3.Row
         conn.execute("PRAGMA journal_mode=WAL")
