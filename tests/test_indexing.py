@@ -120,27 +120,27 @@ class TestGetCollection:
 class TestToChromaMetadata:
     def test_all_required_keys_present(self):
         chunk = _make_chunk("c-1", is_header=True, block_type="table")
-        meta = indexer._to_chroma_metadata(chunk)
+        meta = indexer._to_chroma_metadata(chunk, "ws-test")
         for key in ("document_id", "page_num", "block_id", "is_header", "block_type", "extra"):
             assert key in meta
 
     def test_values_are_scalar(self):
         chunk = _make_chunk("c-1")
         chunk.metadata.extra = {"header_block_ids": [0, 1]}
-        meta = indexer._to_chroma_metadata(chunk)
+        meta = indexer._to_chroma_metadata(chunk, "ws-test")
         for v in meta.values():
             assert isinstance(v, (str, int, float, bool)), f"Non-scalar value: {v!r}"
 
     def test_extra_serialised_as_json_string(self):
         chunk = _make_chunk("c-1")
         chunk.metadata.extra = {"header_block_ids": [2, 3]}
-        meta = indexer._to_chroma_metadata(chunk)
+        meta = indexer._to_chroma_metadata(chunk, "ws-test")
         parsed = json.loads(meta["extra"])
         assert parsed["header_block_ids"] == [2, 3]
 
     def test_is_header_bool(self):
         chunk = _make_chunk("c-1", is_header=True)
-        assert indexer._to_chroma_metadata(chunk)["is_header"] is True
+        assert indexer._to_chroma_metadata(chunk, "ws-test")["is_header"] is True
 
 
 # ---------------------------------------------------------------------------

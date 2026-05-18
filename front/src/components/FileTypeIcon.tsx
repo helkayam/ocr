@@ -1,4 +1,4 @@
-import { FileText, FileType2, Map, Layers } from 'lucide-react';
+import { FileText, FileType2, Map } from 'lucide-react';
 import { FileType } from '@/types/files';
 import { cn } from '@/lib/utils';
 
@@ -12,7 +12,6 @@ const iconConfig: Record<FileType, { icon: typeof FileText; colorClass: string }
   pdf: { icon: FileText, colorClass: 'text-red-500' },
   docx: { icon: FileType2, colorClass: 'text-blue-500' },
   geojson: { icon: Map, colorClass: 'text-green-500' },
-  shapefile: { icon: Layers, colorClass: 'text-orange-500' },
 };
 
 const sizeConfig = {

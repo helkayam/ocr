@@ -1,24 +1,10 @@
 from fastapi import APIRouter
-from pydantic import BaseModel
 from typing import List
 
+from .schemas import SearchRequest, SearchResult
 from services.nlp_service import search_chunks
 
 router = APIRouter(prefix="/search", tags=["search"])
-
-
-class SearchRequest(BaseModel):
-    workspace_id: str
-    query: str
-    top_k: int = 5
-
-
-class SearchResult(BaseModel):
-    chunk_id: str
-    file_id: str
-    filename: str
-    content: str
-    score: float
 
 
 @router.post("", response_model=List[SearchResult])

@@ -114,6 +114,70 @@ cd ..
 
 ---
 
+## 🧪 Verification & Testing Guide
+
+Once the backend and frontend are running, use the steps below to verify that both core features work end-to-end.
+
+### 1. RAG & OCR Pipeline
+
+#### Via CLI
+
+All commands require the virtual environment to be active.
+
+```bash
+source venv/bin/activate
+
+# Step 1 — Ingest a PDF (triggers OCR → chunking → indexing)
+python main.py ingest path/to/your/file.pdf
+
+# Step 2 — Query the indexed document
+python main.py ask "your question here"
+# Example Hebrew query:
+python main.py ask "מהן דרישות הבטיחות לפי סעיף 4?"
+```
+
+The system returns a **Hebrew-only response** with inline `(עמוד X)` page citations and a footer listing all referenced page numbers. If the answer cannot be grounded in the document, it replies: `"המידע המבוקש לא נמצא במסמכים שסופקו."` — it will never hallucinate.
+
+#### Via Web UI
+
+| Step | Action | Detail |
+|---|---|---|
+| 1 | Open `http://localhost:5173` | Requires the Vite dev server to be running |
+| 2 | Create a Workspace | Click **New Workspace**, enter a name (e.g., `"Safety Protocols Q2"`) |
+| 3 | Upload a PDF | Drag-and-drop a Hebrew or English PDF into the upload area; select a geo layer category if the file contains spatial data |
+| 4 | Monitor the status badge | The badge polls every 3 s and advances through four stages: `pending` → `ocr_completed` → `chunked` → `indexed` |
+| 5 | Query | Once the badge reaches **`indexed`**, type a question in the QueryBox — the answer appears as Hebrew prose with page citations |
+
+> **What to check:** If the badge stalls at `ocr_completed` or `chunked` for more than 60 s, inspect the backend terminal for `loguru` error messages — common causes are a missing Tesseract `heb` pack or a corrupt PDF.
+
+---
+
+### 2. Emergency Geo-Simulation
+
+The simulation pipeline runs: **RAG query → intent extraction → Haversine geo-routing → Hebrew directive generation**.
+
+> **Hard Architectural Rule:** A user-supplied evacuation origin is mandatory. The "Simulate" button is intentionally **disabled** until an origin pin is placed. The system will **never** fall back to the sensor's coordinates as a routing origin.
+
+**Step-by-step:**
+
+1. Navigate to **Map View** for your workspace (`/workspaces/{id}/map`).
+2. **Place the Evacuation Origin Pin 📍** — click anywhere on the map to set your starting position. The pin confirms your location; the "Simulate" button becomes active only after this step.
+3. **Select an active sensor** from the side panel (sensor type: `SIREN`, `TERRORIST`, or `HAZMAT`).
+4. Click **Simulate**.
+5. Inspect the **Emergency Result Card** for the following fields:
+
+| Field | What it tells you |
+|---|---|
+| **Intent / Action** | LLM-extracted action from the RAG answer (e.g., `evacuate`, `shelter_in_place`) |
+| **Target Type** | Canonical geo-feature type the intent maps to (e.g., `shelter`, `exit`) |
+| **Urgency** | Extracted urgency level (`low` / `medium` / `high` / `critical`) |
+| **Nearest Feature** | Label of the closest matching geo-feature, distance in metres (Haversine from your origin pin) |
+| **Directive** | Generated Hebrew evacuation instruction combining all of the above |
+
+> **What to check:** If the Result Card is empty or the directive is missing, verify that geo-features of the relevant type exist in the workspace (add them via the **Geo Feature Manager** panel) and that the workspace has at least one indexed document for the RAG step to draw from.
+
+---
+
 ## Environment Configuration
 
 Create a `.env` file in the **project root** (next to `main.py`):

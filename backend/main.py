@@ -5,9 +5,10 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from fastapi import FastAPI
+from loguru import logger
 from fastapi.middleware.cors import CORSMiddleware
 from api import workspaces, files
-from api import search, sensors, map as map_router, report
+from api import search, sensors, map as map_router
 from api.rag_router import documents_router, query_router
 from api.emergency_router import router as emergency_router
 from db import init_pool, get_db, db_available
@@ -28,7 +29,6 @@ app.include_router(files.router)
 app.include_router(search.router)
 app.include_router(sensors.router)
 app.include_router(map_router.router)
-app.include_router(report.router)
 app.include_router(documents_router)
 app.include_router(query_router)
 app.include_router(emergency_router)
@@ -167,7 +167,7 @@ def init_db():
             if stmt:
                 cur.execute(stmt)
     _migrate_db()
-    print("Database schema ready")
+    logger.info("Database schema ready")
 
 
 def _migrate_db():
@@ -206,8 +206,8 @@ def _init_rag_dirs():
 def _preload_embedding_model():
     try:
         from app.indexing import embedder
-        print("RAG: pre-loading E5 embedding model…")
+        logger.info("RAG: pre-loading E5 embedding model…")
         embedder.get_model()
-        print("RAG: embedding model ready")
+        logger.info("RAG: embedding model ready")
     except Exception as e:
-        print(f"RAG: embedding model preload failed ({e}) — will load on first request")
+        logger.warning("RAG: embedding model preload failed ({}) — will load on first request", e)

@@ -15,6 +15,8 @@ import threading
 from contextlib import contextmanager
 from datetime import datetime
 
+from loguru import logger
+
 # ─── Module state ────────────────────────────────────────────────────────────
 
 _mode: str | None = None          # 'postgres' | 'sqlite'
@@ -83,10 +85,10 @@ def init_pool() -> bool:
             from psycopg2 import pool as _pg
             _pg_pool = _pg.ThreadedConnectionPool(1, 20, db_url)
             _mode = "postgres"
-            print("Database: PostgreSQL connected")
+            logger.info("Database: PostgreSQL connected")
             return True
         except Exception as e:
-            print(f"Database: PostgreSQL unavailable ({e}) — falling back to SQLite")
+            logger.warning("Database: PostgreSQL unavailable ({}) — falling back to SQLite", e)
 
     # SQLite fallback
     base = os.path.dirname(os.path.abspath(__file__))
@@ -94,7 +96,7 @@ def init_pool() -> bool:
     os.makedirs(data_dir, exist_ok=True)
     _sqlite_path = os.path.join(data_dir, "protocol_genesis.db")
     _mode = "sqlite"
-    print(f"Database: SQLite at {_sqlite_path}")
+    logger.info("Database: SQLite at {}", _sqlite_path)
     return True
 
 

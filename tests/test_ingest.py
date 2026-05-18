@@ -130,22 +130,19 @@ class TestIngestManager:
         record = registry.get(doc_id)
         assert record.file_hash == expected_hash
 
-    def test_deduplication_raises_on_second_ingest(self, pdf_file, tmp_path):
-        manager.ingest(pdf_file)
-        # Second copy with identical content
+    def test_deduplication_returns_same_id_on_second_ingest(self, pdf_file, tmp_path):
+        first_id = manager.ingest(pdf_file)
+        # Second copy with identical content → upsert, same document_id returned
         duplicate = tmp_path / "duplicate.pdf"
         duplicate.write_bytes(_MINIMAL_PDF)
-        with pytest.raises(ValueError, match="Duplicate"):
-            manager.ingest(duplicate)
+        second_id = manager.ingest(duplicate)
+        assert second_id == first_id
 
     def test_deduplication_does_not_add_second_registry_entry(self, pdf_file, tmp_path):
         manager.ingest(pdf_file)
         duplicate = tmp_path / "dup.pdf"
         duplicate.write_bytes(_MINIMAL_PDF)
-        try:
-            manager.ingest(duplicate)
-        except ValueError:
-            pass
+        manager.ingest(duplicate)  # upserts, does not create a new entry
         assert len(registry.list_all()) == 1
 
     def test_different_files_both_ingested(self, pdf_file, tmp_path):

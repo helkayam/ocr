@@ -73,30 +73,27 @@ def _split_text(text: str, chunk_size: int, chunk_overlap: int) -> list[str]:
         cut = _find_split_point(remaining, chunk_size)
         chunks.append(remaining[:cut].rstrip())
 
-        if len(remaining) - cut > chunk_size:
-            raw = max(0, cut - chunk_overlap)
-            overlap_start: Optional[int] = None
+        raw = max(0, cut - chunk_overlap)
+        overlap_start: Optional[int] = None
 
-            for i in range(raw, cut):
-                if remaining[i] in _SENTENCE_END:
-                    j = i + 1
-                    while j < cut and remaining[j] in (" ", "\n"):
-                        j += 1
-                    if j < cut:
-                        overlap_start = j
-                        break
+        for i in range(raw, cut):
+            if remaining[i] in _SENTENCE_END:
+                j = i + 1
+                while j < cut and remaining[j] in (" ", "\n"):
+                    j += 1
+                if j < cut:
+                    overlap_start = j
+                    break
 
-            if overlap_start is None:
-                pos = raw
-                while pos < cut and remaining[pos] not in (" ", "\n"):
-                    pos += 1
-                while pos < cut and remaining[pos] in (" ", "\n"):
-                    pos += 1
-                overlap_start = pos if pos < cut else raw
+        if overlap_start is None:
+            pos = raw
+            while pos < cut and remaining[pos] not in (" ", "\n"):
+                pos += 1
+            while pos < cut and remaining[pos] in (" ", "\n"):
+                pos += 1
+            overlap_start = pos if pos < cut else raw
 
-            advance = overlap_start if 0 < overlap_start < cut else cut
-        else:
-            advance = cut
+        advance = overlap_start if 0 < overlap_start < cut else cut
 
         start += max(advance, min_step)
 
@@ -300,6 +297,58 @@ def _merge_hanging_text(pages: list[OCRPage]) -> list[OCRPage]:
         )
         for idx, p in enumerate(pages)
     ]
+
+
+# ── Per-page chunking ─────────────────────────────────────────────────────────
+
+def _chunk_page(
+    document_id: str,
+    page_num: int,
+    blocks: list[Block],
+    chunk_size: int = PARENT_CHUNK_SIZE,
+    chunk_overlap: int = PARENT_CHUNK_OVERLAP,
+) -> list[Chunk]:
+    """Aggregate, annotate, and split blocks from a single page into parent chunks.
+
+    Returns parent-level chunks (before child sub-splitting). Used directly by
+    tests to verify header attachment, table integrity, and chunk sizing.
+    ``split()`` calls this per page and then sub-splits each parent into children
+    via ``_child_chunks_from_parent``.
+    """
+    aggregated = _aggregate_blocks(blocks)
+    parents: list[Chunk] = []
+    pending_headers: list[tuple[int, str]] = []
+
+    for block_id, block in enumerate(aggregated):
+        if _is_header(block):
+            pending_headers.append((block_id, block.text))
+            continue
+
+        header_prefix    = "\n".join(t for _, t in pending_headers)
+        header_block_ids = [bid for bid, _ in pending_headers]
+        extra            = {"header_block_ids": header_block_ids} if header_block_ids else {}
+        pending_headers  = []
+
+        content = f"{header_prefix}\n{block.text}".strip() if header_prefix else block.text
+
+        if block.type == "table":
+            parents.append(_make_chunk(
+                document_id, page_num, block_id, 0,
+                content, "table", False, extra,
+            ))
+        else:
+            for idx, sub in enumerate(_split_text(content, chunk_size, chunk_overlap)):
+                parents.append(_make_chunk(
+                    document_id, page_num, block_id, idx,
+                    sub, "text", False, extra,
+                ))
+
+    # Flush trailing headers (no following content block on this page)
+    if pending_headers:
+        for bid, header_text in pending_headers:
+            parents.append(_make_chunk(document_id, page_num, bid, 0, header_text, "text", True))
+
+    return parents
 
 
 # ── Main entry point ──────────────────────────────────────────────────────────

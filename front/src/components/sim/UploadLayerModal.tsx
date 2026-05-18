@@ -1,20 +1,11 @@
 /**
- * UploadLayerModal — Claude-style centered modal with backdrop-blur for GeoJSON layer uploads.
+ * UploadLayerModal — modal wrapper around GeoLayerForm for MapView.
  */
-import { useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { Dialog, DialogPortal } from '@/components/ui/dialog';
-import { X, Upload, Layers } from 'lucide-react';
-import { cn } from '@/lib/utils';
-
-type GeoCategory = 'cameras' | 'shelters' | 'buildings';
-
-const GEO_CATEGORIES: { type: GeoCategory; emoji: string; label: string; desc: string }[] = [
-  { type: 'shelters',  emoji: '🏠', label: 'Shelters',  desc: 'Emergency shelter points' },
-  { type: 'cameras',   emoji: '📷', label: 'Cameras',   desc: 'Surveillance camera points' },
-  { type: 'buildings', emoji: '🏢', label: 'Buildings', desc: 'Building polygon layer' },
-];
+import { X, Layers } from 'lucide-react';
+import { GeoLayerForm, GeoCategory } from './GeoLayerForm';
 
 interface UploadLayerModalProps {
   open: boolean;
@@ -35,15 +26,12 @@ export function UploadLayerModal({
   isUploading,
   uploadProgress,
 }: UploadLayerModalProps) {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
   return (
     <Dialog open={open} onOpenChange={v => !v && onClose()}>
       <DialogPortal forceMount>
         <AnimatePresence>
           {open && (
             <>
-              {/* Backdrop */}
               <DialogPrimitive.Overlay asChild forceMount>
                 <motion.div
                   key="upload-layer-overlay"
@@ -55,7 +43,6 @@ export function UploadLayerModal({
                 />
               </DialogPrimitive.Overlay>
 
-              {/* Modal */}
               <DialogPrimitive.Content forceMount className="fixed inset-0 z-[901] flex items-center justify-center p-4 pointer-events-none focus:outline-none">
                 <motion.div
                   key="upload-layer-modal"
@@ -67,7 +54,6 @@ export function UploadLayerModal({
                 >
                   <DialogPrimitive.Title className="sr-only">Upload GIS Layer</DialogPrimitive.Title>
 
-                  {/* Header */}
                   <div
                     className="flex items-center justify-between px-5 py-4 border-b border-border/50"
                     style={{ background: 'linear-gradient(135deg, hsl(0,84%,15%), hsl(220,25%,12%))' }}
@@ -86,66 +72,14 @@ export function UploadLayerModal({
                     </button>
                   </div>
 
-                  <div className="p-5 space-y-4">
-                    {/* Category */}
-                    <div className="space-y-2">
-                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                        Layer Category
-                      </p>
-                      <div className="space-y-2">
-                        {GEO_CATEGORIES.map(cat => (
-                          <button
-                            key={cat.type}
-                            onClick={() => onGeoCategoryChange(cat.type)}
-                            className={cn(
-                              'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border text-left transition-all',
-                              geoCategory === cat.type
-                                ? 'bg-primary/10 border-primary text-primary'
-                                : 'border-border text-foreground hover:bg-muted/40'
-                            )}
-                          >
-                            <span className="text-xl shrink-0">{cat.emoji}</span>
-                            <div>
-                              <p className="text-sm font-semibold">{cat.label}</p>
-                              <p className="text-xs text-muted-foreground">{cat.desc}</p>
-                            </div>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* File upload area */}
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept=".geojson,.json"
-                      className="hidden"
-                      onChange={e => {
-                        const file = e.target.files?.[0];
-                        if (file) { onUpload(file); onClose(); }
-                        e.target.value = '';
-                      }}
+                  <div className="p-5">
+                    <GeoLayerForm
+                      geoCategory={geoCategory}
+                      onGeoCategoryChange={onGeoCategoryChange}
+                      onFileSelect={file => { onUpload(file); onClose(); }}
+                      isUploading={isUploading}
+                      uploadProgress={uploadProgress}
                     />
-                    <button
-                      onClick={() => fileInputRef.current?.click()}
-                      disabled={isUploading}
-                      className={cn(
-                        'w-full flex flex-col items-center gap-3 py-6 rounded-2xl border-2 border-dashed transition-all',
-                        isUploading
-                          ? 'border-primary/30 bg-primary/5 cursor-not-allowed'
-                          : 'border-border hover:border-primary/40 hover:bg-muted/30 cursor-pointer'
-                      )}
-                    >
-                      <div className="p-3 rounded-2xl bg-muted">
-                        <Upload className={cn('h-5 w-5', isUploading ? 'text-primary animate-bounce' : 'text-muted-foreground')} />
-                      </div>
-                      <div className="text-center">
-                        <p className="text-sm font-semibold">
-                          {uploadProgress ?? 'Choose .geojson file'}
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-0.5">GeoJSON or JSON format</p>
-                      </div>
-                    </button>
                   </div>
                 </motion.div>
               </DialogPrimitive.Content>

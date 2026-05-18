@@ -175,7 +175,7 @@ export default function WorkspaceCreate() {
                   <ul className="text-sm text-muted-foreground space-y-1.5">
                     <li className="flex items-start gap-1.5">
                       <span className="mt-1.5 h-1.5 w-1.5 rounded-full shrink-0" style={{ background: 'hsl(0,84%,55%)' }} />
-                      Upload and organize PDF, DOCX, GeoJSON, and Shapefile documents
+                      Upload and organize PDF, DOCX, and GeoJSON documents
                     </li>
                     <li className="flex items-start gap-1.5">
                       <span className="mt-1.5 h-1.5 w-1.5 rounded-full shrink-0" style={{ background: 'hsl(0,0%,40%)' }} />

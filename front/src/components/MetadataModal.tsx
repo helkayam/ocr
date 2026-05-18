@@ -42,8 +42,6 @@ export function MetadataModal({ file, isOpen, onClose }: MetadataModalProps) {
     { type: 'success' as const, message: 'Content readable' },
   ];
 
-  const missingComponents = file.metadata?.missingComponents || [];
-
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[600px] bg-card border-border p-0 overflow-hidden">
@@ -108,26 +106,6 @@ export function MetadataModal({ file, isOpen, onClose }: MetadataModalProps) {
               ))}
             </div>
           </div>
-
-          {/* Missing Components (for Shapefiles) */}
-          {file.type === 'shapefile' && missingComponents.length > 0 && (
-            <div className="space-y-3">
-              <h4 className="text-sm font-medium text-destructive flex items-center gap-2">
-                <AlertCircle className="h-4 w-4" />
-                Missing Components
-              </h4>
-              <div className="flex flex-wrap gap-2">
-                {missingComponents.map((component, index) => (
-                  <span
-                    key={index}
-                    className="px-2 py-1 text-xs rounded bg-destructive/10 text-destructive border border-destructive/20"
-                  >
-                    {component}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
 
         </div>
 

@@ -1,10 +1,11 @@
 import { Workspace } from '@/types/files';
-import { Folder, Calendar, FileStack, HardDrive, ArrowRight } from 'lucide-react';
+import { Folder, Calendar, FileStack, HardDrive, ArrowRight, Trash2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface WorkspaceCardProps {
   workspace: Workspace;
   onClick: () => void;
+  onDelete?: (e: React.MouseEvent) => void;
 }
 
 function formatFileSize(bytes: number): string {
@@ -30,13 +31,16 @@ const CARD_PALETTES = [
   { from: 'hsl(0,0%,14%)',   to: 'hsl(0,84%,46%)',  glow: 'rgba(239,68,68,0.16)'  },
 ];
 
-export function WorkspaceCard({ workspace, onClick }: WorkspaceCardProps) {
+export function WorkspaceCard({ workspace, onClick, onDelete }: WorkspaceCardProps) {
   const palette = CARD_PALETTES[(workspace.name.charCodeAt(0) || 0) % CARD_PALETTES.length];
 
   return (
-    <motion.button
+    <motion.div
       onClick={onClick}
-      className="w-full h-full text-left focus:outline-none focus:ring-2 focus:ring-primary/40 focus:ring-offset-2 rounded-3xl"
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => e.key === 'Enter' && onClick()}
+      className="w-full h-full text-left cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/40 focus:ring-offset-2 rounded-3xl"
       whileHover={{ scale: 1.03, y: -4 }}
       whileTap={{ scale: 0.97 }}
       transition={{ type: 'spring', stiffness: 380, damping: 22 }}
@@ -54,7 +58,7 @@ export function WorkspaceCard({ workspace, onClick }: WorkspaceCardProps) {
         />
 
         <div className="relative z-10 flex flex-col flex-1">
-          {/* Icon + arrow row */}
+          {/* Icon + action row */}
           <div className="flex items-start justify-between mb-4">
             <div
               className="p-3 rounded-2xl"
@@ -65,14 +69,27 @@ export function WorkspaceCard({ workspace, onClick }: WorkspaceCardProps) {
             >
               <Folder className="h-6 w-6 text-white" />
             </div>
-            <motion.div
-              className="opacity-0 group-hover:opacity-100 p-1.5 rounded-xl"
-              initial={{ x: -4, opacity: 0 }}
-              whileHover={{ x: 0, opacity: 1 }}
-              style={{ background: `linear-gradient(135deg, ${palette.from}22, ${palette.to}22)` }}
-            >
-              <ArrowRight className="h-4 w-4" style={{ color: palette.from }} />
-            </motion.div>
+            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              {onDelete && (
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                  onClick={(e) => { e.stopPropagation(); onDelete?.(e); }}
+                  className="p-1.5 rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </motion.button>
+              )}
+              <motion.div
+                className="p-1.5 rounded-xl"
+                initial={{ x: -4, opacity: 0 }}
+                whileHover={{ x: 0, opacity: 1 }}
+                style={{ background: `linear-gradient(135deg, ${palette.from}22, ${palette.to}22)` }}
+              >
+                <ArrowRight className="h-4 w-4" style={{ color: palette.from }} />
+              </motion.div>
+            </div>
           </div>
 
           <h3 className="text-lg font-bold text-foreground mb-1.5 group-hover:text-gradient transition-all line-clamp-1">
@@ -107,6 +124,6 @@ export function WorkspaceCard({ workspace, onClick }: WorkspaceCardProps) {
           </div>
         </div>
       </div>
-    </motion.button>
+    </motion.div>
   );
 }

@@ -1,42 +1,26 @@
 {
-  "cbf2f900-6679-40a8-93eb-4509fbd08a22": {
-    "document_id": "cbf2f900-6679-40a8-93eb-4509fbd08a22",
-    "file_name": "חוק הביטוח הלאומי.pdf",
-    "status": "indexed",
-    "created_at": "2026-05-06T10:35:36.141685Z",
-    "file_hash": "c8923f118cdad1bf902a057244ad4d68cc678f3ee5026394a8fada3bbab09f93",
-    "workspace_id": "0fff6cb7-8721-4399-a8fd-95d2d9b1c73e"
-  },
-  "635eb6b0-6566-4271-b5e0-b1926b0a6c3d": {
-    "document_id": "635eb6b0-6566-4271-b5e0-b1926b0a6c3d",
-    "file_name": "חוק התכנון והבניה.pdf",
-    "status": "indexed",
-    "created_at": "2026-05-06T10:35:36.475092Z",
-    "file_hash": "44453a6e737a41c1d2952522c2fbdd3db4fde4507983e83e783e8347aaf24543",
-    "workspace_id": "0fff6cb7-8721-4399-a8fd-95d2d9b1c73e"
-  },
-  "0baea31e-d5db-466c-a981-760f8b3d983e": {
-    "document_id": "0baea31e-d5db-466c-a981-760f8b3d983e",
-    "file_name": "חוק החברות.pdf",
-    "status": "indexed",
-    "created_at": "2026-05-06T10:35:41.499780Z",
-    "file_hash": "811afa4e530321ee3fcf357fe250dd892cae163bf031cd6399e2a4767939f51c",
-    "workspace_id": "0fff6cb7-8721-4399-a8fd-95d2d9b1c73e"
-  },
-  "e4130cf6-3366-48f7-b469-025ef93876db": {
-    "document_id": "e4130cf6-3366-48f7-b469-025ef93876db",
-    "file_name": "RulesOfProcedure.pdf",
-    "status": "indexed",
-    "created_at": "2026-05-11T12:22:06.714763Z",
-    "file_hash": "98f45f94b6c21b355d296d8f16bdb1af6e0d71a08906783afe6b19cdb24d7e59",
-    "workspace_id": "0fff6cb7-8721-4399-a8fd-95d2d9b1c73e"
-  },
-  "f208e646-b1b2-4afd-9d43-57924d79f9a9": {
-    "document_id": "f208e646-b1b2-4afd-9d43-57924d79f9a9",
+  "ce23f30c-fc51-4152-b944-c88eba50b6b7": {
+    "document_id": "ce23f30c-fc51-4152-b944-c88eba50b6b7",
     "file_name": "פרוטוקול הנחיות אופרטיבי.pdf",
     "status": "indexed",
-    "created_at": "2026-05-14T10:35:05.194109Z",
+    "created_at": "2026-05-18T08:23:34.262273Z",
     "file_hash": "1628db5c428cbf553183fc38eae10f11d647c8fd9fd4bad04fc7226be22766f7",
-    "workspace_id": "511b04a8-cefb-4153-a19c-8a55b4203f55"
+    "workspace_id": "1b30ee29"
+  },
+  "3a1cbba7-97c9-472f-86e0-31903fcfcb74": {
+    "document_id": "3a1cbba7-97c9-472f-86e0-31903fcfcb74",
+    "file_name": "חוק החברות.pdf",
+    "status": "indexed",
+    "created_at": "2026-05-18T10:50:33.066751Z",
+    "file_hash": "811afa4e530321ee3fcf357fe250dd892cae163bf031cd6399e2a4767939f51c",
+    "workspace_id": "d719f8ad"
+  },
+  "2776487b-cc35-439e-9bc6-c24379a7fa46": {
+    "document_id": "2776487b-cc35-439e-9bc6-c24379a7fa46",
+    "file_name": "RulesOfProcedure.pdf",
+    "status": "indexed",
+    "created_at": "2026-05-18T10:56:01.300728Z",
+    "file_hash": "98f45f94b6c21b355d296d8f16bdb1af6e0d71a08906783afe6b19cdb24d7e59",
+    "workspace_id": "d719f8ad"
   }
 }

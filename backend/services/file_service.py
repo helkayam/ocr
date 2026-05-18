@@ -18,8 +18,6 @@ def _file_type(filename: str) -> FileType:
         return FileType.DOCX
     if fname.endswith((".geojson", ".json")):
         return FileType.GEOJSON
-    if fname.endswith((".shp", ".shapefile")):
-        return FileType.SHAPEFILE
     return FileType.PDF
 
 
@@ -118,12 +116,59 @@ def get_file(file_id: str) -> Optional[dict]:
 
 
 def delete_file(file_id: str) -> None:
+    """Remove SQL rows only (files + document_chunks). Use deep_delete_file for full teardown."""
     if db_available():
         with get_db() as cur:
             cur.execute("DELETE FROM document_chunks WHERE file_id = %s", (file_id,))
             cur.execute("DELETE FROM files WHERE file_id = %s", (file_id,))
     else:
         _files_mem.pop(file_id, None)
+
+
+def deep_delete_file(file_rec: dict) -> None:
+    """Full teardown for one file: RAG vectors + disk artifacts + geo entities + SQL + object storage.
+
+    Accepts the file's DB row as a dict (keys: file_id, file_type, object_name).
+    Best-effort on each step — logs errors but never raises, so callers (e.g.
+    workspace deletion) remain atomic across many files.
+    """
+    from loguru import logger
+    from services.storage_service import delete_object
+
+    file_id: str = file_rec.get("file_id", "")
+    object_name: Optional[str] = file_rec.get("object_name")
+
+    # 1. RAG pipeline: ChromaDB vectors + data/raw|ocr|chunks on disk + registry
+    if str(file_rec.get("file_type", "")).lower() == "pdf":
+        try:
+            from app import pipeline
+            import app.registry as rag_registry
+            if rag_registry.get(file_id):
+                pipeline.delete_pipeline(file_id)
+                logger.info("[deep_delete] RAG delete complete for {}", file_id)
+            else:
+                logger.info("[deep_delete] {} not in RAG registry — skipping pipeline delete", file_id)
+        except KeyError:
+            pass  # already removed from registry
+        except Exception as exc:
+            logger.error("[deep_delete] RAG delete failed for {}: {}", file_id, exc)
+
+    # 2. Geo layers + emergency geo_features linked to this file
+    try:
+        from services.geo_service import delete_geo_entities_for_file
+        delete_geo_entities_for_file(file_id)
+    except Exception as exc:
+        logger.error("[deep_delete] Geo entity delete failed for {}: {}", file_id, exc)
+
+    # 3. SQL rows (files + document_chunks)
+    try:
+        delete_file(file_id)
+    except Exception as exc:
+        logger.error("[deep_delete] SQL delete failed for {}: {}", file_id, exc)
+
+    # 4. Object storage (best-effort — never block on storage errors)
+    if object_name:
+        delete_object(object_name)
 
 
 def _row_to_file_item(d: dict) -> FileItem:

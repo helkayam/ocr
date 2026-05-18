@@ -18,10 +18,6 @@ function getFileType(fileName: string): FileType {
     case 'docx': return 'docx';
     case 'geojson':
     case 'json': return 'geojson';
-    case 'shp':
-    case 'dbf':
-    case 'shx':
-    case 'prj': return 'shapefile';
     default: return 'pdf';
   }
 }

@@ -1,6 +1,6 @@
 // ─── Core document types ─────────────────────────────────────────────────────
 
-export type FileType = 'pdf' | 'docx' | 'geojson' | 'shapefile';
+export type FileType = 'pdf' | 'docx' | 'geojson';
 export type FileStatus = 'pending' | 'uploading' | 'completed' | 'error';
 
 export interface ValidationResult {
@@ -196,16 +196,3 @@ export type StreamPhase =
   | 'routing'
   | 'done';
 
-// ─── Readiness Report ────────────────────────────────────────────────────────
-
-export interface ReadinessReport {
-  workspace_id: string;
-  score: number;
-  covered: string[];
-  gaps: string[];
-  warnings: string[];
-  total_files: number;
-  total_sensors: number;
-  file_types: string[];
-  sensor_types: string[];
-}

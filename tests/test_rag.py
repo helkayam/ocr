@@ -4,7 +4,7 @@ from typing import List
 from unittest.mock import MagicMock, call, patch
 
 import httpx
-import groq as groq_sdk
+import openai
 import pytest
 
 from app.models import CitedSource, RAGResponse, SearchResult
@@ -12,7 +12,7 @@ from app.rag import generator
 from app.rag.generator import (
     _MAX_RETRY_ATTEMPTS,
     _build_user_message,
-    _call_groq_api,
+    _call_llm,
     generate,
 )
 from app.retrieval import search as retrieval_search
@@ -36,8 +36,8 @@ def _make_search_result(
     )
 
 
-def _make_groq_response(content: str) -> MagicMock:
-    """Build a mock object that mimics groq chat.completions.create() return value."""
+def _make_llm_response(content: str) -> MagicMock:
+    """Build a mock that mimics openai chat.completions.create() return value."""
     msg = MagicMock()
     msg.content = content
     choice = MagicMock()
@@ -47,13 +47,19 @@ def _make_groq_response(content: str) -> MagicMock:
     return resp
 
 
-def _rate_limit_error() -> groq_sdk.RateLimitError:
-    """Construct a real groq.RateLimitError suitable for use in tests."""
-    req = httpx.Request("POST", "https://api.groq.com/openai/v1/chat/completions")
-    resp = httpx.Response(status_code=429, request=req)
-    return groq_sdk.RateLimitError(
-        "Rate limit exceeded", response=resp, body={"error": {"message": "rate limit"}}
+# Keep old name as alias so TestRetryLogic helper still works
+_make_groq_response = _make_llm_response
+
+
+def _rate_limit_error() -> openai.RateLimitError:
+    """Construct a real openai.RateLimitError suitable for use in tests."""
+    req = httpx.Request("POST", "https://api.openai.com/v1/chat/completions")
+    resp = httpx.Response(
+        status_code=429,
+        request=req,
+        json={"error": {"message": "rate limit", "type": "tokens", "code": "rate_limit_exceeded"}},
     )
+    return openai.RateLimitError("Rate limit exceeded", response=resp, body=None)
 
 
 # ---------------------------------------------------------------------------
@@ -111,8 +117,8 @@ class TestSystemPrompt:
         assert "only" in prompt or "רק" in prompt
 
     def test_includes_citation_format(self):
-        assert "document_id" in generator._SYSTEM_PROMPT
-        assert "page_num" in generator._SYSTEM_PROMPT
+        # Current prompt uses inline (עמוד X) format for page citations
+        assert "עמוד" in generator._SYSTEM_PROMPT
 
     def test_instructs_not_found_response(self):
         assert "לא נמצא" in generator._SYSTEM_PROMPT
@@ -124,29 +130,31 @@ class TestSystemPrompt:
 
 class TestGenerate:
     def _mock_client(self, answer_text: str) -> MagicMock:
-        client = MagicMock(spec=groq_sdk.Groq)
-        client.chat.completions.create.return_value = _make_groq_response(answer_text)
+        client = MagicMock(spec=openai.OpenAI)
+        client.chat.completions.create.return_value = _make_llm_response(answer_text)
         return client
+
+    def _patch_client(self, answer_text: str):
+        """Return a context manager that patches _get_client."""
+        mock_client = self._mock_client(answer_text)
+        return patch("app.rag.generator._get_client", return_value=(mock_client, "llama-3.3-70b-versatile"))
 
     def test_returns_rag_response(self):
         ctx = [_make_search_result()]
-        with patch("app.rag.generator.groq_sdk.Groq", return_value=self._mock_client("תשובה")):
-            with patch("os.getenv", return_value="test-key"):
-                result = generate("שאלה", ctx)
+        with self._patch_client("תשובה"):
+            result = generate("שאלה", ctx)
         assert isinstance(result, RAGResponse)
 
     def test_answer_from_llm_in_response(self):
         ctx = [_make_search_result()]
-        with patch("app.rag.generator.groq_sdk.Groq", return_value=self._mock_client("זוהי תשובה מפורטת")):
-            with patch("os.getenv", return_value="test-key"):
-                result = generate("שאלה", ctx)
+        with self._patch_client("זוהי תשובה מפורטת"):
+            result = generate("שאלה", ctx)
         assert result.answer == "זוהי תשובה מפורטת"
 
     def test_query_preserved_in_response(self):
         ctx = [_make_search_result()]
-        with patch("app.rag.generator.groq_sdk.Groq", return_value=self._mock_client("תשובה")):
-            with patch("os.getenv", return_value="test-key"):
-                result = generate("מה שם המחבר?", ctx)
+        with self._patch_client("תשובה"):
+            result = generate("מה שם המחבר?", ctx)
         assert result.query == "מה שם המחבר?"
 
     def test_sources_derived_from_context(self):
@@ -154,9 +162,8 @@ class TestGenerate:
             _make_search_result(doc_id="doc-001", page=3),
             _make_search_result(doc_id="doc-002", page=7),
         ]
-        with patch("app.rag.generator.groq_sdk.Groq", return_value=self._mock_client("תשובה")):
-            with patch("os.getenv", return_value="test-key"):
-                result = generate("שאלה", ctx)
+        with self._patch_client("תשובה"):
+            result = generate("שאלה", ctx)
         assert len(result.sources) == 2
         source_pairs = {(s.document_id, s.page_num) for s in result.sources}
         assert ("doc-001", 3) in source_pairs
@@ -164,28 +171,25 @@ class TestGenerate:
 
     def test_sources_are_cited_source_objects(self):
         ctx = [_make_search_result()]
-        with patch("app.rag.generator.groq_sdk.Groq", return_value=self._mock_client("תשובה")):
-            with patch("os.getenv", return_value="test-key"):
-                result = generate("שאלה", ctx)
+        with self._patch_client("תשובה"):
+            result = generate("שאלה", ctx)
         assert all(isinstance(s, CitedSource) for s in result.sources)
 
-    def test_groq_called_with_system_and_user_messages(self):
+    def test_llm_called_with_system_and_user_messages(self):
         ctx = [_make_search_result(text="תוכן חשוב")]
         mock_client = self._mock_client("תשובה")
-        with patch("app.rag.generator.groq_sdk.Groq", return_value=mock_client):
-            with patch("os.getenv", return_value="test-key"):
-                generate("שאלה", ctx)
+        with patch("app.rag.generator._get_client", return_value=(mock_client, "test-model")):
+            generate("שאלה", ctx)
         called_messages = mock_client.chat.completions.create.call_args.kwargs["messages"]
         roles = [m["role"] for m in called_messages]
         assert "system" in roles
         assert "user" in roles
 
-    def test_user_message_sent_to_groq_contains_context(self):
+    def test_user_message_contains_context(self):
         ctx = [_make_search_result(text="מידע קריטי")]
         mock_client = self._mock_client("תשובה")
-        with patch("app.rag.generator.groq_sdk.Groq", return_value=mock_client):
-            with patch("os.getenv", return_value="test-key"):
-                generate("שאלה", ctx)
+        with patch("app.rag.generator._get_client", return_value=(mock_client, "test-model")):
+            generate("שאלה", ctx)
         msgs = mock_client.chat.completions.create.call_args.kwargs["messages"]
         user_content = next(m["content"] for m in msgs if m["role"] == "user")
         assert "מידע קריטי" in user_content
@@ -193,22 +197,23 @@ class TestGenerate:
     def test_correct_model_used(self):
         ctx = [_make_search_result()]
         mock_client = self._mock_client("תשובה")
-        with patch("app.rag.generator.groq_sdk.Groq", return_value=mock_client):
-            with patch("os.getenv", return_value="test-key"):
-                generate("שאלה", ctx)
+        with patch("app.rag.generator._get_client", return_value=(mock_client, "llama-3.3-70b-versatile")):
+            generate("שאלה", ctx)
         model_used = mock_client.chat.completions.create.call_args.kwargs["model"]
         assert model_used == "llama-3.3-70b-versatile"
 
-    def test_empty_context_still_calls_groq(self):
+    def test_empty_context_still_calls_llm(self):
         mock_client = self._mock_client("המידע המבוקש לא נמצא במסמכים שסופקו.")
-        with patch("app.rag.generator.groq_sdk.Groq", return_value=mock_client):
-            with patch("os.getenv", return_value="test-key"):
-                result = generate("שאלה", [])
+        with patch("app.rag.generator._get_client", return_value=(mock_client, "test-model")):
+            result = generate("שאלה", [])
         assert mock_client.chat.completions.create.called
         assert result.sources == []
 
     def test_missing_api_key_raises_environment_error(self):
-        with patch("os.getenv", return_value=None):
+        import os
+        env_without_keys = {k: v for k, v in os.environ.items()
+                            if k not in ("GROQ_API_KEY", "OPENAI_API_KEY", "LLM_PROVIDER")}
+        with patch.dict("os.environ", env_without_keys, clear=True):
             with pytest.raises(EnvironmentError, match="GROQ_API_KEY"):
                 generate("שאלה", [])
 
@@ -218,28 +223,28 @@ class TestGenerate:
 # ---------------------------------------------------------------------------
 
 class TestRetryLogic:
-    """Verify that _call_groq_api retries on RateLimitError and stops on success."""
+    """Verify that _call_llm retries on RateLimitError and stops on success."""
 
     @staticmethod
     def _client_with_side_effects(*effects) -> MagicMock:
-        client = MagicMock(spec=groq_sdk.Groq)
+        client = MagicMock(spec=openai.OpenAI)
         client.chat.completions.create.side_effect = list(effects)
         return client
 
     def test_succeeds_on_first_attempt(self):
-        client = self._client_with_side_effects(_make_groq_response("תשובה"))
+        client = self._client_with_side_effects(_make_llm_response("תשובה"))
         with patch("time.sleep"):  # prevent actual waiting
-            result = _call_groq_api(client, [{"role": "user", "content": "שאלה"}])
+            result = _call_llm(client, "test-model", [{"role": "user", "content": "שאלה"}])
         assert result == "תשובה"
         assert client.chat.completions.create.call_count == 1
 
     def test_retries_once_on_rate_limit_then_succeeds(self):
         client = self._client_with_side_effects(
             _rate_limit_error(),
-            _make_groq_response("תשובה לאחר retry"),
+            _make_llm_response("תשובה לאחר retry"),
         )
         with patch("time.sleep"):
-            result = _call_groq_api(client, [{"role": "user", "content": "שאלה"}])
+            result = _call_llm(client, "test-model", [{"role": "user", "content": "שאלה"}])
         assert result == "תשובה לאחר retry"
         assert client.chat.completions.create.call_count == 2
 
@@ -248,10 +253,10 @@ class TestRetryLogic:
             _rate_limit_error(),
             _rate_limit_error(),
             _rate_limit_error(),
-            _make_groq_response("הצלחה אחרי שלושה ניסיונות"),
+            _make_llm_response("הצלחה אחרי שלושה ניסיונות"),
         )
         with patch("time.sleep"):
-            result = _call_groq_api(client, [{"role": "user", "content": "שאלה"}])
+            result = _call_llm(client, "test-model", [{"role": "user", "content": "שאלה"}])
         assert result == "הצלחה אחרי שלושה ניסיונות"
         assert client.chat.completions.create.call_count == 4
 
@@ -259,17 +264,17 @@ class TestRetryLogic:
         errors = [_rate_limit_error()] * _MAX_RETRY_ATTEMPTS
         client = self._client_with_side_effects(*errors)
         with patch("time.sleep"):
-            with pytest.raises(groq_sdk.RateLimitError):
-                _call_groq_api(client, [{"role": "user", "content": "שאלה"}])
+            with pytest.raises(openai.RateLimitError):
+                _call_llm(client, "test-model", [{"role": "user", "content": "שאלה"}])
         assert client.chat.completions.create.call_count == _MAX_RETRY_ATTEMPTS
 
     def test_non_rate_limit_error_not_retried(self):
         client = self._client_with_side_effects(
-            groq_sdk.APIConnectionError(request=MagicMock()),
+            openai.APIConnectionError(request=MagicMock()),
         )
         with patch("time.sleep"):
-            with pytest.raises(groq_sdk.APIConnectionError):
-                _call_groq_api(client, [{"role": "user", "content": "שאלה"}])
+            with pytest.raises(openai.APIConnectionError):
+                _call_llm(client, "test-model", [{"role": "user", "content": "שאלה"}])
         # Must NOT retry — should be exactly 1 call
         assert client.chat.completions.create.call_count == 1
 
@@ -301,6 +306,7 @@ class TestSearch:
         assert all(isinstance(r, SearchResult) for r in results)
 
     def test_result_fields_populated(self):
+        from app.models import SearchResult as SR
         with patch("app.retrieval.search.embedder.embed", return_value=[[0.1]]):
             mock_col = MagicMock()
             mock_col.count.return_value = 1
@@ -308,7 +314,9 @@ class TestSearch:
                 ["c-0"], ["תוכן חשוב"], ["doc-xyz"], [5], [0.05]
             )
             with patch("app.retrieval.search.db.get_collection", return_value=mock_col):
-                results = retrieval_search.search("שאלה")
+                with patch("app.retrieval.search.reranker.rerank",
+                           side_effect=lambda q, cands, k: cands[:k]):
+                    results = retrieval_search.search("שאלה")
 
         r = results[0]
         assert r.chunk_id == "c-0"

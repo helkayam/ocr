@@ -1,6 +1,6 @@
 import { FileType } from '@/types/files';
 import { cn } from '@/lib/utils';
-import { FileText, FileType2, Map, Layers, SlidersHorizontal } from 'lucide-react';
+import { FileText, FileType2, Map, SlidersHorizontal } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface FileFiltersProps {
@@ -17,10 +17,9 @@ const filterOptions: {
   to: string;
   glow: string;
 }[] = [
-  { type: 'pdf',       label: 'PDF',       icon: FileText,  from: 'hsl(0,84%,65%)',   to: 'hsl(20,90%,60%)',  glow: 'rgba(239,68,68,0.25)' },
-  { type: 'docx',      label: 'DOCX',      icon: FileType2, from: 'hsl(215,90%,62%)', to: 'hsl(199,89%,55%)', glow: 'rgba(59,130,246,0.25)' },
-  { type: 'geojson',   label: 'GeoJSON',   icon: Map,       from: 'hsl(142,60%,50%)', to: 'hsl(158,64%,48%)', glow: 'rgba(34,197,94,0.25)' },
-  { type: 'shapefile', label: 'Shapefile', icon: Layers,    from: 'hsl(30,90%,60%)',  to: 'hsl(38,92%,55%)',  glow: 'rgba(249,115,22,0.25)' },
+  { type: 'pdf',     label: 'PDF',     icon: FileText,  from: 'hsl(0,84%,65%)',   to: 'hsl(20,90%,60%)',  glow: 'rgba(239,68,68,0.25)' },
+  { type: 'docx',    label: 'DOCX',    icon: FileType2, from: 'hsl(215,90%,62%)', to: 'hsl(199,89%,55%)', glow: 'rgba(59,130,246,0.25)' },
+  { type: 'geojson', label: 'GeoJSON', icon: Map,       from: 'hsl(142,60%,50%)', to: 'hsl(158,64%,48%)', glow: 'rgba(34,197,94,0.25)' },
 ];
 
 export function FileFilters({ selectedTypes, onTypeToggle, onClearFilters }: FileFiltersProps) {

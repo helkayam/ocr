@@ -281,7 +281,6 @@ class TestChunkPage:
         blocks = [_block("טקסט"), _block("| t |", block_type="table")]
         for chunk in self._run(blocks):
             assert chunk.document_id == self.DOC_ID
-            assert chunk.metadata.document_id == self.DOC_ID
 
     def test_every_chunk_has_correct_page_num(self):
         blocks = [_block("טקסט")]
@@ -352,7 +351,9 @@ class TestSplitFunction:
         _write_ocr(tmp_path, registered_doc, [[_block("תוכן")]])
         original = splitter.split(registered_doc)
         out = tmp_path / "chunks" / f"{registered_doc}_chunks.json"
-        reloaded = [Chunk(**c) for c in json.loads(out.read_text(encoding="utf-8"))]
+        envelope = json.loads(out.read_text(encoding="utf-8"))
+        doc_id = envelope["document_id"]
+        reloaded = [Chunk(**c, document_id=doc_id) for c in envelope["chunks"]]
         assert len(reloaded) == len(original)
         assert reloaded[0].chunk_id == original[0].chunk_id
 
@@ -372,10 +373,11 @@ class TestSplitFunction:
             splitter.split("ghost-doc-id")
 
     def test_multipage_document_chunks_all_pages(self, registered_doc, tmp_path):
+        # Terminate each block with '.' so _merge_hanging_text does not consume page 2's block.
         _write_ocr(tmp_path, registered_doc, [
-            [_block("עמוד 1")],
-            [_block("עמוד 2")],
-            [_block("עמוד 3")],
+            [_block("עמוד 1.")],
+            [_block("עמוד 2.")],
+            [_block("עמוד 3.")],
         ])
         chunks = splitter.split(registered_doc)
         pages = {c.page for c in chunks}

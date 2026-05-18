@@ -7,7 +7,6 @@ import Index from "./pages/Index";
 import WorkspaceDetails from "./pages/WorkspaceDetails";
 import WorkspaceCreate from "./pages/WorkspaceCreate";
 import MapView from "./pages/MapView";
-import ReportView from "./pages/ReportView";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -37,7 +36,6 @@ const App = () => (
           <Route path="/workspace/:id" element={<WorkspaceDetails />} />
           <Route path="/workspace/:id/map" element={<MapView />} />
           <Route path="/workspace/:id/sensors" element={<MapView />} />
-          <Route path="/workspace/:id/report" element={<ReportView />} />
           <Route path="/create" element={<WorkspaceCreate />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

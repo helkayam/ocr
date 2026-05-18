@@ -1,5 +1,5 @@
 import { Link, useLocation, useParams } from 'react-router-dom';
-import { Library, ChevronRight, Menu, X, Map, BarChart3, Files, Upload } from 'lucide-react';
+import { Library, ChevronRight, Menu, X, Map, Files, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
@@ -11,9 +11,8 @@ interface HeaderProps {
 }
 
 const WORKSPACE_TABS = [
-  { label: 'Files',  icon: Files,     suffix: '' },
-  { label: 'Map',    icon: Map,       suffix: '/map' },
-  { label: 'Report', icon: BarChart3, suffix: '/report' },
+  { label: 'Files', icon: Files, suffix: '' },
+  { label: 'Map',   icon: Map,   suffix: '/map' },
 ];
 
 export function Header({ workspaceName, onUploadClick }: HeaderProps) {

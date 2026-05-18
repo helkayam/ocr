@@ -29,7 +29,7 @@ class TestProcessDocumentSuccess:
 
     def test_calls_splitter(self):
         _, p_split, _, _ = self._run()
-        p_split.assert_called_once_with("doc-001")
+        p_split.assert_called_once_with("doc-001", workspace_id="__legacy__")
 
     def test_calls_indexer(self):
         _, _, p_index, _ = self._run()

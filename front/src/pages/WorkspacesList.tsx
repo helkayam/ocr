@@ -1,22 +1,47 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Header } from '@/components/Header';
 import { WorkspaceCard } from '@/components/WorkspaceCard';
 import { SearchBar } from '@/components/SearchBar';
-import { Button } from '@/components/ui/button';
+import { ConfirmDeleteModal } from '@/components/ConfirmDeleteModal';
 import { api } from '@/lib/api';
 import { Plus, FolderOpen } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { toast } from 'sonner';
 
 export default function WorkspacesList() {
   const navigate = useNavigate();
+  const qc = useQueryClient();
   const [searchQuery, setSearchQuery] = useState('');
+  const [pendingDelete, setPendingDelete] = useState<{ id: string; name: string } | null>(null);
 
   const { data: workspaces = [], isLoading } = useQuery({
     queryKey: ['workspaces'],
     queryFn: api.workspaces.list,
   });
+
+  const deleteMutation = useMutation({
+    mutationFn: api.workspaces.delete,
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['workspaces'] });
+      toast.success('Workspace deleted');
+      setPendingDelete(null);
+    },
+    onError: () => {
+      toast.error('Failed to delete workspace');
+      setPendingDelete(null);
+    },
+  });
+
+  const handleDelete = (id: string, name: string) => (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setPendingDelete({ id, name });
+  };
+
+  const handleConfirmDelete = () => {
+    if (pendingDelete) deleteMutation.mutate(pendingDelete.id);
+  };
 
   const filteredWorkspaces = workspaces.filter(workspace =>
     workspace.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -25,6 +50,13 @@ export default function WorkspacesList() {
 
   return (
     <div className="min-h-screen">
+      <ConfirmDeleteModal
+        isOpen={pendingDelete !== null}
+        workspaceName={pendingDelete?.name ?? ''}
+        isDeleting={deleteMutation.isPending}
+        onCancel={() => setPendingDelete(null)}
+        onConfirm={handleConfirmDelete}
+      />
       <Header />
 
       <main className="container mx-auto px-4 py-10">
@@ -54,10 +86,7 @@ export default function WorkspacesList() {
             <span className="text-foreground">Digital </span>
             <span className="text-gradient">Librarian</span>
           </h1>
-          <p className="text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed">
-            Secure document management for emergency organizations.
-            Upload, organize, and query critical files with confidence.
-          </p>
+
         </motion.div>
 
         {/* Actions Bar */}
@@ -122,6 +151,7 @@ export default function WorkspacesList() {
                 <WorkspaceCard
                   workspace={workspace}
                   onClick={() => navigate(`/workspace/${workspace.id}`)}
+                  onDelete={handleDelete(workspace.id, workspace.name)}
                 />
               </motion.div>
             ))}

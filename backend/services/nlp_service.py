@@ -19,6 +19,7 @@ from typing import List, Optional
 
 import pypdf
 from docx import Document
+from loguru import logger
 
 from db import get_db, db_available
 
@@ -125,7 +126,7 @@ def get_embeddings(texts: List[str]) -> List[List[float]]:
             result.extend(item.embedding for item in resp.data)
         return result
     except Exception as e:
-        print(f"Embedding error: {e}")
+        logger.error("Embedding error: {}", e)
         return [[0.0] * EMBEDDING_DIM for _ in texts]
 
 
@@ -152,7 +153,7 @@ def process_file(file_id: str, workspace_id: str, filename: str, object_name: st
         from services.storage_service import get_file_bytes
         raw = get_file_bytes(object_name)
     except Exception as e:
-        print(f"[nlp] Could not download {object_name}: {e}")
+        logger.error("[nlp] Could not download {}: {}", object_name, e)
         _set_status(file_id, "error")
         return
 
@@ -180,9 +181,9 @@ def process_file(file_id: str, workspace_id: str, filename: str, object_name: st
                 "UPDATE files SET processing_status = 'done' WHERE file_id = %s",
                 (file_id,),
             )
-        print(f"[nlp] {filename}: {len(chunks)} chunks stored")
+        logger.info("[nlp] {}: {} chunks stored", filename, len(chunks))
     except Exception as e:
-        print(f"[nlp] DB write error for {file_id}: {e}")
+        logger.error("[nlp] DB write error for {}: {}", file_id, e)
         _set_status(file_id, "error")
 
 
@@ -218,7 +219,7 @@ def search_chunks(workspace_id: str, query: str, top_k: int = 5) -> List[dict]:
             )
             rows = [dict(r) for r in cur.fetchall()]
     except Exception as e:
-        print(f"[nlp] search DB error: {e}")
+        logger.error("[nlp] search DB error: {}", e)
         return []
 
     if not rows:

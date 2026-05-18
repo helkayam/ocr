@@ -267,46 +267,10 @@ def get_file_status(file_id: str):
 @router.delete("/{file_id}", status_code=204)
 def delete_file_endpoint(file_id: str):
     """Full teardown: RAG pipeline (vectors + registry + disk) + SQL DB + object storage."""
-    from app import pipeline
-    from services.storage_service import delete_object
-
     file_rec = file_service.get_file(file_id)
     if not file_rec:
         raise HTTPException(status_code=404, detail="File not found")
-
-    object_name = file_rec.get("object_name")
-
-    # For PDFs, run the RAG pipeline delete if the document is registered
-    if str(file_rec.get("file_type", "")).lower() == "pdf":
-        try:
-            import app.registry as rag_registry
-            if rag_registry.get(file_id):
-                pipeline.delete_pipeline(file_id)
-                logger.info("[files] RAG pipeline delete complete for {}", file_id)
-            else:
-                logger.info("[files] {} not in RAG registry — skipping pipeline delete", file_id)
-        except KeyError:
-            pass  # already gone from registry; continue cleanup
-        except Exception as exc:
-            raise HTTPException(status_code=500, detail=str(exc))
-
-    # Delete geo layers and emergency features linked to this file
-    try:
-        from services.geo_service import delete_geo_entities_for_file
-        delete_geo_entities_for_file(file_id)
-        logger.info("[files] Geo entities deleted for {}", file_id)
-    except Exception as exc:
-        logger.error("[files] Geo entity delete failed for {}: {}", file_id, exc)
-
-    # Remove from SQL DB (also clears document_chunks rows)
-    try:
-        file_service.delete_file(file_id)
-    except Exception as exc:
-        logger.error("[files] SQL delete failed for {}: {}", file_id, exc)
-
-    # Remove from object storage (best-effort — never block on this)
-    if object_name:
-        delete_object(object_name)
+    file_service.deep_delete_file(file_rec)
 
 
 # ─── PDF page renderer ───────────────────────────────────────────────────────

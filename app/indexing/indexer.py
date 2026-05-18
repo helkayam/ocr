@@ -11,7 +11,7 @@ from app.models import Chunk, DocumentStatus
 CHUNKS_DIR = Path("data/chunks")
 INDEX_DIR  = Path("data/index")
 
-UPSERT_BATCH_SIZE = 100
+_UPSERT_BATCH_SIZE = 100
 
 
 def _load_chunks(document_id: str) -> tuple[str, list[Chunk]]:
@@ -102,7 +102,7 @@ def index(document_id: str) -> int:
         collection = db.reset_collection(INDEX_DIR)
         bm25.reset()
 
-    num_batches     = (total + UPSERT_BATCH_SIZE - 1) // UPSERT_BATCH_SIZE
+    num_batches     = (total + _UPSERT_BATCH_SIZE - 1) // _UPSERT_BATCH_SIZE
     batch_num       = 0
     _dim_reset_done = False
     bm25_entries: list[dict] = []
@@ -117,9 +117,9 @@ def index(document_id: str) -> int:
 
     try:
         for batch_num, batch_start in enumerate(
-            range(0, total, UPSERT_BATCH_SIZE), start=1
+            range(0, total, _UPSERT_BATCH_SIZE), start=1
         ):
-            batch   = chunks[batch_start : batch_start + UPSERT_BATCH_SIZE]
+            batch   = chunks[batch_start : batch_start + _UPSERT_BATCH_SIZE]
             vectors = embedder.embed([c.text for c in batch])
             try:
                 _upsert(collection, batch, vectors)

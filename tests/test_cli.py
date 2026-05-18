@@ -255,16 +255,16 @@ class TestPipelineFunctions:
             doc_id = ingest_pipeline("fake.pdf")
 
         assert doc_id == "d1"
-        p2.assert_called_once_with("fake.pdf")
+        p2.assert_called_once_with("fake.pdf", workspace_id="__legacy__")
         p3.assert_called_once_with("d1")
-        p4.assert_called_once_with("d1")
+        p4.assert_called_once_with("d1", workspace_id="__legacy__")
         p5.assert_called_once_with("d1")
 
     def test_ask_pipeline_calls_generator(self):
         with patch("app.pipeline.generator.answer", return_value=_rag_response()) as mock:
             from app.pipeline import ask_pipeline
             result = ask_pipeline("שאלה", top_k=7)
-        mock.assert_called_once_with("שאלה", top_k=7)
+        mock.assert_called_once_with("שאלה", top_k=7, workspace_id=None)
         assert isinstance(result, RAGResponse)
 
     def test_delete_pipeline_calls_all_deletions(self):

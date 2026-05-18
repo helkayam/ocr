@@ -1,13 +1,10 @@
 """
-GIS Service — parse GeoJSON / Shapefile, store layers, manage map tags,
+GIS Service — parse GeoJSON, store layers, manage map tags,
 and typed emergency geo features with Haversine proximity routing.
 """
 
-import io
 import json
 import math
-import os
-import tempfile
 import uuid
 from typing import Any, Dict, List, Optional
 
@@ -37,39 +34,6 @@ def parse_geojson(file_bytes: bytes) -> Dict[str, Any]:
         "crs": "EPSG:4326",
     }
 
-
-def parse_shapefile(file_bytes: bytes, filename: str) -> Dict[str, Any]:
-    try:
-        import shapefile  # pyshp
-    except ImportError:
-        return {"error": "pyshp not installed", "geojson": None, "feature_count": 0}
-
-    with tempfile.TemporaryDirectory() as tmpdir:
-        path = os.path.join(tmpdir, filename)
-        with open(path, "wb") as fh:
-            fh.write(file_bytes)
-        try:
-            sf = shapefile.Reader(path)
-        except Exception as e:
-            return {"error": str(e), "geojson": None, "feature_count": 0}
-
-        fields = [f[0] for f in sf.fields[1:]]
-        features = [
-            {
-                "type": "Feature",
-                "geometry": sr.shape.__geo_interface__,
-                "properties": dict(zip(fields, sr.record)),
-            }
-            for sr in sf.shapeRecords()
-        ]
-
-    geojson = {"type": "FeatureCollection", "features": features}
-    return {
-        "geojson": geojson,
-        "feature_count": len(features),
-        "bounds": _bounds(features),
-        "crs": "EPSG:4326",
-    }
 
 
 def _bounds(features: list) -> Optional[List[float]]:

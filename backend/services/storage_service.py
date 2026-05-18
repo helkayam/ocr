@@ -14,6 +14,8 @@ import os
 from datetime import timedelta
 from pathlib import Path
 
+from loguru import logger
+
 # ─── Configuration ────────────────────────────────────────────────────────────
 
 MINIO_ENDPOINT  = os.getenv("MINIO_ENDPOINT",  "localhost:9000")
@@ -64,11 +66,11 @@ def ensure_bucket() -> bool:
         c = _client()
         if not c.bucket_exists(MINIO_BUCKET):
             c.make_bucket(MINIO_BUCKET)
-        print(f"Storage: MinIO bucket '{MINIO_BUCKET}' ready")
+        logger.info("Storage: MinIO bucket '{}' ready", MINIO_BUCKET)
         _use_local = False
         return True
     except Exception as e:
-        print(f"Storage: MinIO unavailable ({e}). Using local_storage/")
+        logger.warning("Storage: MinIO unavailable ({}). Using local_storage/", e)
         LOCAL_STORAGE.mkdir(parents=True, exist_ok=True)
         _use_local = True
         return False
@@ -133,12 +135,12 @@ def delete_object(object_name: str) -> None:
         try:
             _safe_local_path(object_name).unlink(missing_ok=True)
         except Exception as e:
-            print(f"Storage: local delete failed for {object_name}: {e}")
+            logger.error("Storage: local delete failed for {}: {}", object_name, e)
     else:
         try:
             _client().remove_object(MINIO_BUCKET, object_name)
         except Exception as e:
-            print(f"Storage: MinIO delete failed for {object_name}: {e}")
+            logger.error("Storage: MinIO delete failed for {}: {}", object_name, e)
 
 
 def delete_workspace_storage(workspace_id: str) -> None:
@@ -155,4 +157,4 @@ def delete_workspace_storage(workspace_id: str) -> None:
         if ws_dir.exists():
             shutil.rmtree(ws_dir)
     except Exception as e:
-        print(f"Storage: workspace dir cleanup failed for {workspace_id}: {e}")
+        logger.error("Storage: workspace dir cleanup failed for {}: {}", workspace_id, e)

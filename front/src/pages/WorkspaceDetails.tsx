@@ -12,6 +12,8 @@ import { MetadataModal } from '@/components/MetadataModal';
 import { PDFPreviewModal } from '@/components/PDFPreviewModal';
 import { QueryBox } from '@/components/QueryBox';
 import { SourcePreviewPanel } from '@/components/SourcePreviewPanel';
+import { GeoLayerForm, GeoCategory } from '@/components/sim/GeoLayerForm';
+import { useGeoUpload } from '@/hooks/useGeoUpload';
 import {
   ResizablePanelGroup,
   ResizablePanel,
@@ -20,10 +22,11 @@ import {
 import { CitedSource, FileItem, FileType, UploadQueueItem } from '@/types/files';
 import { api } from '@/lib/api';
 import { toast } from 'sonner';
-import { ArrowLeft, Upload, X } from 'lucide-react';
+import { ArrowLeft, Upload, X, FileText, Map } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { Dialog, DialogPortal, DialogTitle } from '@/components/ui/dialog';
+import { cn } from '@/lib/utils';
 
 export default function WorkspaceDetails() {
   const { id } = useParams<{ id: string }>();
@@ -73,6 +76,9 @@ export default function WorkspaceDetails() {
 
   const [uploadQueue, setUploadQueue] = useState<UploadQueueItem[]>([]);
   const [uploadDrawerOpen, setUploadDrawerOpen] = useState(false);
+  const [uploadTab, setUploadTab] = useState<'documents' | 'map'>('documents');
+  const [geoCategory, setGeoCategory] = useState<GeoCategory>('buildings');
+  const { handleGeoUpload, uploadProgress: geoProgress, isUploading: geoUploading } = useGeoUpload(id ?? '');
 
   // ── Filter / search state ──────────────────────────────────────────────────
 
@@ -348,6 +354,7 @@ export default function WorkspaceDetails() {
                   >
                     <DialogTitle className="sr-only">Upload Files</DialogTitle>
 
+                    {/* Header */}
                     <div
                       className="flex items-center justify-between px-6 py-5 border-b border-white/10 shrink-0"
                       style={{ background: 'linear-gradient(135deg, hsl(0,0%,10%) 0%, hsl(0,84%,32%) 100%)' }}
@@ -369,18 +376,53 @@ export default function WorkspaceDetails() {
                       </motion.button>
                     </div>
 
-                    <div className="flex-1 overflow-y-auto p-6 space-y-4">
-                      <FileUploadArea
-                        onFilesSelected={handleFilesSelected}
-                        isUploading={uploadQueue.some(q => q.status === 'uploading')}
-                      />
-                      {uploadQueue.length > 0 && (
-                        <div
-                          className="p-4 rounded-3xl bg-white border border-gray-100"
-                          style={{ boxShadow: '0 4px 16px rgba(239,68,68,0.08), inset 0 1px 0 rgba(255,255,255,0.95)' }}
+                    {/* Tabs */}
+                    <div className="flex border-b border-gray-100 shrink-0 bg-gray-50/60">
+                      {([
+                        { key: 'documents', label: 'Documents', icon: FileText },
+                        { key: 'map',       label: 'Upload Map', icon: Map },
+                      ] as const).map(({ key, label, icon: Icon }) => (
+                        <button
+                          key={key}
+                          onClick={() => setUploadTab(key)}
+                          className={cn(
+                            'flex-1 flex items-center justify-center gap-2 py-3 text-sm font-semibold transition-all border-b-2',
+                            uploadTab === key
+                              ? 'border-red-500 text-red-600 bg-white'
+                              : 'border-transparent text-gray-500 hover:text-gray-700'
+                          )}
                         >
-                          <FileUploadQueue items={uploadQueue} onRemove={handleRemoveFromQueue} />
-                        </div>
+                          <Icon className="h-4 w-4" />
+                          {label}
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Tab body */}
+                    <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                      {uploadTab === 'documents' ? (
+                        <>
+                          <FileUploadArea
+                            onFilesSelected={handleFilesSelected}
+                            isUploading={uploadQueue.some(q => q.status === 'uploading')}
+                          />
+                          {uploadQueue.length > 0 && (
+                            <div
+                              className="p-4 rounded-3xl bg-white border border-gray-100"
+                              style={{ boxShadow: '0 4px 16px rgba(239,68,68,0.08), inset 0 1px 0 rgba(255,255,255,0.95)' }}
+                            >
+                              <FileUploadQueue items={uploadQueue} onRemove={handleRemoveFromQueue} />
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        <GeoLayerForm
+                          geoCategory={geoCategory}
+                          onGeoCategoryChange={setGeoCategory}
+                          onFileSelect={file => handleGeoUpload(file, geoCategory)}
+                          isUploading={geoUploading}
+                          uploadProgress={geoProgress}
+                        />
                       )}
                     </div>
                   </motion.div>

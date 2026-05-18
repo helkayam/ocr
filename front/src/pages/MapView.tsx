@@ -10,7 +10,8 @@
  */
 import { useState, useMemo, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { useGeoUpload } from '@/hooks/useGeoUpload';
 import { AnimatePresence, motion } from 'framer-motion';
 import type { Feature, Geometry, GeoJsonProperties } from 'geojson';
 import { Header } from '@/components/Header';
@@ -82,7 +83,6 @@ function DockButton({ icon: Icon, label, active, prominent, pulse, onClick }: Do
 export default function MapView() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const qc = useQueryClient();
 
   // ── Server data ────────────────────────────────────────────────────────────
   const { data: workspace } = useQuery({
@@ -133,7 +133,7 @@ export default function MapView() {
 
   // ── GeoJSON upload ─────────────────────────────────────────────────────────
   const [geoCategory, setGeoCategory] = useState<GeoCategory>('buildings');
-  const [uploadProgress, setUploadProgress] = useState<string | null>(null);
+  const { handleGeoUpload, uploadProgress, isUploading: geoUploading } = useGeoUpload(id ?? '');
 
   // ── Simulation state ───────────────────────────────────────────────────────
   // Two-step flow: stage sensor → user picks origin on map → run simulation.
@@ -344,30 +344,6 @@ export default function MapView() {
     }
   };
 
-  const handleGeoJsonUpload = async (file: File) => {
-    if (!id) return;
-    setUploadProgress('Uploading...');
-    try {
-      const { upload_url, file_id } = await api.files.getUploadUrl({
-        workspace_id: id,
-        filename: file.name,
-        content_type: 'application/geo+json',
-        file_size: file.size,
-      });
-      await fetch(upload_url, { method: 'PUT', body: file, headers: { 'Content-Type': 'application/geo+json' } });
-      await api.files.confirmUpload({
-        file_id, workspace_id: id, filename: file.name,
-        file_size: file.size, content_type: 'application/geo+json', geo_category: geoCategory,
-      });
-      setUploadProgress(null);
-      qc.invalidateQueries({ queryKey: ['map-layers', id] });
-      qc.invalidateQueries({ queryKey: ['geo-features', id] });
-      toast.success('GeoJSON layer uploaded');
-    } catch {
-      setUploadProgress(null);
-      toast.error('Upload failed');
-    }
-  };
 
   const handleFeatureClick = (_feature: Feature<Geometry, GeoJsonProperties>) => {};
 
@@ -562,8 +538,8 @@ export default function MapView() {
         onClose={() => setUploadLayerOpen(false)}
         geoCategory={geoCategory}
         onGeoCategoryChange={setGeoCategory}
-        onUpload={handleGeoJsonUpload}
-        isUploading={!!uploadProgress}
+        onUpload={file => handleGeoUpload(file, geoCategory)}
+        isUploading={geoUploading}
         uploadProgress={uploadProgress}
       />
     </div>

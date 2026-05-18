@@ -8,7 +8,6 @@ class FileType(str, Enum):
     PDF = "pdf"
     DOCX = "docx"
     GEOJSON = "geojson"
-    SHAPEFILE = "shapefile"
 
 
 class FileStatus(str, Enum):
@@ -98,6 +97,22 @@ class UploadUrlResponse(BaseModel):
 class ConfirmUploadResponse(BaseModel):
     file: FileItem
     status: str = "ok"
+
+
+# ── NLP / semantic search schemas ────────────────────────────────────────────
+
+class SearchRequest(BaseModel):
+    workspace_id: str
+    query: str
+    top_k: int = 5
+
+
+class SearchResult(BaseModel):
+    chunk_id: str
+    file_id: str
+    filename: str
+    content: str
+    score: float
 
 
 # ── RAG pipeline schemas ──────────────────────────────────────────────────────

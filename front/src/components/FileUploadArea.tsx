@@ -13,23 +13,13 @@ interface FileUploadAreaProps {
 const ACCEPTED_TYPES: Record<string, FileType> = {
   'application/pdf': 'pdf',
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'docx',
-  'application/geo+json': 'geojson',
-  'application/json': 'geojson',
   '.pdf': 'pdf',
   '.docx': 'docx',
-  '.geojson': 'geojson',
-  '.json': 'geojson',
-  '.shp': 'shapefile',
-  '.dbf': 'shapefile',
-  '.shx': 'shapefile',
-  '.prj': 'shapefile',
 };
 
 const TYPE_PILLS = [
-  { label: 'PDF',     from: 'hsl(0,84%,65%)',   to: 'hsl(20,90%,60%)' },
-  { label: 'DOCX',    from: 'hsl(215,90%,62%)', to: 'hsl(199,89%,55%)' },
-  { label: 'GeoJSON', from: 'hsl(142,60%,50%)', to: 'hsl(158,64%,48%)' },
-  { label: 'SHP',     from: 'hsl(30,90%,60%)',  to: 'hsl(38,92%,55%)' },
+  { label: 'PDF',  from: 'hsl(0,84%,65%)',   to: 'hsl(20,90%,60%)' },
+  { label: 'DOCX', from: 'hsl(215,90%,62%)', to: 'hsl(199,89%,55%)' },
 ];
 
 export function FileUploadArea({ onFilesSelected, isUploading }: FileUploadAreaProps) {
@@ -56,7 +46,7 @@ export function FileUploadArea({ onFilesSelected, isUploading }: FileUploadAreaP
         validFiles.push(file);
       } else {
         toast.error(`Invalid file type: ${file.name}`, {
-          description: 'Supported formats: PDF, DOCX, GeoJSON, Shapefile',
+          description: 'Supported formats: PDF, DOCX',
         });
       }
     });
@@ -102,7 +92,7 @@ export function FileUploadArea({ onFilesSelected, isUploading }: FileUploadAreaP
           type="file"
           multiple
           className="hidden"
-          accept=".pdf,.docx,.geojson,.json,.shp,.dbf,.shx,.prj"
+          accept=".pdf,.docx"
           onChange={handleFileInput}
           disabled={isUploading}
         />
@@ -132,7 +122,7 @@ export function FileUploadArea({ onFilesSelected, isUploading }: FileUploadAreaP
         </h3>
 
         <p className="text-sm text-muted-foreground text-center mb-5 font-medium">
-          PDF · DOCX · GeoJSON · Shapefile
+          PDF · DOCX
         </p>
 
         <motion.div

@@ -1,12 +1,10 @@
 import {
   EmergencyEvent,
-  EmergencySimResult,
   FileItem,
   GeoFeature,
   MapLayer,
   MapTag,
   RagAnswer,
-  ReadinessReport,
   SearchResult,
   Sensor,
   Workspace,
@@ -17,6 +15,7 @@ const BASE = (import.meta.env.VITE_API_URL as string) || 'http://localhost:8000'
 /** Recursively convert ISO date strings to Date objects. */
 function parseDates<T>(obj: T): T {
   if (obj === null || typeof obj !== 'object') return obj;
+  if (obj instanceof Date) return obj;
   if (Array.isArray(obj)) return obj.map(parseDates) as unknown as T;
   const r = { ...(obj as Record<string, unknown>) };
   for (const key of ['createdAt', 'updatedAt', 'date']) {
@@ -72,6 +71,7 @@ export const api = {
     get: (id: string): Promise<Workspace> => request(`/workspaces/${id}`),
     create: (body: { name: string; description?: string }): Promise<Workspace> =>
       post('/workspaces', body),
+    delete: (id: string): Promise<void> => del(`/workspaces/${id}`),
   },
 
   files: {
@@ -162,11 +162,6 @@ export const api = {
       file_id?: string;
     }): Promise<MapTag> => post('/map/tags', body),
     deleteTag: (tagId: string): Promise<void> => del(`/map/tags/${tagId}`),
-  },
-
-  report: {
-    get: (workspaceId: string): Promise<ReadinessReport> =>
-      request(`/report/${workspaceId}`),
   },
 
   emergency: {
